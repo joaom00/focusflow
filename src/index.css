@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply h-full;
+}
+
+body {
+  @apply min-h-full text-white;
+}
+
+#root {
+  background-image: url('/mario.gif');
+  @apply min-h-screen bg-cover;
+}
+
+:where(.messages)::-webkit-scrollbar {
+  width: 0;
+}
+
+@layer components {
+  ::selection {
+    @apply bg-pink-500
+  }
+  [cmdk-list-sizer] {
+    @apply space-y-1.5;
+  }
+}
