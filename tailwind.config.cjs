@@ -1,10 +1,15 @@
 const plugin = require('tailwindcss/plugin')
+const { fontFamily } = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', ...fontFamily.sans],
+        bungee: 'Bungee',
+      },
       colors: {
         gray: {
           400: 'rgb(161 161 170)',
@@ -30,12 +35,14 @@ module.exports = {
       },
       animation: {
         slideLeft: 'slideLeft 250ms both ease-in',
+'spin-slow': 'spin 3s linear infinite'
       },
     },
   },
   plugins: [
     plugin(({ addVariant }) => {
       addVariant('selected', '&[aria-selected="true"]')
+      addVariant('command-heading', '& [cmdk-group-heading]')
     }),
   ],
 }

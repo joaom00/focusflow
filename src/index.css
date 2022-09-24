@@ -12,18 +12,28 @@ body {
 
 #root {
   background-image: url('/mario.gif');
-  @apply min-h-screen bg-cover;
+  @apply min-h-screen bg-cover bg-center;
 }
 
 :where(.messages)::-webkit-scrollbar {
   width: 0;
 }
 
+:where(:not(:active):focus-visible) {
+  @apply outline-none outline-pink-400;
+}
+
+:where(:focus-visible) {
+  transition: outline-offset 145ms;
+}
+
 @layer components {
   ::selection {
-    @apply bg-pink-500
+    @apply bg-pink-500;
   }
+
   [cmdk-list-sizer] {
     @apply space-y-1.5;
   }
+
 }
