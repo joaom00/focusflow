@@ -42,6 +42,7 @@ module.exports = {
   plugins: [
     plugin(({ addVariant }) => {
       addVariant('selected', '&[aria-selected="true"]')
+      addVariant('radix-checked', '&[data-state="checked"]')
       addVariant('command-heading', '& [cmdk-group-heading]')
     }),
   ],

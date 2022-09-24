@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.0.0",
     "@radix-ui/react-slider": "^1.0.0",
     "@radix-ui/react-tooltip": "^1.0.0",
     "cmdk": "^0.1.20",

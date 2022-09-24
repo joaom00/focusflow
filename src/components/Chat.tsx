@@ -51,10 +51,10 @@ export const Chat = () => {
 
   return (
     <ChatProvider headerRef={headerRef}>
-      <div className="bg-gray-900/70 ml-auto max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex-1 flex flex-col border-l border-l-gray-700">
+      <div className="bg-gray-900/70 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-l border-l-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:right-0 md:left-auto">
         <header
           ref={headerRef}
-          className="border-b border-b-gray-700 w-full grid grid-cols-3 items-center py-6 px-3"
+          className="border-b border-b-gray-700 w-full grid grid-cols-3 items-center py-4 px-3"
         >
           <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">Chat</p>
         </header>
