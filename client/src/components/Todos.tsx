@@ -59,8 +59,7 @@ const Todo = React.forwardRef<HTMLLIElement, TodoProps>((props, forwardedRef) =>
               onSubmit={(event) => {
                 event.preventDefault()
                 setEdit(false)
-                if(value) {
-
+                if (value) {
                   props.onSubmit(value)
                 }
               }}
@@ -73,8 +72,7 @@ const Todo = React.forwardRef<HTMLLIElement, TodoProps>((props, forwardedRef) =>
                 autoFocus
                 onBlur={() => {
                   setEdit(false)
-                  if(value) {
-
+                  if (value) {
                     props.onSubmit(value)
                   }
                 }}
@@ -95,13 +93,23 @@ Todo.displayName = 'Todo'
 interface Todo {
   status: 'todo' | 'in-progress' | 'done'
   edit: boolean
-  value: string
+  content: string
 }
 
 const MotionTodo = motion(Todo)
 
 export const Todos = () => {
   const [todos, setTodos] = React.useState<Todo[]>([])
+
+  React.useEffect(() => {
+    async function getTodos() {
+      const response = await fetch('http://localhost:3333/todos')
+      const todos = await response.json()
+      setTodos(todos)
+    }
+    getTodos()
+  }, [])
+
   return (
     <div className="bg-gray-900/90 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto">
       <header className="border-b border-b-gray-700 w-full text-center py-4 px-3">
@@ -114,7 +122,7 @@ export const Todos = () => {
               <MotionTodo
                 key={i}
                 edit={todo.edit}
-                value={todo.value}
+                value={todo.content}
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 onSubmit={(value) =>
@@ -134,7 +142,7 @@ export const Todos = () => {
                 onClick={() =>
                   setTodos((currentTodos) => [
                     ...currentTodos,
-                    { status: 'todo', edit: true, value: '' },
+                    { status: 'todo', edit: true, content: '' },
                   ])
                 }
               >

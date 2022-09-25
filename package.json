@@ -1,20 +1,24 @@
 {
-  "name": "@chat",
+  "name": "@chat/root",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "run-p dev:*",
+    "dev:client": "pnpm -F @chat/client dev",
+    "dev:server": "pnpm -F @chat/server dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
-    "@typescript-eslint/parser": "^5.37.0",
-    "eslint": "^8.23.1",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
-    "typescript": "^4.6.4"
+    "typescript": "^4.8.3"
   }
 }
