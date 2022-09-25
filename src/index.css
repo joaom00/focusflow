@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 html {
   @apply h-full;
 }
@@ -35,5 +36,4 @@ body {
   [cmdk-list-sizer] {
     @apply space-y-1.5;
   }
-
 }

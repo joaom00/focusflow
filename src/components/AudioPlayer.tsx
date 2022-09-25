@@ -1,8 +1,9 @@
 import React from 'react'
 import { RiPlayFill, RiPauseFill, RiVolumeUpFill, RiVolumeMuteFill } from 'react-icons/ri'
-import shallow from 'zustand/shallow'
-import { useAudioPlayerStore } from '../stores'
 import * as SliderPrimitive from '@radix-ui/react-slider'
+import shallow from 'zustand/shallow'
+import { motion } from 'framer-motion'
+import { useAudioPlayerStore } from '../stores'
 
 export const AudioPlayer = () => {
   const { play, isPlaying } = useAudioPlayerStore(
@@ -12,9 +13,9 @@ export const AudioPlayer = () => {
     }),
     shallow
   )
-
   const [song, setSong] = React.useState({ title: '', artist: '', artwork_url: '' })
   const [volume, setVolume] = React.useState([50])
+  const [pressing, setPressing] = React.useState(false)
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const previouslyVolume = React.useRef(50)
 
@@ -43,18 +44,18 @@ export const AudioPlayer = () => {
     audioRef.current?.pause()
   }, [isPlaying])
 
-  React.useEffect(() => {
-    async function getSongStatus() {
-      const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
-      const data = await response.json()
-      setSong({
-        title: data.current_track.title.split(' - ')[1],
-        artist: data.current_track.title.split(' - ')[0],
-        artwork_url: data.current_track.artwork_url,
-      })
-    }
-    getSongStatus()
-  }, [])
+  // React.useEffect(() => {
+  //   async function getSongStatus() {
+  //     const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
+  //     const data = await response.json()
+  //     setSong({
+  //       title: data.current_track.title.split(' - ')[1],
+  //       artist: data.current_track.title.split(' - ')[0],
+  //       artwork_url: data.current_track.artwork_url,
+  //     })
+  //   }
+  //   getSongStatus()
+  // }, [])
 
   return (
     <div className="bg-gray-900/70 p-3 border-t border-t-gray-700 backdrop-blur-lg backdrop-saturate-[180%] flex items-center gap-5 px-5">
@@ -67,15 +68,29 @@ export const AudioPlayer = () => {
           <p className="text-sm">{song.artist}</p>
         </div>
       </div>
-      {isPlaying ? (
-        <button className="hover:bg-gray-800 p-2 rounded-lg select-none" onClick={onPause}>
-          <RiPauseFill size={24} />
-        </button>
-      ) : (
-        <button className="hover:bg-gray-800 p-2 rounded-lg select-none" onClick={onPlay}>
-          <RiPlayFill size={24} />
-        </button>
-      )}
+      <motion.button
+        onTapStart={() => setPressing(true)}
+        onTap={() => setPressing(false)}
+        initial={false}
+        animate={pressing ? 'pressed' : 'unpressed'}
+        variants={{
+          pressed: {
+            scale: 0.85,
+            backgroundColor: 'rgb(39 39 42 / 25)',
+            opacity: 0.7,
+          },
+          unpressed: {
+            scale: [null, 0.85, 1],
+            opacity: 1,
+            backgroundColor: [null, 'rgb(39 39 42 / 25)', 'rgb(39 39 42 / 0)'],
+          },
+        }}
+        transition={{ type: 'spring', duration: 0.2, bounce: 0.5 }}
+        className="p-2 rounded-lg select-none"
+        onClick={isPlaying ? onPause : onPlay}
+      >
+        {isPlaying ? <RiPauseFill size={24} /> : <RiPlayFill size={24} />}
+      </motion.button>
       {volume[0] === 0 ? (
         <button
           className="hover:bg-gray-800 p-2 rounded-lg select-none"

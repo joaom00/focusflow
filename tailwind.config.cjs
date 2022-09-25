@@ -35,7 +35,7 @@ module.exports = {
       },
       animation: {
         slideLeft: 'slideLeft 250ms both ease-in',
-'spin-slow': 'spin 3s linear infinite'
+        'spin-slow': 'spin 3s linear infinite',
       },
     },
   },

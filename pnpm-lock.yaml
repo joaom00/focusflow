@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@radix-ui/react-checkbox': ^1.0.0
+  '@radix-ui/react-collapsible': ^1.0.0
   '@radix-ui/react-slider': ^1.0.0
   '@radix-ui/react-tooltip': ^1.0.0
   '@types/react': ^18.0.17
@@ -15,7 +16,7 @@ specifiers:
   eslint-config-prettier: ^8.5.0
   eslint-plugin-react: ^7.31.8
   eslint-plugin-react-hooks: ^4.6.0
-  motion: ^10.14.2
+  framer-motion: ^7.3.6
   postcss: ^8.4.16
   prettier: ^2.7.1
   react: ^18.2.0
@@ -29,10 +30,11 @@ specifiers:
 
 dependencies:
   '@radix-ui/react-checkbox': 1.0.0_biqbaboplfbrettd7655fr4n2y
+  '@radix-ui/react-collapsible': 1.0.0_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-slider': registry.npmmirror.com/@radix-ui/react-slider/1.0.0_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-tooltip': registry.npmmirror.com/@radix-ui/react-tooltip/1.0.0_7ey2zzynotv32rpkwno45fsx4e
   cmdk: registry.npmmirror.com/cmdk/0.1.20_7ey2zzynotv32rpkwno45fsx4e
-  motion: 10.14.2
+  framer-motion: 7.3.6_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-icons: 4.4.0_react@18.2.0
@@ -332,6 +334,19 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
+  /@emotion/is-prop-valid/0.8.8:
+    resolution: {integrity: sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==}
+    requiresBuild: true
+    dependencies:
+      '@emotion/memoize': 0.7.4
+    dev: false
+    optional: true
+
+  /@emotion/memoize/0.7.4:
+    resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    dev: false
+    optional: true
+
   /@esbuild/android-arm/0.15.8:
     resolution: {integrity: sha512-CyEWALmn+no/lbgbAJsbuuhT8s2J19EJGHkeyAwjbFJMrj80KJ9zuYsoAvidPTU7BgBf87r/sgae8Tw0dbOc4Q==}
     engines: {node: '>=12'}
@@ -440,8 +455,8 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@motionone/dom/10.14.2:
-    resolution: {integrity: sha512-GbGtvTSelXfT4TeQUQ3Y31PllAu0Uvghqr68FSPAJsh1hjbuYPaiPJWpP6+t/t50cHtvUbl4m2SgnGKJ0NCgWA==}
+  /@motionone/dom/10.13.1:
+    resolution: {integrity: sha512-zjfX+AGMIt/fIqd/SL1Lj93S6AiJsEA3oc5M9VkUr+Gz+juRmYN1vfvZd6MvEkSqEjwPQgcjN7rGZHrDB9APfQ==}
     dependencies:
       '@motionone/animation': 10.14.0
       '@motionone/generators': 10.14.0
@@ -466,13 +481,6 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@motionone/svelte/10.14.2:
-    resolution: {integrity: sha512-WKgER0eH7b8q0/ODElHIbzMM3uIINdcdCw87jf7xqs4daidsy6e1ckh2XJF2Z8zyWyUEtO4VHvGumRX7EjrxFA==}
-    dependencies:
-      '@motionone/dom': 10.14.2
-      tslib: 2.4.0
-    dev: false
-
   /@motionone/types/10.14.0:
     resolution: {integrity: sha512-3bNWyYBHtVd27KncnJLhksMFQ5o2MSdk1cA/IZqsHtA9DnRM1SYgN01CTcJ8Iw8pCXF5Ocp34tyAjY7WRpOJJQ==}
     dev: false
@@ -482,13 +490,6 @@ packages:
     dependencies:
       '@motionone/types': 10.14.0
       hey-listen: 1.0.8
-      tslib: 2.4.0
-    dev: false
-
-  /@motionone/vue/10.14.2:
-    resolution: {integrity: sha512-nxC/j4WhOsXxVDUdWHJDUIvHSb97eu0Kn1HNzGp08Fm9WTFkKy0HtJtTqTdkGVks2jB/XBh/FO3wU2OzyDFZNw==}
-    dependencies:
-      '@motionone/dom': 10.14.2
       tslib: 2.4.0
     dev: false
 
@@ -535,6 +536,25 @@ packages:
       '@radix-ui/react-use-controllable-state': 1.0.0_react@18.2.0
       '@radix-ui/react-use-previous': 1.0.0_react@18.2.0
       '@radix-ui/react-use-size': 1.0.0_react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@radix-ui/react-collapsible/1.0.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-NfZqWntvPsC43szs0NvumRjmTTJTLgaDOAnmVGDZaGsg2u6LcJwUT7YeYSKnlxWRQWN4pwwEfoYdWrtoutfO8g==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.19.0
+      '@radix-ui/primitive': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-context': 1.0.0_react@18.2.0
+      '@radix-ui/react-id': 1.0.0_react@18.2.0
+      '@radix-ui/react-presence': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-controllable-state': 1.0.0_react@18.2.0
+      '@radix-ui/react-use-layout-effect': 1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -1667,6 +1687,30 @@ packages:
     resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
     dev: true
 
+  /framer-motion/7.3.6_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-en8mLpDv6IcieZo54acHg56HSLpOSryRLZtMOd1Sj1s7hBbUTWnJsv68CWaHI2ysPKcbH/olGfAhRh4yrJn5tw==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@motionone/dom': 10.13.1
+      framesync: 6.1.2
+      hey-listen: 1.0.8
+      popmotion: 11.0.5
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      style-value-types: 5.1.2
+      tslib: 2.4.0
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
+    dev: false
+
+  /framesync/6.1.2:
+    resolution: {integrity: sha512-jBTqhX6KaQVDyus8muwZbBeGGP0XgujBRbQ7gM7BRdS3CadCZIHiawyzYLnafYcvZIh5j8WE7cxZKFn7dXhu9g==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
+
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
     dev: true
@@ -2071,17 +2115,6 @@ packages:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
     dev: true
 
-  /motion/10.14.2:
-    resolution: {integrity: sha512-zZp9PL4/O7nSgQBWBDdyvGm25Ef/hQUUVAOnyzxn2IvAhp496M+RB9p1ce4nN7cYLizox2Bq77/dTIjFGkJmAw==}
-    dependencies:
-      '@motionone/animation': 10.14.0
-      '@motionone/dom': 10.14.2
-      '@motionone/svelte': 10.14.2
-      '@motionone/types': 10.14.0
-      '@motionone/utils': 10.14.0
-      '@motionone/vue': 10.14.2
-    dev: false
-
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
@@ -2249,6 +2282,15 @@ packages:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /popmotion/11.0.5:
+    resolution: {integrity: sha512-la8gPM1WYeFznb/JqF4GiTkRRPZsfaj2+kCxqQgr2MJylMmIKUwBfWW8Wa5fml/8gmtlD5yI01MP1QCZPWmppA==}
+    dependencies:
+      framesync: 6.1.2
+      hey-listen: 1.0.8
+      style-value-types: 5.1.2
+      tslib: 2.4.0
+    dev: false
 
   /postcss-import/14.1.0_postcss@8.4.16:
     resolution: {integrity: sha512-flwI+Vgm4SElObFVPpTIT7SU7R3qk2L7PyduMcokiaVKuWv9d/U+Gm/QAd8NDLuykTWTkcrjOeD2Pp1rMeBTGw==}
@@ -2579,6 +2621,13 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /style-value-types/5.1.2:
+    resolution: {integrity: sha512-Vs9fNreYF9j6W2VvuDTP7kepALi7sk0xtk2Tu8Yxi9UoajJdEVpNpCov0HsLTqXvNGKX+Uv09pkozVITi1jf3Q==}
+    dependencies:
+      hey-listen: 1.0.8
+      tslib: 2.4.0
+    dev: false
+
   /supports-color/5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -2827,7 +2876,7 @@ packages:
     version: 7.19.0
     engines: {node: '>=6.9.0'}
     dependencies:
-      regenerator-runtime: registry.npmmirror.com/regenerator-runtime/0.13.9
+      regenerator-runtime: 0.13.9
     dev: false
 
   registry.npmmirror.com/@floating-ui/core/0.7.3:
@@ -2866,7 +2915,7 @@ packages:
     name: '@radix-ui/number'
     version: 1.0.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
     dev: false
 
   registry.npmmirror.com/@radix-ui/primitive/1.0.0:
@@ -2874,7 +2923,7 @@ packages:
     name: '@radix-ui/primitive'
     version: 1.0.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
     dev: false
 
   registry.npmmirror.com/@radix-ui/react-arrow/1.0.0_biqbaboplfbrettd7655fr4n2y:
@@ -2886,8 +2935,8 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -2901,11 +2950,11 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-context': registry.npmmirror.com/@radix-ui/react-context/1.0.0_react@18.2.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-slot': registry.npmmirror.com/@radix-ui/react-slot/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-context': 1.0.0_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-slot': 1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -2918,7 +2967,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -2930,7 +2979,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -2943,19 +2992,19 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/primitive': registry.npmmirror.com/@radix-ui/primitive/1.0.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-context': registry.npmmirror.com/@radix-ui/react-context/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/primitive': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-context': 1.0.0_react@18.2.0
       '@radix-ui/react-dismissable-layer': registry.npmmirror.com/@radix-ui/react-dismissable-layer/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-focus-guards': registry.npmmirror.com/@radix-ui/react-focus-guards/1.0.0_react@18.2.0
       '@radix-ui/react-focus-scope': registry.npmmirror.com/@radix-ui/react-focus-scope/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-id': registry.npmmirror.com/@radix-ui/react-id/1.0.0_react@18.2.0
+      '@radix-ui/react-id': 1.0.0_react@18.2.0
       '@radix-ui/react-portal': registry.npmmirror.com/@radix-ui/react-portal/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-presence': registry.npmmirror.com/@radix-ui/react-presence/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-slot': registry.npmmirror.com/@radix-ui/react-slot/1.0.0_react@18.2.0
-      '@radix-ui/react-use-controllable-state': registry.npmmirror.com/@radix-ui/react-use-controllable-state/1.0.0_react@18.2.0
+      '@radix-ui/react-presence': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-slot': 1.0.0_react@18.2.0
+      '@radix-ui/react-use-controllable-state': 1.0.0_react@18.2.0
       aria-hidden: registry.npmmirror.com/aria-hidden/1.2.1_w5j4k42lgipnm43s3brx6h3c34
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -2972,7 +3021,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -2985,11 +3034,11 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/primitive': registry.npmmirror.com/@radix-ui/primitive/1.0.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-use-callback-ref': registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/primitive': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-callback-ref': 1.0.0_react@18.2.0
       '@radix-ui/react-use-escape-keydown': registry.npmmirror.com/@radix-ui/react-use-escape-keydown/1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -3003,7 +3052,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -3016,10 +3065,10 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-use-callback-ref': registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-callback-ref': 1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -3032,8 +3081,8 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-use-layout-effect': registry.npmmirror.com/@radix-ui/react-use-layout-effect/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-use-layout-effect': 1.0.0_react@18.2.0
       react: 18.2.0
     dev: false
 
@@ -3046,13 +3095,13 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       '@floating-ui/react-dom': registry.npmmirror.com/@floating-ui/react-dom/0.7.2_7ey2zzynotv32rpkwno45fsx4e
       '@radix-ui/react-arrow': registry.npmmirror.com/@radix-ui/react-arrow/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-context': registry.npmmirror.com/@radix-ui/react-context/1.0.0_react@18.2.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-use-layout-effect': registry.npmmirror.com/@radix-ui/react-use-layout-effect/1.0.0_react@18.2.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-context': 1.0.0_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-layout-effect': 1.0.0_react@18.2.0
       '@radix-ui/react-use-rect': registry.npmmirror.com/@radix-ui/react-use-rect/1.0.0_react@18.2.0
       '@radix-ui/react-use-size': registry.npmmirror.com/@radix-ui/react-use-size/1.0.0_react@18.2.0
       '@radix-ui/rect': registry.npmmirror.com/@radix-ui/rect/1.0.0
@@ -3071,8 +3120,8 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -3086,9 +3135,9 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
-      '@radix-ui/react-use-layout-effect': registry.npmmirror.com/@radix-ui/react-use-layout-effect/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
+      '@radix-ui/react-use-layout-effect': 1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -3102,8 +3151,8 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-slot': registry.npmmirror.com/@radix-ui/react-slot/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-slot': 1.0.0_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -3141,8 +3190,8 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-compose-refs': 1.0.0_react@18.2.0
       react: 18.2.0
     dev: false
 
@@ -3174,18 +3223,6 @@ packages:
       - '@types/react'
     dev: false
 
-  registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0_react@18.2.0:
-    resolution: {integrity: sha512-GZtyzoHz95Rhs6S63D2t/eqvdFCm7I+yHMLVQheKM7nBD8mbZIt+ct1jz4536MDnaOGKIxynJ8eHTkVGVVkoTg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@radix-ui/react-use-callback-ref/-/react-use-callback-ref-1.0.0.tgz}
-    id: registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0
-    name: '@radix-ui/react-use-callback-ref'
-    version: 1.0.0
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      react: 18.2.0
-    dev: false
-
   registry.npmmirror.com/@radix-ui/react-use-controllable-state/1.0.0_react@18.2.0:
     resolution: {integrity: sha512-FohDoZvk3mEXh9AWAVyRTYR4Sq7/gavuofglmiXB2g1aKyboUD4YtgWxKj8O5n+Uak52gXQ4wKz5IFST4vtJHg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@radix-ui/react-use-controllable-state/-/react-use-controllable-state-1.0.0.tgz}
     id: registry.npmmirror.com/@radix-ui/react-use-controllable-state/1.0.0
@@ -3194,8 +3231,8 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-use-callback-ref': registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-use-callback-ref': 1.0.0_react@18.2.0
       react: 18.2.0
     dev: false
 
@@ -3207,8 +3244,8 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-use-callback-ref': registry.npmmirror.com/@radix-ui/react-use-callback-ref/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-use-callback-ref': 1.0.0_react@18.2.0
       react: 18.2.0
     dev: false
 
@@ -3220,7 +3257,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -3232,7 +3269,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       react: 18.2.0
     dev: false
 
@@ -3244,7 +3281,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
       '@radix-ui/rect': registry.npmmirror.com/@radix-ui/rect/1.0.0
       react: 18.2.0
     dev: false
@@ -3257,8 +3294,8 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-use-layout-effect': registry.npmmirror.com/@radix-ui/react-use-layout-effect/1.0.0_react@18.2.0
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-use-layout-effect': 1.0.0_react@18.2.0
       react: 18.2.0
     dev: false
 
@@ -3271,8 +3308,8 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
-      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@babel/runtime': 7.19.0
+      '@radix-ui/react-primitive': 1.0.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -3282,7 +3319,7 @@ packages:
     name: '@radix-ui/rect'
     version: 1.0.0
     dependencies:
-      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
+      '@babel/runtime': 7.19.0
     dev: false
 
   registry.npmmirror.com/aria-hidden/1.2.1_w5j4k42lgipnm43s3brx6h3c34:
@@ -3300,7 +3337,7 @@ packages:
     dependencies:
       '@types/react': 18.0.20
       react: 18.2.0
-      tslib: registry.npmmirror.com/tslib/2.4.0
+      tslib: 2.4.0
     dev: false
 
   registry.npmmirror.com/cmdk/0.1.20_7ey2zzynotv32rpkwno45fsx4e:
@@ -3378,7 +3415,7 @@ packages:
       '@types/react': 18.0.20
       react: 18.2.0
       react-style-singleton: registry.npmmirror.com/react-style-singleton/2.2.1_w5j4k42lgipnm43s3brx6h3c34
-      tslib: registry.npmmirror.com/tslib/2.4.0
+      tslib: 2.4.0
     dev: false
 
   registry.npmmirror.com/react-remove-scroll/2.5.4_w5j4k42lgipnm43s3brx6h3c34:
@@ -3398,7 +3435,7 @@ packages:
       react: 18.2.0
       react-remove-scroll-bar: registry.npmmirror.com/react-remove-scroll-bar/2.3.3_w5j4k42lgipnm43s3brx6h3c34
       react-style-singleton: registry.npmmirror.com/react-style-singleton/2.2.1_w5j4k42lgipnm43s3brx6h3c34
-      tslib: registry.npmmirror.com/tslib/2.4.0
+      tslib: 2.4.0
       use-callback-ref: registry.npmmirror.com/use-callback-ref/1.3.0_w5j4k42lgipnm43s3brx6h3c34
       use-sidecar: registry.npmmirror.com/use-sidecar/1.1.2_w5j4k42lgipnm43s3brx6h3c34
     dev: false
@@ -3420,19 +3457,7 @@ packages:
       get-nonce: registry.npmmirror.com/get-nonce/1.0.1
       invariant: registry.npmmirror.com/invariant/2.2.4
       react: 18.2.0
-      tslib: registry.npmmirror.com/tslib/2.4.0
-    dev: false
-
-  registry.npmmirror.com/regenerator-runtime/0.13.9:
-    resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz}
-    name: regenerator-runtime
-    version: 0.13.9
-    dev: false
-
-  registry.npmmirror.com/tslib/2.4.0:
-    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tslib/-/tslib-2.4.0.tgz}
-    name: tslib
-    version: 2.4.0
+      tslib: 2.4.0
     dev: false
 
   registry.npmmirror.com/use-callback-ref/1.3.0_w5j4k42lgipnm43s3brx6h3c34:
@@ -3450,7 +3475,7 @@ packages:
     dependencies:
       '@types/react': 18.0.20
       react: 18.2.0
-      tslib: registry.npmmirror.com/tslib/2.4.0
+      tslib: 2.4.0
     dev: false
 
   registry.npmmirror.com/use-isomorphic-layout-effect/1.1.2_w5j4k42lgipnm43s3brx6h3c34:
@@ -3485,7 +3510,7 @@ packages:
       '@types/react': 18.0.20
       detect-node-es: registry.npmmirror.com/detect-node-es/1.1.0
       react: 18.2.0
-      tslib: registry.npmmirror.com/tslib/2.4.0
+      tslib: 2.4.0
     dev: false
 
   registry.npmmirror.com/use-sync-external-store/1.2.0_react@18.2.0:
