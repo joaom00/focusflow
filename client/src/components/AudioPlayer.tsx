@@ -16,6 +16,7 @@ export const AudioPlayer = () => {
   const [song, setSong] = React.useState({ title: '', artist: '', artwork_url: '' })
   const [volume, setVolume] = React.useState([50])
   const [pressing, setPressing] = React.useState(false)
+  const [hovering, setHovering] = React.useState(false)
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const previouslyVolume = React.useRef(50)
 
@@ -127,7 +128,45 @@ export const AudioPlayer = () => {
         <SliderPrimitive.Track className="bg-gray-400 relative flex-grow rounded-full h-[3px]">
           <SliderPrimitive.Range className="absolute bg-white h-full rounded-full" />
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)]" />
+        <SliderPrimitive.Thumb
+          className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)]"
+          onPointerDown={() => setHovering(true)}
+          onPointerUp={() => setHovering(false)}
+        >
+          <motion.div
+            animate={hovering ? 'hovering' : 'unhovering'}
+            variants={{
+              hovering: {
+                x: '-12%',
+                opacity: 1,
+                y: -35,
+                scale: 1,
+              },
+              unhovering: {
+                x: '-12%',
+                opacity: 0,
+                y: -10,
+                scale: 0.5,
+                transition: {
+                  opacity: {
+                    duration: 0.3,
+                  },
+                  scale: {
+                    duration: 0.1,
+                  },
+                  y: {
+                    duration: 0.2,
+                  },
+                  // duration: 0.1,
+                },
+              },
+            }}
+            transition={{ duration: 0.3 }}
+            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center"
+          >
+            {volume[0]}
+          </motion.div>
+        </SliderPrimitive.Thumb>
       </SliderPrimitive.Root>
 
       <audio ref={audioRef} src="https://s2.radio.co/s83d70ae1d/listen" crossOrigin="" />
