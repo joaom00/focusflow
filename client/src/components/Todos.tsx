@@ -31,8 +31,9 @@ const CheckIcon = () => {
 
 interface TodoProps {
   edit: boolean
-  onSubmit: (value: string) => void
   value: string
+  onBlur: (value: string) => void
+  addTodo: (value: string) => void
 }
 
 const Todo = React.forwardRef<HTMLLIElement, TodoProps>((props, forwardedRef) => {
@@ -61,9 +62,20 @@ const Todo = React.forwardRef<HTMLLIElement, TodoProps>((props, forwardedRef) =>
         {edit ? (
           <Textarea
             autoFocus
-            onBlur={() => setEdit(false)}
+            onBlur={() => {
+              setEdit(false)
+              props.onBlur(value)
+            }}
             value={value}
             onChange={(event) => setValue(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              const hasEnterPressed = event.key === 'Enter'
+              if (hasEnterPressed) {
+                event.preventDefault()
+                if (value === '') return props.onBlur(value)
+                props.addTodo(value)
+              }
+            }}
             className="resize-none bg-gray-800 pl-10 pr-4 py-2 text-sm focus:outline-none border-t border-t-transparent focus:border-t-pink-500 z-30 absolute inset-x-0 shadow-lg shadow-[rgba(0,0,0,0.5)] rounded-md"
             placeholder="Enter a name"
             minRows={1}
@@ -134,13 +146,21 @@ export const Todos = () => {
                   value={todo.content}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  onSubmit={(value) =>
-                    setTodos((currentTodos) =>
-                      currentTodos.map((todo, index) =>
-                        index === i ? { ...todo, edit: false, value } : todo
-                      )
-                    )
-                  }
+                  onBlur={(value) => {
+                    if (value === '') {
+                      setTodos((currentTodos) => currentTodos.slice(0, -1))
+                    }
+                  }}
+                  addTodo={(value) => {
+                    const currentTodos = [...todos]
+                    const lastTodo = currentTodos.pop()
+                    if (lastTodo) {
+                      lastTodo.edit = false
+                      lastTodo.content = value
+                      const newTodo: Todo = { edit: true, status: 'todo', content: '' }
+                      setTodos([...currentTodos, lastTodo, newTodo])
+                    }
+                  }}
                 />
               ))}
 
@@ -149,10 +169,10 @@ export const Todos = () => {
                   type="button"
                   className="text-sm flex items-center gap-2 rounded-lg text-gray-300"
                   onClick={() => {
-                      setTodos((currentTodos) => [
-                        ...currentTodos,
-                        { status: 'todo', edit: true, content: '' },
-                      ])
+                    setTodos((currentTodos) => [
+                      ...currentTodos,
+                      { status: 'todo', edit: true, content: '' },
+                    ])
                   }}
                 >
                   <div className="border-2 border-gray-300 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center">
