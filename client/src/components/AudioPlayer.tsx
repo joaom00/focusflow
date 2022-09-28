@@ -16,7 +16,6 @@ export const AudioPlayer = () => {
   const [song, setSong] = React.useState({ title: '', artist: '', artwork_url: '' })
   const [volume, setVolume] = React.useState([50])
   const [pressing, setPressing] = React.useState(false)
-  const [hovering, setHovering] = React.useState(false)
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const previouslyVolume = React.useRef(50)
 
@@ -70,31 +69,16 @@ export const AudioPlayer = () => {
         </div>
       </div>
       <motion.button
-        onTapStart={() => setPressing(true)}
-        onTap={() => setPressing(false)}
-        initial={false}
-        animate={pressing ? 'pressed' : 'unpressed'}
-        variants={{
-          pressed: {
-            scale: 0.85,
-            backgroundColor: 'rgb(39 39 42 / 25)',
-            opacity: 0.7,
-          },
-          unpressed: {
-            scale: [null, 0.85, 1],
-            opacity: 1,
-            backgroundColor: [null, 'rgb(39 39 42 / 25)', 'rgb(39 39 42 / 0)'],
-          },
-        }}
-        transition={{ type: 'spring', duration: 0.2, bounce: 0.5 }}
+        whileTap={{ scale: 0.8, backgroundColor: 'rgb(39 39 42 / 25)', opacity: 0.7 }}
         className="p-2 rounded-lg select-none"
         onClick={isPlaying ? onPause : onPlay}
       >
         {isPlaying ? <RiPauseFill size={24} /> : <RiPlayFill size={24} />}
       </motion.button>
       {volume[0] === 0 ? (
-        <button
-          className="hover:bg-gray-800 p-2 rounded-lg select-none"
+        <motion.button
+          whileTap={{ scale: 0.8, backgroundColor: 'rgb(39 39 42 / 25)', opacity: 0.7 }}
+          className="p-2 rounded-lg select-none"
           onClick={() => {
             if (audioRef.current) {
               setVolume([previouslyVolume.current])
@@ -103,10 +87,11 @@ export const AudioPlayer = () => {
           }}
         >
           <RiVolumeMuteFill size={24} />
-        </button>
+        </motion.button>
       ) : (
-        <button
-          className="hover:bg-gray-800 p-2 rounded-lg select-none"
+        <motion.button
+          whileTap={{ scale: 0.8, backgroundColor: 'rgb(39 39 42 / 25)', opacity: 0.7 }}
+          className="p-2 rounded-lg select-none"
           onClick={() => {
             if (audioRef.current) {
               previouslyVolume.current = volume[0]
@@ -116,7 +101,7 @@ export const AudioPlayer = () => {
           }}
         >
           <RiVolumeUpFill size={24} />
-        </button>
+        </motion.button>
       )}
       <SliderPrimitive.Root
         className="relative flex items-center select-none touch-none w-[150px] h-5 slider-root"
@@ -129,40 +114,41 @@ export const AudioPlayer = () => {
           <SliderPrimitive.Range className="absolute bg-white h-full rounded-full" />
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb
-          className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)]"
-          onPointerDown={() => setHovering(true)}
-          onPointerUp={() => setHovering(false)}
+          className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)] z-20"
+          onPointerDown={() => setPressing(true)}
+          onPointerUp={() => setPressing(false)}
         >
           <motion.div
-            animate={hovering ? 'hovering' : 'unhovering'}
+            animate={pressing ? 'pressing' : 'unpressed'}
             variants={{
-              hovering: {
+              pressing: {
                 x: '-12%',
                 opacity: 1,
                 y: -35,
-                scale: 1,
-              },
-              unhovering: {
-                x: '-12%',
-                opacity: 0,
-                y: -10,
-                scale: 0.5,
+                scaleX: [null, 0.6, 1],
                 transition: {
-                  opacity: {
+                  scaleX: {
+                    type: 'spring',
                     duration: 0.3,
-                  },
-                  scale: {
-                    duration: 0.1,
+                    delay: 0.05,
                   },
                   y: {
-                    duration: 0.2,
+                    duration: 0.3,
                   },
-                  // duration: 0.1,
+                },
+              },
+              unpressed: {
+                x: '-12%',
+                opacity: 0,
+                y: [-35, -45, -10],
+                scaleX: 0.2,
+                transition: {
+                  scaleX: { duration: 0.2 },
+                  y: { duration: 0.3 },
                 },
               },
             }}
-            transition={{ duration: 0.3 }}
-            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center"
+            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center origin-bottom z-10"
           >
             {volume[0]}
           </motion.div>
