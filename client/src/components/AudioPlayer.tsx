@@ -148,7 +148,7 @@ export const AudioPlayer = () => {
                 },
               },
             }}
-            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center origin-bottom z-10"
+            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center origin-bottom z-10 border border-pink-700"
           >
             {volume[0]}
           </motion.div>
