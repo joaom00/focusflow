@@ -17,12 +17,14 @@ interface TodoProps {
 
 const MotionCheckboxRoot = motion(Checkbox.Root)
 
-const CheckboxTodo = ({ id, edit }: { id: string, edit: boolean }) => {
+const CheckboxTodo = ({ id, edit }: { id: string; edit: boolean }) => {
   return (
     <MotionCheckboxRoot
       id={id}
       whileTap={{ scale: 0.8 }}
-      className={`border-2 border-gray-500 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center radix-checked:bg-pink-500 radix-checked:border-transparent transition-colors ease-in-out duration-[250ms] ml-4 mt-3 ${edit ? 'z-40' : ''}`}
+      className={`border-2 border-gray-500 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center radix-checked:bg-pink-500 radix-checked:border-transparent transition-colors ease-in-out duration-[250ms] ml-4 mt-3 ${
+        edit ? 'z-40' : 'z-10'
+      }`}
       style={{ gridColumn: '1/2', gridRow: '1/2' }}
     >
       <Checkbox.Indicator className="text-violet-500">
@@ -36,19 +38,48 @@ const Todo = (props: TodoProps) => {
   const id = React.useId()
   const [edit, setEdit] = React.useState(props.edit)
   const [value, setValue] = React.useState(props.value)
+  const [hovering, setHovering] = React.useState(false)
+  const prevValueRef = React.useRef(props.value)
 
   const onBlur = () => {
+    if (!prevValueRef.current) return props.onBlurEmptyValue()
+    if (!value && prevValueRef.current) {
+      setValue(prevValueRef.current)
+      setEdit(false)
+      return
+    }
     setEdit(false)
-    if (!value) return props.onBlurEmptyValue()
+    prevValueRef.current = value
     props.onBlur(value)
   }
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    const hasEnterPressed = event.key === 'Enter'
-    if (hasEnterPressed) {
-      event.preventDefault()
-      if (!value) return props.onBlurEmptyValue()
-      props.onSubmit(value)
+    switch (event.key) {
+      case 'Enter': {
+        event.preventDefault()
+        if (!value) return props.onBlurEmptyValue()
+        prevValueRef.current = value
+        props.onSubmit(value)
+        break
+      }
+      case 'Backspace': {
+        if (!value) {
+          event.preventDefault()
+          props.onBlurEmptyValue()
+        }
+        break
+      }
+      case 'Escape': {
+        if (!prevValueRef.current) return props.onBlurEmptyValue()
+        if (!value && prevValueRef.current) {
+          setValue(prevValueRef.current)
+          return
+        }
+        prevValueRef.current = value
+        props.onBlur(value)
+        setEdit(false)
+        break
+      }
     }
   }
 
@@ -62,7 +93,22 @@ const Todo = (props: TodoProps) => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
     >
-      <div
+      <motion.div
+        onHoverStart={() => setHovering(true)}
+        onHoverEnd={() => setHovering(false)}
+        animate={hovering ? 'hovering' : 'unhovering'}
+        variants={{
+          hovering: {
+            backgroundColor: 'rgb(51 51 56)',
+            transition: { duration: 0 },
+          },
+          unhovering: {
+            backgroundColor: 'rgb(51 51 56 / 0)',
+            transition: {
+              duration: 0.18,
+            },
+          },
+        }}
         className={`group hover:bg-gray-750 min-h-[36px] h-full grid relative ${
           edit ? 'pointer-events-none' : 'pointer-events-auto'
         }`}
@@ -77,7 +123,13 @@ const Todo = (props: TodoProps) => {
 
         {edit ? (
           <Textarea
-            autoFocus
+            ref={(node) => {
+              if (node) {
+                const end = value.length
+                node.setSelectionRange(end, end)
+                node.focus()
+              }
+            }}
             onBlur={onBlur}
             value={value}
             onChange={onChange}
@@ -97,25 +149,25 @@ const Todo = (props: TodoProps) => {
               gridColumn: '1/2',
               gridRow: '1/2',
               display: '-webkit-box',
-              ['-webkit-line-clamp' as string]: '2',
-              ['-webkit-box-orient' as string]: 'vertical',
+              ['WebkitLineClamp' as string]: '2',
+              ['WebkitBoxOrient' as string]: 'vertical',
               overflow: 'hidden',
             }}
           >
             {value}
           </label>
         )}
-      </div>
+      </motion.div>
     </motion.li>
   )
 }
 
 const AddTodoButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <div className="border-t border-t-gray-700 w-full px-4 py-2">
+    <div className="border-t border-t-gray-700 w-full py-1 px-2">
       <button
         type="button"
-        className="text-sm flex items-center gap-2 rounded-lg text-gray-300"
+        className="text-sm flex items-center gap-2 rounded-lg text-gray-300 px-2 py-1 hover:bg-gray-750 transition-colors duration-200"
         onClick={onClick}
       >
         <div className="border-2 border-gray-300 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center">
