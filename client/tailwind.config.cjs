@@ -23,7 +23,7 @@ module.exports = {
           800: 'rgb(39 39 42)',
           850: 'rgb(32 32 35)',
           900: 'rgb(24 24 27)',
-          950: 'rgb(12 12 14)'
+          950: 'rgb(12 12 14)',
         },
         pink: {
           300: 'rgb(237 138 181)',
@@ -31,7 +31,7 @@ module.exports = {
           500: 'rgb(226 74 141)',
           600: 'rgb(219 29 112)',
           700: 'rgb(192 26 98)',
-          800: 'rgb(164 22 84)'
+          800: 'rgb(164 22 84)',
         },
       },
       keyframes: {
@@ -54,6 +54,7 @@ module.exports = {
     plugin(({ addVariant }) => {
       addVariant('selected', '&[aria-selected="true"]')
       addVariant('radix-checked', '&[data-state="checked"]')
+      addVariant('radix-highlighted', '&[data-highlighted]')
       addVariant('command-heading', '& [cmdk-group-heading]')
     }),
   ],

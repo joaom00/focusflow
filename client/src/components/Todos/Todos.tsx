@@ -3,6 +3,7 @@ import cuid from 'cuid'
 import { Section } from './Section'
 import { Todo } from './Todo'
 import { AddTodoButton } from './AddTodoButton'
+import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
 
 interface Todo {
   id: string
@@ -67,8 +68,16 @@ export const Todos = () => {
 
   return (
     <div className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-auto">
-      <header className="border-b border-b-gray-700 w-full text-center py-4 px-3">
+      <header className="border-b border-b-gray-700 w-full text-center py-4 px-3 flex items-center justify-between">
         <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">To-do list</p>
+        <div className="flex items-center gap-0.5">
+          <button className="p-2 rounded-md hover:bg-gray-750">
+            <GearIcon />
+          </button>
+          <button className="p-2 rounded-md hover:bg-gray-750">
+            <SpeakerLoudIcon />
+          </button>
+        </div>
       </header>
       <Section name="To do">
         {todos.map((todo) => (

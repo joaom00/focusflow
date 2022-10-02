@@ -1,7 +1,7 @@
 import React from 'react'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FiChevronDown } from 'react-icons/fi'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 
 interface SectionProps {
   name: string
@@ -15,7 +15,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
     return (
       <Collapsible.Root open={open} onOpenChange={setOpen}>
         <div
-          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent"
+          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent border-t border-t-gray-700"
           style={{
             backgroundImage: 'radial-gradient(rgb(24 24 27 / 5%) 1px, rgb(24 24 27) 1px)',
             backgroundSize: '4px 4px',
@@ -32,7 +32,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
               variants={{ open: { rotateX: '180deg' }, closed: { rotateX: '0deg' } }}
               transition={{ type: 'spring', duration: 0.6, bounce: 0.3 }}
             >
-              <FiChevronDown />
+              <ChevronDownIcon />
             </motion.button>
           </Collapsible.Trigger>
         </div>

@@ -1,5 +1,7 @@
+import React from 'react'
 import * as ContextMenu from '@radix-ui/react-context-menu'
-import { FiCopy, FiPlus } from 'react-icons/fi'
+import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
+import { motion } from 'framer-motion'
 
 interface MenuProps {
   children: React.ReactNode
@@ -11,21 +13,76 @@ export const Menu = ({ children }: MenuProps) => {
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
         <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-600">
-          <ContextMenu.Item className="flex items-center gap-2 px-3 hover:bg-gray-750 cursor-pointer h-[30px] text-gray-200">
-            <FiCopy />
+          <MenuItem>
+            <CopyIcon />
             Copy task
-          </ContextMenu.Item>
+            <RightSLot>Ctrl+C</RightSLot>
+          </MenuItem>
+
           <ContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
-          <ContextMenu.Item className="flex items-center gap-2 px-3 hover:bg-gray-750 cursor-pointer h-[30px] text-gray-200">
-            <FiPlus />
+
+          <MenuItem>
+            <PlusIcon />
             Insert task below
-          </ContextMenu.Item>
-          <ContextMenu.Item className="flex items-center gap-2 px-3 hover:bg-gray-750 cursor-pointer h-[30px] text-gray-200">
-            <FiCopy />
+            <RightSLot>Alt+Enter</RightSLot>
+          </MenuItem>
+          <MenuItem>
+            <CopyIcon />
             Duplicate task
-          </ContextMenu.Item>
+            <RightSLot>Ctrl+Shift+V</RightSLot>
+          </MenuItem>
+          <MenuItem>
+            <Pencil1Icon />
+            Edit task
+            <RightSLot>Enter</RightSLot>
+          </MenuItem>
+
+          <ContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
+
+          <MenuItem>
+            <TrashIcon />
+            Delete
+          </MenuItem>
         </ContextMenu.Content>
       </ContextMenu.Portal>
     </ContextMenu.Root>
+  )
+}
+
+interface MenuItemProps {
+  children?: React.ReactNode
+}
+
+const MotionContextMenuItem = motion(ContextMenu.Item)
+const MenuItem = ({ children }: MenuItemProps) => {
+  const [hovering, setHovering] = React.useState(false)
+
+  return (
+    <MotionContextMenuItem
+      onHoverStart={() => setHovering(true)}
+      onHoverEnd={() => setHovering(false)}
+      animate={hovering ? 'hovering' : 'unhovering'}
+      variants={{
+        hovering: {
+          backgroundColor: 'rgb(51 51 56)',
+          transition: { duration: 0 },
+        },
+        unhovering: {
+          backgroundColor: 'rgb(51 51 56 / 0)',
+          transition: { duration: 0.18 },
+        },
+      }}
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 todo-menu-item"
+    >
+      {children}
+    </MotionContextMenuItem>
+  )
+}
+
+const RightSLot = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <div className="ml-auto text-[11px] leading-none text-gray-400 border border-gray-400 rounded-[4px] p-0.5">
+      {children}
+    </div>
   )
 }
