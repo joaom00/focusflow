@@ -17,7 +17,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
         <div
           className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent"
           style={{
-            backgroundImage: 'radial-gradient(rgba(0,0,0,0) 1px,#0f1115 1px)',
+            backgroundImage: 'radial-gradient(rgb(24 24 27 / 5%) 1px, rgb(24 24 27) 1px)',
             backgroundSize: '4px 4px',
             backdropFilter: 'brightness(100%) blur(3px)',
             zIndex: 50,

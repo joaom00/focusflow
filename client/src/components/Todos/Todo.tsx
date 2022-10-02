@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { FiEdit2 } from 'react-icons/fi'
 import Textarea from 'react-textarea-autosize'
 import { CheckboxTodo } from './CheckboxTodo'
+import { Menu } from './Menu'
 
 interface TodoProps {
   id: string
@@ -100,6 +101,8 @@ export const Todo = (props: TodoProps) => {
       tabIndex={-1}
       onKeyDown={onTodoKeyDown}
     >
+      <Menu>
+
       <motion.div
         onHoverStart={() => setHovering(true)}
         onHoverEnd={() => setHovering(false)}
@@ -165,6 +168,7 @@ export const Todo = (props: TodoProps) => {
           </label>
         )}
       </motion.div>
+      </Menu>
     </motion.li>
   )
 }
