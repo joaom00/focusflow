@@ -70,15 +70,25 @@ const Todo = (props: TodoProps) => {
         break
       }
       case 'Escape': {
-        if (!prevValueRef.current) return props.onBlurEmptyValue()
+        if (!value && !prevValueRef.current) return props.onBlurEmptyValue()
         if (!value && prevValueRef.current) {
           setValue(prevValueRef.current)
+          setEdit(false)
           return
         }
         prevValueRef.current = value
         props.onBlur(value)
         setEdit(false)
         break
+      }
+    }
+  }
+
+  const onTodoKeyDown = (event: React.KeyboardEvent) => {
+    switch (event.key) {
+      case 'Enter': {
+        event.preventDefault()
+        setEdit(true)
       }
     }
   }
@@ -92,6 +102,8 @@ const Todo = (props: TodoProps) => {
       className="border-t border-t-gray-700"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
+      tabIndex={0}
+      onKeyDown={onTodoKeyDown}
     >
       <motion.div
         onHoverStart={() => setHovering(true)}
@@ -125,7 +137,7 @@ const Todo = (props: TodoProps) => {
           <Textarea
             ref={(node) => {
               if (node) {
-                const end = value.length
+                const end = value.trim().length
                 node.setSelectionRange(end, end)
                 node.focus()
               }
@@ -167,7 +179,7 @@ const AddTodoButton = ({ onClick }: { onClick: () => void }) => {
     <div className="border-t border-t-gray-700 w-full py-1 px-2">
       <button
         type="button"
-        className="text-sm flex items-center gap-2 rounded-lg text-gray-300 px-2 py-1 hover:bg-gray-750 transition-colors duration-200"
+        className="text-sm flex items-center gap-2 rounded-lg text-gray-300 px-2 py-1 duration-200 relative add-task-button"
         onClick={onClick}
       >
         <div className="border-2 border-gray-300 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center">
@@ -194,12 +206,18 @@ export const Todos = () => {
 
   const onSubmit = (value: string) => {
     const currentTodos = [...todos]
-    const lastTodo = currentTodos.pop()
-    if (lastTodo) {
-      lastTodo.edit = false
-      lastTodo.content = value
+    const currentFocusedTodo = currentTodos.find((todo) => todo.content === value)
+    const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.content === value)
+    if (currentFocusedTodo) {
+      currentFocusedTodo.edit = false
+      currentFocusedTodo.content = value
       const newTodo: Todo = { edit: true, status: 'todo', content: '' }
-      setTodos([...currentTodos, lastTodo, newTodo])
+      setTodos([
+        ...currentTodos.slice(0, currentFocusedTodoIndex),
+        currentFocusedTodo,
+        newTodo,
+        ...currentTodos.slice(currentFocusedTodoIndex + 1),
+      ])
     }
   }
 
