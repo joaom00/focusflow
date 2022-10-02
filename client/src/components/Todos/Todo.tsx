@@ -133,7 +133,7 @@ export const Todo = (props: TodoProps) => {
             <Textarea
               ref={(node) => {
                 if (node) {
-                  const end = value.trim().length
+                  const end = value.length
                   node.setSelectionRange(end, end)
                   node.focus()
                 }
