@@ -26,7 +26,7 @@ const ScrollAreaScrollbar = (props: { children: React.ReactNode }) => {
   return (
     <ScrollAreaPrimitive.Scrollbar
       {...props}
-      className="flex select-none touch-none p-[2px] bg-gray-900/60 transition-colors duration-150 ease-out hover:bg-gray-900/80 w-3 z-50"
+      className="flex select-none touch-none p-[2px] bg-gray-900/60 transition-colors duration-150 ease-out hover:bg-gray-900/80 w-2 z-50"
     />
   )
 }

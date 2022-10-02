@@ -31,7 +31,9 @@ importers:
       '@types/react-dom': ^18.0.6
       '@vitejs/plugin-react': ^2.1.0
       autoprefixer: ^10.4.11
+      clsx: ^1.2.1
       cmdk: ^0.1.20
+      cuid: ^2.1.8
       eslint-plugin-react: ^7.31.8
       eslint-plugin-react-hooks: ^4.6.0
       framer-motion: ^7.3.6
@@ -49,7 +51,9 @@ importers:
       '@radix-ui/react-scroll-area': registry.npmmirror.com/@radix-ui/react-scroll-area/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-slider': 1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tooltip': 1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
+      clsx: registry.npmmirror.com/clsx/1.2.1
       cmdk: 0.1.20_rj7ozvcq3uehdlnj3cbwzbi5ce
+      cuid: registry.npmmirror.com/cuid/2.1.8
       framer-motion: 7.3.6_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -3948,6 +3952,19 @@ packages:
     dependencies:
       '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.0
       react: 18.2.0
+    dev: false
+
+  registry.npmmirror.com/clsx/1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/clsx/-/clsx-1.2.1.tgz}
+    name: clsx
+    version: 1.2.1
+    engines: {node: '>=6'}
+    dev: false
+
+  registry.npmmirror.com/cuid/2.1.8:
+    resolution: {integrity: sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/cuid/-/cuid-2.1.8.tgz}
+    name: cuid
+    version: 2.1.8
     dev: false
 
   registry.npmmirror.com/esbuild-android-64/0.15.9:
