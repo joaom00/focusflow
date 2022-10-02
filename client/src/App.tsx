@@ -1,7 +1,7 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { AudioPlayer } from './components/AudioPlayer'
 import { Chat } from './components/Chat'
-import { Todos } from './components/Todos'
+import { Todos } from './components/Todos/Todos'
 
 function App() {
   return (

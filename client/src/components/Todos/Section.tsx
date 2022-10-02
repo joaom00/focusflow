@@ -1,0 +1,49 @@
+import React from 'react'
+import * as Collapsible from '@radix-ui/react-collapsible'
+import { AnimatePresence, motion } from 'framer-motion'
+import { FiChevronDown } from 'react-icons/fi'
+
+interface SectionProps {
+  name: string
+  children?: React.ReactNode
+}
+
+export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
+  ({ name, children }, forwardedRef) => {
+    const [open, setOpen] = React.useState(true)
+
+    return (
+      <Collapsible.Root open={open} onOpenChange={setOpen}>
+        <div
+          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(0,0,0,0) 1px,#0f1115 1px)',
+            backgroundSize: '4px 4px',
+            backdropFilter: 'brightness(100%) blur(3px)',
+            zIndex: 50,
+            backgroundColor: 'rgb(24 24 27 / 5%)',
+          }}
+        >
+          <p className="text-sm font-medium">{name}</p>
+          <Collapsible.Trigger asChild>
+            <motion.button
+              initial={false}
+              animate={open ? 'open' : 'closed'}
+              variants={{ open: { rotateX: '180deg' }, closed: { rotateX: '0deg' } }}
+              transition={{ type: 'spring', duration: 0.6, bounce: 0.3 }}
+            >
+              <FiChevronDown />
+            </motion.button>
+          </Collapsible.Trigger>
+        </div>
+
+        <Collapsible.Content>
+          <ul ref={forwardedRef}>
+            <AnimatePresence>{children}</AnimatePresence>
+          </ul>
+        </Collapsible.Content>
+      </Collapsible.Root>
+    )
+  }
+)
+Section.displayName = 'Section'
