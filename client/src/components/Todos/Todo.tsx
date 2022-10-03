@@ -90,7 +90,7 @@ export const Todo = (props: TodoProps) => {
 
   return (
     <motion.li
-      className="border-t border-t-gray-700"
+      className="border-t border-t-gray-700 select-none"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{
@@ -101,7 +101,7 @@ export const Todo = (props: TodoProps) => {
       tabIndex={-1}
       onKeyDown={onTodoKeyDown}
     >
-      <Menu>
+      <Menu value={value}>
         <motion.div
           onHoverStart={() => setHovering(true)}
           onHoverEnd={() => setHovering(false)}
@@ -130,26 +130,29 @@ export const Todo = (props: TodoProps) => {
           </div>
 
           {edit ? (
-            <Textarea
-              ref={(node) => {
-                if (node) {
-                  const end = value.length
-                  node.setSelectionRange(end, end)
-                  node.focus()
-                }
-              }}
-              onBlur={onBlur}
-              value={value}
-              onChange={onChange}
-              onKeyDown={onKeyDown}
-              className={clsx(
-                'resize-none bg-gray-800 pl-10 pr-4 py-2 text-sm focus:outline-none border-t border-t-transparent focus:border-t-pink-500 absolute inset-x-0 shadow-lg shadow-black/50 rounded-md',
-                edit && 'pointer-events-auto z-30'
-              )}
-              placeholder="Enter a name"
-              minRows={1}
-              style={{ gridColumn: '1/2', gridRow: '1/2' }}
-            />
+            <>
+              <div className="fixed inset-0 z-30 pointer-events-auto" />
+              <Textarea
+                ref={(node) => {
+                  if (node) {
+                    const end = value.length
+                    node.setSelectionRange(end, end)
+                    node.focus()
+                  }
+                }}
+                onBlur={onBlur}
+                value={value}
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                className={clsx(
+                  'resize-none bg-gray-800 pl-10 pr-4 py-2 text-sm focus:outline-none border-t border-t-transparent focus:border-t-pink-500 absolute inset-x-0 shadow-lg shadow-black/50 rounded-md',
+                  edit && 'pointer-events-auto z-40'
+                )}
+                placeholder="Enter a name"
+                minRows={1}
+                style={{ gridColumn: '1/2', gridRow: '1/2' }}
+              />
+            </>
           ) : (
             <label
               htmlFor={id}

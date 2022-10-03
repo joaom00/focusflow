@@ -15,12 +15,11 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
     return (
       <Collapsible.Root open={open} onOpenChange={setOpen}>
         <div
-          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent border-t border-t-gray-700"
+          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent border-t border-t-gray-700 z-30"
           style={{
             backgroundImage: 'radial-gradient(rgb(24 24 27 / 5%) 1px, rgb(24 24 27) 1px)',
             backgroundSize: '4px 4px',
             backdropFilter: 'brightness(100%) blur(3px)',
-            zIndex: 50,
             backgroundColor: 'rgb(24 24 27 / 5%)',
           }}
         >

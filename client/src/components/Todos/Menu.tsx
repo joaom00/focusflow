@@ -5,21 +5,26 @@ import { motion } from 'framer-motion'
 
 interface MenuProps {
   children: React.ReactNode
+  value: string
 }
 
-export const Menu = ({ children }: MenuProps) => {
+export const Menu = ({ value, children }: MenuProps) => {
+  const onCopy = () => {
+    window.navigator.clipboard.writeText(value)
+  }
+
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
-        <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-600">
-          <MenuItem>
+        <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
+          <MenuItem onSelect={onCopy}>
             <CopyIcon />
             Copy task
             <RightSLot>Ctrl+C</RightSLot>
           </MenuItem>
 
-          <ContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
+          <ContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
 
           <MenuItem>
             <PlusIcon />
@@ -51,14 +56,16 @@ export const Menu = ({ children }: MenuProps) => {
 
 interface MenuItemProps {
   children?: React.ReactNode
+  onSelect?: () => void
 }
 
 const MotionContextMenuItem = motion(ContextMenu.Item)
-const MenuItem = ({ children }: MenuItemProps) => {
+const MenuItem = ({ children, onSelect }: MenuItemProps) => {
   const [hovering, setHovering] = React.useState(false)
 
   return (
     <MotionContextMenuItem
+      onSelect={onSelect}
       onHoverStart={() => setHovering(true)}
       onHoverEnd={() => setHovering(false)}
       animate={hovering ? 'hovering' : 'unhovering'}
@@ -81,7 +88,7 @@ const MenuItem = ({ children }: MenuItemProps) => {
 
 const RightSLot = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="ml-auto text-[11px] leading-none text-gray-400 border border-gray-400 rounded-[4px] p-0.5">
+    <div className="ml-auto text-[11px] leading-none text-gray-400 border border-gray-700 rounded-[4px] p-0.5">
       {children}
     </div>
   )
