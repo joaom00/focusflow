@@ -2,22 +2,33 @@ import React from 'react'
 import * as ContextMenu from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
+import { useTodo } from './Todo'
 
 interface MenuProps {
   children: React.ReactNode
-  value: string
 }
 
-export const Menu = ({ value, children }: MenuProps) => {
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({ children }, forwardedRef) => {
+  const value = useTodo((state) => state.value)
+  const setEdit = useTodo((state) => state.setEdit)
+  const setMenu = useTodo((state) => state.setMenu)
+
   const onCopy = () => {
     window.navigator.clipboard.writeText(value)
   }
 
+  const onEdit = () => {
+    setEdit(true)
+  }
+
   return (
-    <ContextMenu.Root>
+    <ContextMenu.Root onOpenChange={setMenu}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
-        <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
+        <ContextMenu.Content
+          className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700"
+          ref={forwardedRef}
+        >
           <MenuItem onSelect={onCopy}>
             <CopyIcon />
             Copy task
@@ -31,12 +42,14 @@ export const Menu = ({ value, children }: MenuProps) => {
             Insert task below
             <RightSLot>Alt+Enter</RightSLot>
           </MenuItem>
+
           <MenuItem>
             <CopyIcon />
             Duplicate task
             <RightSLot>Ctrl+Shift+V</RightSLot>
           </MenuItem>
-          <MenuItem>
+
+          <MenuItem onSelect={onEdit}>
             <Pencil1Icon />
             Edit task
             <RightSLot>Enter</RightSLot>
@@ -52,11 +65,12 @@ export const Menu = ({ value, children }: MenuProps) => {
       </ContextMenu.Portal>
     </ContextMenu.Root>
   )
-}
+})
+Menu.displayName = 'MenuTodo'
 
 interface MenuItemProps {
   children?: React.ReactNode
-  onSelect?: () => void
+  onSelect?: (event: Event) => void
 }
 
 const MotionContextMenuItem = motion(ContextMenu.Item)

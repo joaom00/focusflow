@@ -1,4 +1,5 @@
 import React from 'react'
+import { StoreApi, useStore } from 'zustand'
 
 export function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
@@ -20,6 +21,29 @@ export function createContext<ContextValueType extends object | null>(
     if (defaultContext !== undefined) return defaultContext
     // if a defaultContext wasn't specified, it's a required context.
     throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``)
+  }
+
+  Provider.displayName = rootComponentName + 'Provider'
+  return [Provider, useContext] as const
+}
+
+export function createStoreContext<ContextValueType extends object | null>(
+  rootComponentName: string
+) {
+  const Context = React.createContext<StoreApi<ContextValueType> | undefined>(undefined)
+
+  function Provider(props: { store: StoreApi<ContextValueType> } & { children: React.ReactNode }) {
+    const { children, store } = props
+    return <Context.Provider value={store}>{children}</Context.Provider>
+  }
+
+  function useContext<StateSlice>(selector: (state: ContextValueType) => StateSlice) {
+    const context = React.useContext(Context)
+    if (!context) {
+      // if a defaultContext wasn't specified, it's a required context.
+      throw new Error(`\`useContext\` must be used within \`${rootComponentName}\``)
+    }
+    return useStore<StoreApi<ContextValueType>, StateSlice>(context, selector)
   }
 
   Provider.displayName = rootComponentName + 'Provider'

@@ -1,19 +1,26 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import { AudioPlayer } from './components/AudioPlayer'
 import { Chat } from './components/Chat'
 import { Todos } from './components/Todos/Todos'
 
+const queryClient = new QueryClient()
+
 function App() {
   return (
-    <TooltipPrimitive.Provider>
-      <div className="flex flex-col min-h-screen">
-        <div className="relative flex-1">
-          <Chat />
-          <Todos />
+    <QueryClientProvider client={queryClient}>
+      <TooltipPrimitive.Provider>
+        <div className="flex flex-col min-h-screen">
+          <div className="relative flex-1">
+            <Chat />
+            <Todos />
+          </div>
+          <AudioPlayer />
         </div>
-        <AudioPlayer />
-      </div>
-    </TooltipPrimitive.Provider>
+      </TooltipPrimitive.Provider>
+        <ReactQueryDevtools />
+    </QueryClientProvider>
   )
 }
 

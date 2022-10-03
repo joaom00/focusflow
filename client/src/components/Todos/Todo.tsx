@@ -5,6 +5,28 @@ import { Pencil1Icon } from '@radix-ui/react-icons'
 import Textarea from 'react-textarea-autosize'
 import { CheckboxTodo } from './CheckboxTodo'
 import { Menu } from './Menu'
+import { createStoreContext } from '../../lib/createContex'
+import { createStore as createStoreZT } from 'zustand'
+
+interface TodoStore {
+  id: string
+  value: string
+  menuOpen: boolean
+  edit: boolean
+  setEdit: (edit: boolean) => void
+  setMenu: (open: boolean) => void
+}
+
+export const [TodoProvider, useTodo] = createStoreContext<TodoStore>('TodoStore')
+
+function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value'>) {
+  return createStoreZT<TodoStore>()((set) => ({
+    ...store,
+    menuOpen: false,
+    setEdit: (edit) => set((state) => ({ ...state, edit })),
+    setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
+  }))
+}
 
 interface TodoProps {
   id: string
@@ -18,30 +40,38 @@ interface TodoProps {
 }
 
 export const Todo = (props: TodoProps) => {
-  const {
-    edit: editProp,
-    onBlurEmptyValue,
-    onBlur: onBlurProp,
-    onSubmit,
-    onDone,
-    ...todoProps
-  } = props
+  return (
+    <TodoProvider store={createStore({ id: props.id, edit: props.edit, value: props.value })}>
+      <TodoImpl {...props} />
+    </TodoProvider>
+  )
+}
+
+const TodoImpl = (props: TodoProps) => {
+  const { onBlurEmptyValue, onBlur: onBlurProp, onSubmit, onDone, ...todoProps } = props
+  const menuRef = React.useRef<HTMLDivElement>(null)
+
   const id = React.useId()
-  const [edit, setEdit] = React.useState(editProp)
+  /* const [edit, setEdit] = React.useState(todoProps.edit) */
+  const edit = useTodo((state) => state.edit)
+  const setEdit = useTodo((state) => state.setEdit)
   const [value, setValue] = React.useState(todoProps.value)
   const [hovering, setHovering] = React.useState(false)
   const prevValueRef = React.useRef(todoProps.value)
 
-  const onBlur = () => {
+  const onBlur = (event: React.FocusEvent) => {
+    console.log('onBlur')
     if (!value && !prevValueRef.current) return onBlurEmptyValue(todoProps.id)
     if (!value && prevValueRef.current) {
       setValue(prevValueRef.current)
-      setEdit(false)
+      /* setEdit(false) */
       return
     }
     prevValueRef.current = value
-    setEdit(false)
-    onBlurProp({ id: todoProps.id, value })
+    /* setEdit(false) */
+    console.log(event)
+    console.log(document.activeElement)
+    /* onBlurProp({ id: todoProps.id, value }) */
   }
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -64,12 +94,12 @@ export const Todo = (props: TodoProps) => {
         if (!value && !prevValueRef.current) return onBlurEmptyValue(todoProps.id)
         if (!value && prevValueRef.current) {
           setValue(prevValueRef.current)
-          setEdit(false)
+          /* setEdit(false) */
           return
         }
         prevValueRef.current = value
         onBlurProp({ id: todoProps.id, value })
-        setEdit(false)
+        /* setEdit(false) */
         break
       }
     }
@@ -79,7 +109,7 @@ export const Todo = (props: TodoProps) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
-        setEdit(true)
+        /* setEdit(true) */
       }
     }
   }
@@ -101,7 +131,7 @@ export const Todo = (props: TodoProps) => {
       tabIndex={-1}
       onKeyDown={onTodoKeyDown}
     >
-      <Menu value={value}>
+      <Menu ref={menuRef}>
         <motion.div
           onHoverStart={() => setHovering(true)}
           onHoverEnd={() => setHovering(false)}

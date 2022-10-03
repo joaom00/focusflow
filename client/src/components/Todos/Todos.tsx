@@ -1,9 +1,9 @@
-import React from 'react'
 import cuid from 'cuid'
 import { Section } from './Section'
 import { Todo } from './Todo'
 import { AddTodoButton } from './AddTodoButton'
 import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 interface Todo {
   id: string
@@ -13,58 +13,68 @@ interface Todo {
 }
 
 export const Todos = () => {
-  const [todos, setTodos] = React.useState<Todo[]>([])
+  const queryClient = useQueryClient()
+  const todosQuery = useQuery<Todo[]>(['todos'], async () => {
+    const response = await fetch('http://localhost:3333/todos')
+    const todos = await response.json()
+    return todos
+  })
 
   const onAddTodo = () => {
-    setTodos((currentTodos) => [
-      ...currentTodos,
-      { id: cuid(), status: 'TODO', edit: true, content: '' },
-    ])
+    const newTodo: Todo = { id: cuid(), status: 'TODO', edit: true, content: '' }
+    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
+      currentTodos ? [...currentTodos, newTodo] : undefined
+    )
   }
 
   const onSubmit = ({ id, value }: { id: string; value: string }) => {
-    const currentTodos = [...todos]
-    const currentFocusedTodo = currentTodos.find((todo) => todo.id === id)
-    const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
-    if (currentFocusedTodo) {
-      currentFocusedTodo.edit = false
-      currentFocusedTodo.content = value
-      const newTodo: Todo = { id: cuid(), edit: true, status: 'TODO', content: '' }
-      setTodos([
-        ...currentTodos.slice(0, currentFocusedTodoIndex),
-        currentFocusedTodo,
-        newTodo,
-        ...currentTodos.slice(currentFocusedTodoIndex + 1),
-      ])
-    }
+    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
+      if (currentTodos) {
+        const currentFocusedTodo = currentTodos.find((todo) => todo.id === id)
+        const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
+        if (currentFocusedTodo) {
+          currentFocusedTodo.edit = false
+          currentFocusedTodo.content = value
+          const newTodo: Todo = { id: cuid(), edit: true, status: 'TODO', content: '' }
+          return [
+            ...currentTodos.slice(0, currentFocusedTodoIndex),
+            currentFocusedTodo,
+            newTodo,
+            ...currentTodos.slice(currentFocusedTodoIndex + 1),
+          ]
+        }
+      }
+      return undefined
+    })
   }
 
   const onBlur = ({ id, value }: { id: string; value: string }) => {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) => (todo.id === id ? { ...todo, edit: false, content: value } : todo))
-    )
+    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
+      return currentTodos
+        ? currentTodos.map((todo) =>
+            todo.id === id ? { ...todo, edit: false, content: value } : todo
+          )
+        : undefined
+    })
+    // TODO: trigger a mutation to add task in DB
+    // TODO: invalidate todos' query
   }
 
   const onBlurEmptyValue = (id: string) => {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
-  }
-
-  const onDone = (id: string) => {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, status: todo.status === 'TODO' ? 'DONE' : 'TODO' } : todo
-      )
+    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
+      currentTodos ? [...currentTodos.filter((todo) => todo.id !== id)] : undefined
     )
   }
 
-  React.useEffect(() => {
-    async function getTodos() {
-      const response = await fetch('http://localhost:3333/todos')
-      const todos = await response.json()
-      setTodos(todos)
-    }
-    getTodos()
-  }, [])
+  const onDone = (id: string) => {
+    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
+      currentTodos
+        ? currentTodos.map((todo) =>
+            todo.id === id ? { ...todo, status: todo.status === 'TODO' ? 'DONE' : 'TODO' } : todo
+          )
+        : undefined
+    )
+  }
 
   return (
     <div className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-auto">
@@ -80,10 +90,10 @@ export const Todos = () => {
         </div>
       </header>
       <Section name="To do">
-        {todos.map((todo) => (
+        {todosQuery.data?.map((todo) => (
           <Todo
             key={todo.id}
-            edit={todo.edit}
+            edit={todo.edit ?? false}
             id={todo.id}
             value={todo.content}
             onSubmit={onSubmit}
