@@ -5,7 +5,7 @@ import { AddTodoButton } from './AddTodoButton'
 import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-interface Todo {
+export interface Todo {
   id: string
   status: 'TODO' | 'DONE'
   edit: boolean

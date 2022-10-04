@@ -3,32 +3,53 @@ import * as ContextMenu from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
 import { useTodo } from './Todo'
+import type { Todo } from './Todos'
+import { useQueryClient } from '@tanstack/react-query'
+import shallow from 'zustand/shallow'
 
 interface MenuProps {
   children: React.ReactNode
 }
 
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({ children }, forwardedRef) => {
-  const value = useTodo((state) => state.value)
-  const setEdit = useTodo((state) => state.setEdit)
-  const setMenu = useTodo((state) => state.setMenu)
+export const Menu = ({ children }: MenuProps) => {
+  const queryClient = useQueryClient()
+  const { id, value, setEdit, setMenu, insertTaskBelow, duplicateTask } = useTodo(
+    (state) => ({
+      id: state.id,
+      value: state.value,
+      setEdit: state.setEdit,
+      setMenu: state.setMenu,
+      insertTaskBelow: state.insertTaskBelow,
+      duplicateTask: state.duplicateTask,
+    }),
+    shallow
+  )
 
-  const onCopy = () => {
-    window.navigator.clipboard.writeText(value)
-  }
+  const onCopy = () => window.navigator.clipboard.writeText(value)
 
   const onEdit = () => {
-    setEdit(true)
+    setTimeout(() => {
+      setEdit(true)
+    }, 10)
+  }
+
+  const onInsertTaskBelow = () => {
+    setTimeout(() => {
+      queryClient.setQueryData<Todo[]>(['todos'], insertTaskBelow(id))
+    }, 10)
+  }
+
+  const onDuplicateTask = () => {
+    setTimeout(() => {
+      queryClient.setQueryData<Todo[]>(['todos'], duplicateTask(id, value))
+    }, 10)
   }
 
   return (
     <ContextMenu.Root onOpenChange={setMenu}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
-        <ContextMenu.Content
-          className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700"
-          ref={forwardedRef}
-        >
+        <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
           <MenuItem onSelect={onCopy}>
             <CopyIcon />
             Copy task
@@ -37,13 +58,13 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({ children }, f
 
           <ContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
 
-          <MenuItem>
+          <MenuItem onSelect={onInsertTaskBelow}>
             <PlusIcon />
             Insert task below
             <RightSLot>Alt+Enter</RightSLot>
           </MenuItem>
 
-          <MenuItem>
+          <MenuItem onSelect={onDuplicateTask}>
             <CopyIcon />
             Duplicate task
             <RightSLot>Ctrl+Shift+V</RightSLot>
@@ -65,8 +86,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(({ children }, f
       </ContextMenu.Portal>
     </ContextMenu.Root>
   )
-})
-Menu.displayName = 'MenuTodo'
+}
 
 interface MenuItemProps {
   children?: React.ReactNode

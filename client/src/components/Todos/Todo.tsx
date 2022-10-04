@@ -7,14 +7,24 @@ import { CheckboxTodo } from './CheckboxTodo'
 import { Menu } from './Menu'
 import { createStoreContext } from '../../lib/createContex'
 import { createStore as createStoreZT } from 'zustand'
+import shallow from 'zustand/shallow'
+import type { Todo as TTodo } from './Todos'
+import cuid from 'cuid'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface TodoStore {
   id: string
   value: string
   menuOpen: boolean
   edit: boolean
+  setValue: (value: string) => void
   setEdit: (edit: boolean) => void
   setMenu: (open: boolean) => void
+  insertTaskBelow: (id: string) => (todos: TTodo[] | undefined) => TTodo[] | undefined
+  duplicateTask: (
+    id: string,
+    content: string
+  ) => (todos: TTodo[] | undefined) => TTodo[] | undefined
 }
 
 export const [TodoProvider, useTodo] = createStoreContext<TodoStore>('TodoStore')
@@ -23,8 +33,33 @@ function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value'>) {
   return createStoreZT<TodoStore>()((set) => ({
     ...store,
     menuOpen: false,
+    setValue: (value) => set((state) => ({ ...state, value })),
     setEdit: (edit) => set((state) => ({ ...state, edit })),
     setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
+    insertTaskBelow: (id) => (currentTodos) => {
+      if (currentTodos) {
+        const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
+        const newTodo: TTodo = { id: cuid(), edit: true, status: 'TODO', content: '' }
+        return [
+          ...currentTodos.slice(0, currentTodoIndex + 1),
+          newTodo,
+          ...currentTodos.slice(currentTodoIndex + 1),
+        ]
+      }
+      return undefined
+    },
+    duplicateTask: (id, content) => (currentTodos) => {
+      if (currentTodos) {
+        const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
+        const newTodo: TTodo = { id: cuid(), edit: false, status: 'TODO', content }
+        return [
+          ...currentTodos.slice(0, currentTodoIndex + 1),
+          newTodo,
+          ...currentTodos.slice(currentTodoIndex + 1),
+        ]
+      }
+      return undefined
+    },
   }))
 }
 
@@ -40,66 +75,75 @@ interface TodoProps {
 }
 
 export const Todo = (props: TodoProps) => {
+  const { id, edit, value, ...handlers } = props
   return (
-    <TodoProvider store={createStore({ id: props.id, edit: props.edit, value: props.value })}>
-      <TodoImpl {...props} />
+    <TodoProvider store={createStore({ id, edit, value })}>
+      <TodoImpl {...handlers} />
     </TodoProvider>
   )
 }
 
-const TodoImpl = (props: TodoProps) => {
-  const { onBlurEmptyValue, onBlur: onBlurProp, onSubmit, onDone, ...todoProps } = props
-  const menuRef = React.useRef<HTMLDivElement>(null)
+const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
+  const { onBlurEmptyValue, onBlur: onBlurProp, onSubmit, onDone } = props
 
-  const id = React.useId()
-  /* const [edit, setEdit] = React.useState(todoProps.edit) */
-  const edit = useTodo((state) => state.edit)
-  const setEdit = useTodo((state) => state.setEdit)
-  const [value, setValue] = React.useState(todoProps.value)
+  const queryClient = useQueryClient()
+
+  const { id, value, setValue, edit, setEdit, insertTaskBelow, duplicateTask } = useTodo(
+    (state) => ({
+      id: state.id,
+      value: state.value,
+      setValue: state.setValue,
+      edit: state.edit,
+      setEdit: state.setEdit,
+      insertTaskBelow: state.insertTaskBelow,
+      duplicateTask: state.duplicateTask,
+    }),
+    shallow
+  )
+
+  const checkboxId = React.useId()
   const [hovering, setHovering] = React.useState(false)
-  const prevValueRef = React.useRef(todoProps.value)
+  const prevValueRef = React.useRef(value)
+  const todoElRef = React.useRef<HTMLLIElement>(null)
 
-  const onBlur = (event: React.FocusEvent) => {
-    console.log('onBlur')
-    if (!value && !prevValueRef.current) return onBlurEmptyValue(todoProps.id)
+  const onBlur = () => {
+    if (!value && !prevValueRef.current) return onBlurEmptyValue(id)
     if (!value && prevValueRef.current) {
       setValue(prevValueRef.current)
-      /* setEdit(false) */
+      setEdit(false)
       return
     }
     prevValueRef.current = value
-    /* setEdit(false) */
-    console.log(event)
-    console.log(document.activeElement)
-    /* onBlurProp({ id: todoProps.id, value }) */
+    setEdit(false)
+    onBlurProp({ id, value })
   }
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
-        if (!value) return onBlurEmptyValue(todoProps.id)
+        if (!value) return onBlurEmptyValue(id)
         prevValueRef.current = value
-        onSubmit({ id: todoProps.id, value })
+        onSubmit({ id, value })
         break
       }
       case 'Backspace': {
         if (!value) {
           event.preventDefault()
-          props.onBlurEmptyValue(todoProps.id)
+          props.onBlurEmptyValue(id)
         }
         break
       }
       case 'Escape': {
-        if (!value && !prevValueRef.current) return onBlurEmptyValue(todoProps.id)
+        if (!value && !prevValueRef.current) return onBlurEmptyValue(id)
         if (!value && prevValueRef.current) {
           setValue(prevValueRef.current)
-          /* setEdit(false) */
+          setEdit(false)
           return
         }
         prevValueRef.current = value
-        onBlurProp({ id: todoProps.id, value })
-        /* setEdit(false) */
+        onBlurProp({ id, value })
+        setEdit(false)
         break
       }
     }
@@ -109,7 +153,27 @@ const TodoImpl = (props: TodoProps) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
-        /* setEdit(true) */
+        if (event.altKey) {
+          queryClient.setQueryData<TTodo[]>(['todos'], insertTaskBelow(id))
+          break
+        }
+        setEdit(true)
+        break
+      }
+      case 'V': {
+        event.preventDefault()
+        if (event.ctrlKey && event.shiftKey) {
+          queryClient.setQueryData<TTodo[]>(['todos'], duplicateTask(id, value))
+          break
+        }
+        break
+      }
+      case 'c': {
+        event.preventDefault()
+        if (event.ctrlKey) {
+          window.navigator.clipboard.writeText(value)
+          break
+        }
       }
     }
   }
@@ -120,6 +184,7 @@ const TodoImpl = (props: TodoProps) => {
 
   return (
     <motion.li
+      ref={todoElRef}
       className="border-t border-t-gray-700 select-none"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
@@ -131,7 +196,7 @@ const TodoImpl = (props: TodoProps) => {
       tabIndex={-1}
       onKeyDown={onTodoKeyDown}
     >
-      <Menu ref={menuRef}>
+      <Menu>
         <motion.div
           onHoverStart={() => setHovering(true)}
           onHoverEnd={() => setHovering(false)}
@@ -151,7 +216,7 @@ const TodoImpl = (props: TodoProps) => {
             edit ? 'pointer-events-none' : 'pointer-events-auto'
           )}
         >
-          <CheckboxTodo id={id} edit={edit} onClick={onDone} />
+          <CheckboxTodo id={checkboxId} edit={edit} onClick={onDone} />
 
           <div className="hidden absolute top-1/2 right-2 -translate-y-1/2 group-hover:flex">
             <button className="hover:bg-gray-800 p-1.5 rounded-md" onClick={() => setEdit(true)}>
@@ -185,7 +250,7 @@ const TodoImpl = (props: TodoProps) => {
             </>
           ) : (
             <label
-              htmlFor={id}
+              htmlFor={checkboxId}
               className="self-baseline pl-10 pr-5 text-sm break-all mt-[9px] w-fit"
               style={{
                 gridColumn: '1/2',
