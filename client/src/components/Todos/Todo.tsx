@@ -11,6 +11,7 @@ import shallow from 'zustand/shallow'
 import type { Todo as TTodo } from './Todos'
 import cuid from 'cuid'
 import { useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 interface TodoStore {
   id: string
@@ -40,6 +41,7 @@ function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value'>) {
       if (currentTodos) {
         const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
         const newTodo: TTodo = { id: cuid(), edit: true, status: 'TODO', content: '' }
+        toast('Insert task')
         return [
           ...currentTodos.slice(0, currentTodoIndex + 1),
           newTodo,
@@ -52,6 +54,7 @@ function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value'>) {
       if (currentTodos) {
         const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
         const newTodo: TTodo = { id: cuid(), edit: false, status: 'TODO', content }
+        toast('Duplicate task')
         return [
           ...currentTodos.slice(0, currentTodoIndex + 1),
           newTodo,
@@ -172,6 +175,7 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
         event.preventDefault()
         if (event.ctrlKey) {
           window.navigator.clipboard.writeText(value)
+          toast('Copy task')
           break
         }
       }
@@ -185,7 +189,7 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
   return (
     <motion.li
       ref={todoElRef}
-      className="border-t border-t-gray-700 select-none"
+      className="border-t border-t-gray-700 select-none focus:bg-gray-750"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{

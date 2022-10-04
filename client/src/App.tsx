@@ -1,6 +1,7 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Toaster } from 'react-hot-toast'
 import { AudioPlayer } from './components/AudioPlayer'
 import { Chat } from './components/Chat'
 import { Todos } from './components/Todos/Todos'
@@ -19,7 +20,8 @@ function App() {
           <AudioPlayer />
         </div>
       </TooltipPrimitive.Provider>
-        <ReactQueryDevtools />
+      <Toaster position="bottom-center" containerClassName='select-none' />
+      <ReactQueryDevtools />
     </QueryClientProvider>
   )
 }

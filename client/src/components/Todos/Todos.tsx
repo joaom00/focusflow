@@ -3,7 +3,7 @@ import { Section } from './Section'
 import { Todo } from './Todo'
 import { AddTodoButton } from './AddTodoButton'
 import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export interface Todo {
   id: string
@@ -19,6 +19,45 @@ export const Todos = () => {
     const todos = await response.json()
     return todos
   })
+  const addTodo = useMutation(
+    async ({ content }: { id: string; content: string }) => {
+      await fetch('http://localhost:3333/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      })
+    },
+    {
+      onMutate: async ({ id, content }) => {
+        await queryClient.cancelQueries(['todos'])
+        const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+
+        queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
+          if (currentTodos) {
+            const currentFocusedTodo = currentTodos.find((todo) => todo.id === id)
+            const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
+            if (currentFocusedTodo) {
+              currentFocusedTodo.edit = false
+              currentFocusedTodo.content = content
+              const newTodo: Todo = { id: cuid(), edit: true, status: 'TODO', content: '' }
+              return [
+                ...currentTodos.slice(0, currentFocusedTodoIndex),
+                currentFocusedTodo,
+                newTodo,
+                ...currentTodos.slice(currentFocusedTodoIndex + 1),
+              ]
+            }
+          }
+          return undefined
+        })
+
+        return { previousTodos }
+      },
+      onError: (_err, _id, context) => {
+        queryClient.setQueryData(['todos'], context?.previousTodos)
+      },
+    }
+  )
 
   const onAddTodo = () => {
     const newTodo: Todo = { id: cuid(), status: 'TODO', edit: true, content: '' }
@@ -28,24 +67,7 @@ export const Todos = () => {
   }
 
   const onSubmit = ({ id, value }: { id: string; value: string }) => {
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
-      if (currentTodos) {
-        const currentFocusedTodo = currentTodos.find((todo) => todo.id === id)
-        const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
-        if (currentFocusedTodo) {
-          currentFocusedTodo.edit = false
-          currentFocusedTodo.content = value
-          const newTodo: Todo = { id: cuid(), edit: true, status: 'TODO', content: '' }
-          return [
-            ...currentTodos.slice(0, currentFocusedTodoIndex),
-            currentFocusedTodo,
-            newTodo,
-            ...currentTodos.slice(currentFocusedTodoIndex + 1),
-          ]
-        }
-      }
-      return undefined
-    })
+    addTodo.mutate({ id, content: value })
   }
 
   const onBlur = ({ id, value }: { id: string; value: string }) => {

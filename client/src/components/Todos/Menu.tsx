@@ -4,15 +4,15 @@ import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icon
 import { motion } from 'framer-motion'
 import { useTodo } from './Todo'
 import type { Todo } from './Todos'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import shallow from 'zustand/shallow'
+import toast from 'react-hot-toast'
 
 interface MenuProps {
   children: React.ReactNode
 }
 
 export const Menu = ({ children }: MenuProps) => {
-  const queryClient = useQueryClient()
   const { id, value, setEdit, setMenu, insertTaskBelow, duplicateTask } = useTodo(
     (state) => ({
       id: state.id,
@@ -25,7 +25,35 @@ export const Menu = ({ children }: MenuProps) => {
     shallow
   )
 
-  const onCopy = () => window.navigator.clipboard.writeText(value)
+  const queryClient = useQueryClient()
+  const deleteTodo = useMutation(
+    async (id: string) => {
+      await fetch(`http://localhost:3333/todos/${id}`, {
+        method: 'DELETE',
+      })
+    },
+    {
+      onMutate: async (id) => {
+        await queryClient.cancelQueries(['todos'])
+        const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+        queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
+          currentTodos ? currentTodos.filter((todo) => todo.id !== id) : undefined
+        )
+        return { previousTodos }
+      },
+      onError: (_err, _id, context) => {
+        queryClient.setQueryData(['todos'], context?.previousTodos)
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(['todos'])
+      },
+    }
+  )
+
+  const onCopy = () => {
+    window.navigator.clipboard.writeText(value)
+    toast('Copy task')
+  }
 
   const onEdit = () => {
     setTimeout(() => {
@@ -43,6 +71,14 @@ export const Menu = ({ children }: MenuProps) => {
     setTimeout(() => {
       queryClient.setQueryData<Todo[]>(['todos'], duplicateTask(id, value))
     }, 10)
+  }
+
+  const onDelete = () => {
+    deleteTodo.mutate(id, {
+      onSuccess: () => {
+        toast('Delete todo')
+      }
+    })
   }
 
   return (
@@ -78,7 +114,7 @@ export const Menu = ({ children }: MenuProps) => {
 
           <ContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
 
-          <MenuItem>
+          <MenuItem onSelect={onDelete}>
             <TrashIcon />
             Delete
           </MenuItem>

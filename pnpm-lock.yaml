@@ -44,6 +44,7 @@ importers:
       postcss: ^8.4.16
       react: ^18.2.0
       react-dom: ^18.2.0
+      react-hot-toast: ^2.4.0
       react-icons: ^4.4.0
       react-textarea-autosize: ^8.3.4
       tailwindcss: ^3.1.8
@@ -65,6 +66,7 @@ importers:
       framer-motion: 7.3.6_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-hot-toast: registry.npmmirror.com/react-hot-toast/2.4.0_biqbaboplfbrettd7655fr4n2y
       react-icons: 4.4.0_react@18.2.0
       react-textarea-autosize: 8.3.4_iapumuv4e6jcjznwuxpf4tt22e
       zustand: 4.1.1_react@18.2.0
@@ -4335,6 +4337,31 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  registry.npmmirror.com/goober/2.1.11:
+    resolution: {integrity: sha512-5SS2lmxbhqH0u9ABEWq7WPU69a4i2pYcHeCxqaNq6Cw3mnrF0ghWNM4tEGid4dKy8XNIAUbuThuozDHHKJVh3A==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/goober/-/goober-2.1.11.tgz}
+    name: goober
+    version: 2.1.11
+    peerDependencies:
+      csstype: ^3.0.10
+    dev: false
+
+  registry.npmmirror.com/react-hot-toast/2.4.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-qnnVbXropKuwUpriVVosgo8QrB+IaPJCpL8oBI6Ov84uvHZ5QQcTp2qg6ku2wNfgJl6rlQXJIQU5q+5lmPOutA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-hot-toast/-/react-hot-toast-2.4.0.tgz}
+    id: registry.npmmirror.com/react-hot-toast/2.4.0
+    name: react-hot-toast
+    version: 2.4.0
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      goober: registry.npmmirror.com/goober/2.1.11
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    transitivePeerDependencies:
+      - csstype
+    dev: false
 
   registry.npmmirror.com/regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz}
