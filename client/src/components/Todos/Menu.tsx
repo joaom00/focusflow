@@ -44,9 +44,6 @@ export const Menu = ({ children }: MenuProps) => {
       onError: (_err, _id, context) => {
         queryClient.setQueryData(['todos'], context?.previousTodos)
       },
-      onSettled: () => {
-        queryClient.invalidateQueries(['todos'])
-      },
     }
   )
 
@@ -58,26 +55,26 @@ export const Menu = ({ children }: MenuProps) => {
   const onEdit = () => {
     setTimeout(() => {
       setEdit(true)
-    }, 10)
+    }, 1)
   }
 
   const onInsertTaskBelow = () => {
     setTimeout(() => {
-      queryClient.setQueryData<Todo[]>(['todos'], insertTaskBelow(id))
-    }, 10)
+      queryClient.setQueryData<Todo[]>(['todos'], insertTaskBelow)
+    }, 1)
   }
 
   const onDuplicateTask = () => {
     setTimeout(() => {
-      queryClient.setQueryData<Todo[]>(['todos'], duplicateTask(id, value))
-    }, 10)
+      queryClient.setQueryData<Todo[]>(['todos'], duplicateTask)
+    }, 1)
   }
 
   const onDelete = () => {
     deleteTodo.mutate(id, {
       onSuccess: () => {
         toast('Delete todo')
-      }
+      },
     })
   }
 
@@ -149,7 +146,7 @@ const MenuItem = ({ children, onSelect }: MenuItemProps) => {
           transition: { duration: 0.18 },
         },
       }}
-      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 todo-menu-item"
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none"
     >
       {children}
     </MotionContextMenuItem>

@@ -8,58 +8,98 @@ import { Menu } from './Menu'
 import { createStoreContext } from '../../lib/createContex'
 import { createStore as createStoreZT } from 'zustand'
 import shallow from 'zustand/shallow'
-import type { Todo as TTodo } from './Todos'
+import { Todo as TTodo, useCreateTodoMutation, useUpdateTodoMutation } from './Todos'
 import cuid from 'cuid'
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
+// TODO: Controlar edit localmente pelo componente ou pelo cache do react query
+
 interface TodoStore {
   id: string
   value: string
+  status: 'TODO' | 'DONE' | 'INPROGRESS'
   menuOpen: boolean
   edit: boolean
+  position: number
   setValue: (value: string) => void
   setEdit: (edit: boolean) => void
   setMenu: (open: boolean) => void
-  insertTaskBelow: (id: string) => (todos: TTodo[] | undefined) => TTodo[] | undefined
-  duplicateTask: (
-    id: string,
-    content: string
-  ) => (todos: TTodo[] | undefined) => TTodo[] | undefined
+  insertTaskBelow: (todos: TTodo[] | undefined) => TTodo[] | undefined
+  duplicateTask: (todos: TTodo[] | undefined) => TTodo[] | undefined
+  removeTask: (todos: TTodo[] | undefined) => TTodo[] | undefined
 }
 
 export const [TodoProvider, useTodo] = createStoreContext<TodoStore>('TodoStore')
 
-function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value'>) {
-  return createStoreZT<TodoStore>()((set) => ({
+function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value' | 'status' | 'position'>) {
+  return createStoreZT<TodoStore>()((set, get) => ({
     ...store,
     menuOpen: false,
     setValue: (value) => set((state) => ({ ...state, value })),
     setEdit: (edit) => set((state) => ({ ...state, edit })),
     setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
-    insertTaskBelow: (id) => (currentTodos) => {
-      if (currentTodos) {
-        const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
-        const newTodo: TTodo = { id: cuid(), edit: true, status: 'TODO', content: '' }
-        toast('Insert task')
+    insertTaskBelow: (currentTasks) => {
+      if (currentTasks) {
+        const nextPosition = get().position + 1
+        const newTask: TTodo = {
+          id: cuid(),
+          edit: true,
+          status: 'TODO',
+          content: '',
+          position: nextPosition,
+        }
+        const updatedTasksPosition = currentTasks.map((task) => {
+          if (task.position >= nextPosition) {
+            return { ...task, position: task.position + 1 }
+          }
+          return task
+        })
+        const currentTaskIndex = updatedTasksPosition.findIndex((task) => task.id === get().id)
         return [
-          ...currentTodos.slice(0, currentTodoIndex + 1),
-          newTodo,
-          ...currentTodos.slice(currentTodoIndex + 1),
+          ...updatedTasksPosition.slice(0, currentTaskIndex + 1),
+          newTask,
+          ...updatedTasksPosition.slice(currentTaskIndex + 1),
         ]
       }
       return undefined
     },
-    duplicateTask: (id, content) => (currentTodos) => {
-      if (currentTodos) {
-        const currentTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
-        const newTodo: TTodo = { id: cuid(), edit: false, status: 'TODO', content }
-        toast('Duplicate task')
+    duplicateTask: (currentTasks) => {
+      if (currentTasks) {
+        const currentTaskIndex = currentTasks.findIndex((task) => task.id === get().id)
+        const nextPosition = get().position + 1
+        const newTask: TTodo = {
+          id: cuid(),
+          edit: false,
+          status: 'TODO',
+          content: get().value,
+          position: nextPosition,
+        }
+        const updatedTasksPosition = currentTasks.map((task) => {
+          if (task.position >= nextPosition) {
+            return { ...task, position: task.position + 1 }
+          }
+          return task
+        })
         return [
-          ...currentTodos.slice(0, currentTodoIndex + 1),
-          newTodo,
-          ...currentTodos.slice(currentTodoIndex + 1),
+          ...updatedTasksPosition.slice(0, currentTaskIndex + 1),
+          newTask,
+          ...updatedTasksPosition.slice(currentTaskIndex + 1),
         ]
+      }
+      return undefined
+    },
+    removeTask: (currentTasks) => {
+      if (currentTasks) {
+        const taskToDeleteId = get().id
+        const taskToDeletePosition = get().position
+        const updatedTasksPosition = currentTasks.map((task) => {
+          if (task.position && task.position >= taskToDeletePosition) {
+            return { ...task, position: task.position - 1 }
+          }
+          return task
+        })
+        return [...updatedTasksPosition.filter((task) => task.id !== taskToDeleteId)]
       }
       return undefined
     },
@@ -70,39 +110,48 @@ interface TodoProps {
   id: string
   value: string
   edit: boolean
-  onBlurEmptyValue: (id: string) => void
-  onBlur: ({ id, value }: { id: string; value: string }) => void
-  onSubmit: ({ id, value }: { id: string; value: string }) => void
-  onDone?: () => void
-  onDelete?: () => void
+  status: 'TODO' | 'DONE' | 'INPROGRESS'
+  position: number
 }
 
 export const Todo = (props: TodoProps) => {
-  const { id, edit, value, ...handlers } = props
   return (
-    <TodoProvider store={createStore({ id, edit, value })}>
-      <TodoImpl {...handlers} />
+    <TodoProvider store={createStore(props)}>
+      <TodoImpl />
     </TodoProvider>
   )
 }
 
-const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
-  const { onBlurEmptyValue, onBlur: onBlurProp, onSubmit, onDone } = props
-
+const TodoImpl = () => {
   const queryClient = useQueryClient()
 
-  const { id, value, setValue, edit, setEdit, insertTaskBelow, duplicateTask } = useTodo(
+  const {
+    id,
+    value,
+    setValue,
+    edit,
+    position,
+    setEdit,
+    insertTaskBelow,
+    duplicateTask,
+    removeTask,
+  } = useTodo(
     (state) => ({
       id: state.id,
       value: state.value,
       setValue: state.setValue,
       edit: state.edit,
+      position: state.position,
       setEdit: state.setEdit,
       insertTaskBelow: state.insertTaskBelow,
       duplicateTask: state.duplicateTask,
+      removeTask: state.removeTask,
     }),
     shallow
   )
+
+  const createTodo = useCreateTodoMutation()
+  const updateTodo = useUpdateTodoMutation()
 
   const checkboxId = React.useId()
   const [hovering, setHovering] = React.useState(false)
@@ -110,43 +159,75 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
   const todoElRef = React.useRef<HTMLLIElement>(null)
 
   const onBlur = () => {
-    if (!value && !prevValueRef.current) return onBlurEmptyValue(id)
+    if (!value && !prevValueRef.current) {
+      return queryClient.setQueryData(['todos'], removeTask)
+    }
     if (!value && prevValueRef.current) {
       setValue(prevValueRef.current)
       setEdit(false)
       return
     }
-    prevValueRef.current = value
     setEdit(false)
-    onBlurProp({ id, value })
+    const isCreatingNewTodo = prevValueRef.current === ''
+    if (isCreatingNewTodo) {
+      console.log('creating...')
+      createTodo.mutate({ id, content: value, position, shoudlInsertTaskBelow: false })
+    }
+    const hasValueChanged = prevValueRef.current !== value
+    if (!isCreatingNewTodo && hasValueChanged) {
+      console.log('updating...')
+      updateTodo.mutate({ id, content: value, position })
+    }
+    prevValueRef.current = value
   }
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
-        if (!value) return onBlurEmptyValue(id)
+        if (!value) {
+          return queryClient.setQueryData(['todos'], removeTask)
+        }
+        const isCreatingNewTodo = prevValueRef.current === ''
+        if (isCreatingNewTodo) {
+          createTodo.mutate({ id, content: value, position })
+        }
+        const hasValueChanged = prevValueRef.current !== value
+        if (!isCreatingNewTodo && hasValueChanged) {
+          updateTodo.mutate({ id, content: value, position, shouldInsertTaskBelow: true })
+        }
+        if (!isCreatingNewTodo && !hasValueChanged) {
+          queryClient.setQueryData(['todos'], insertTaskBelow)
+        }
         prevValueRef.current = value
-        onSubmit({ id, value })
         break
       }
       case 'Backspace': {
         if (!value) {
           event.preventDefault()
-          props.onBlurEmptyValue(id)
+          queryClient.setQueryData(['todos'], removeTask)
         }
         break
       }
       case 'Escape': {
-        if (!value && !prevValueRef.current) return onBlurEmptyValue(id)
+        if (!value && !prevValueRef.current) {
+          return queryClient.setQueryData(['todos'], removeTask)
+        }
         if (!value && prevValueRef.current) {
           setValue(prevValueRef.current)
           setEdit(false)
           return
         }
-        prevValueRef.current = value
-        onBlurProp({ id, value })
         setEdit(false)
+        const isCreatingNewTodo = prevValueRef.current === ''
+        if (isCreatingNewTodo) {
+          createTodo.mutate({ id, content: value, shoudlInsertTaskBelow: false })
+        }
+        const hasValueChanged = prevValueRef.current !== value
+        if (!isCreatingNewTodo && hasValueChanged) {
+          updateTodo.mutate({ id, content: value, position })
+        }
+        prevValueRef.current = value
         break
       }
     }
@@ -155,9 +236,10 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
   const onTodoKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
+        console.log('alou')
         event.preventDefault()
         if (event.altKey) {
-          queryClient.setQueryData<TTodo[]>(['todos'], insertTaskBelow(id))
+          queryClient.setQueryData<TTodo[]>(['todos'], insertTaskBelow)
           break
         }
         setEdit(true)
@@ -166,7 +248,7 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
       case 'V': {
         event.preventDefault()
         if (event.ctrlKey && event.shiftKey) {
-          queryClient.setQueryData<TTodo[]>(['todos'], duplicateTask(id, value))
+          queryClient.setQueryData<TTodo[]>(['todos'], duplicateTask)
           break
         }
         break
@@ -197,7 +279,6 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
         height: 0,
         transition: { duration: 0.2 },
       }}
-      tabIndex={-1}
       onKeyDown={onTodoKeyDown}
     >
       <Menu>
@@ -220,7 +301,7 @@ const TodoImpl = (props: Omit<TodoProps, 'id' | 'value' | 'edit'>) => {
             edit ? 'pointer-events-none' : 'pointer-events-auto'
           )}
         >
-          <CheckboxTodo id={checkboxId} edit={edit} onClick={onDone} />
+          <CheckboxTodo id={checkboxId} />
 
           <div className="hidden absolute top-1/2 right-2 -translate-y-1/2 group-hover:flex">
             <button className="hover:bg-gray-800 p-1.5 rounded-md" onClick={() => setEdit(true)}>

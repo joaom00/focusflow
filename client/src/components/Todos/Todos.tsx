@@ -7,96 +7,171 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export interface Todo {
   id: string
-  status: 'TODO' | 'DONE'
+  status: 'TODO' | 'DONE' | 'INPROGRESS'
   edit: boolean
   content: string
+  position: number
 }
 
-export const Todos = () => {
+export const useCreateTodoMutation = () => {
   const queryClient = useQueryClient()
-  const todosQuery = useQuery<Todo[]>(['todos'], async () => {
-    const response = await fetch('http://localhost:3333/todos')
-    const todos = await response.json()
-    return todos
-  })
-  const addTodo = useMutation(
-    async ({ content }: { id: string; content: string }) => {
+
+  return useMutation(
+    async ({
+      content,
+      position,
+    }: {
+      id: string
+      content: string
+      position?: number
+      shoudlInsertTaskBelow?: boolean
+    }) => {
       await fetch('http://localhost:3333/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, position }),
       })
     },
     {
-      onMutate: async ({ id, content }) => {
+      onMutate: async ({ id, content, shoudlInsertTaskBelow = true }) => {
         await queryClient.cancelQueries(['todos'])
-        const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+        const previousTasks = queryClient.getQueryData<Todo[]>(['todos'])
 
-        queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
-          if (currentTodos) {
-            const currentFocusedTodo = currentTodos.find((todo) => todo.id === id)
-            const currentFocusedTodoIndex = currentTodos.findIndex((todo) => todo.id === id)
-            if (currentFocusedTodo) {
-              currentFocusedTodo.edit = false
-              currentFocusedTodo.content = content
-              const newTodo: Todo = { id: cuid(), edit: true, status: 'TODO', content: '' }
+        queryClient.setQueryData<Todo[]>(['todos'], (currentTasks) => {
+          if (currentTasks) {
+            const currentFocusedTask = currentTasks.find((task) => task.id === id)
+            const currentFocusedTaskIndex = currentTasks.findIndex((task) => task.id === id)
+            if (currentFocusedTask) {
+              currentFocusedTask.content = content
+              currentFocusedTask.edit = false
+              if (shoudlInsertTaskBelow) {
+                const nextPosition = currentFocusedTask.position + 1
+                const newTask: Todo = {
+                  id: cuid(),
+                  edit: true,
+                  status: 'TODO',
+                  content: '',
+                  position: nextPosition,
+                }
+                const updatedTasksPosition = currentTasks.map((task) => {
+                  if (task.position >= nextPosition) {
+                    return { ...task, position: task.position + 1 }
+                  }
+                  return task
+                })
+                return [
+                  ...updatedTasksPosition.slice(0, currentFocusedTaskIndex),
+                  currentFocusedTask,
+                  newTask,
+                  ...updatedTasksPosition.slice(currentFocusedTaskIndex + 1),
+                ]
+              }
+
               return [
-                ...currentTodos.slice(0, currentFocusedTodoIndex),
-                currentFocusedTodo,
-                newTodo,
-                ...currentTodos.slice(currentFocusedTodoIndex + 1),
+                ...currentTasks.slice(0, currentFocusedTaskIndex),
+                currentFocusedTask,
+                ...currentTasks.slice(currentFocusedTaskIndex + 1),
               ]
             }
           }
           return undefined
         })
 
-        return { previousTodos }
+        return { previousTasks }
       },
-      onError: (_err, _id, context) => {
-        queryClient.setQueryData(['todos'], context?.previousTodos)
-      },
+      /* onError: (_err, _id, context) => { */
+      /*   queryClient.setQueryData(['todos'], context?.previousTodos) */
+      /* }, */
     }
   )
+}
 
-  const onAddTodo = () => {
-    const newTodo: Todo = { id: cuid(), status: 'TODO', edit: true, content: '' }
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
-      currentTodos ? [...currentTodos, newTodo] : undefined
-    )
-  }
+export const useUpdateTodoMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation(
+    async ({
+      id,
+      content,
+      position,
+    }: {
+      id: string
+      content: string
+      position: number
+      shouldInsertTaskBelow?: boolean
+    }) => {
+      await fetch(`http://localhost:3333/todos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, position }),
+      })
+    },
+    {
+      onMutate: async ({ id, content, shouldInsertTaskBelow = false }) => {
+        await queryClient.cancelQueries(['todos'])
 
-  const onSubmit = ({ id, value }: { id: string; value: string }) => {
-    addTodo.mutate({ id, content: value })
-  }
+        const previousTasks = queryClient.getQueryData(['todos'])
 
-  const onBlur = ({ id, value }: { id: string; value: string }) => {
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) => {
-      return currentTodos
-        ? currentTodos.map((todo) =>
-            todo.id === id ? { ...todo, edit: false, content: value } : todo
-          )
-        : undefined
-    })
-    // TODO: trigger a mutation to add task in DB
-    // TODO: invalidate todos' query
-  }
+        queryClient.setQueryData<Todo[]>(['todos'], (currentTasks) => {
+          if (currentTasks) {
+            const currentFocusedTask = currentTasks.find((task) => task.id === id)
+            const currentFocusedTaskIndex = currentTasks.findIndex((task) => task.id === id)
+            if (currentFocusedTask) {
+              currentFocusedTask.content = content
+              currentFocusedTask.edit = false
+              if (shouldInsertTaskBelow) {
+                const nextPosition = currentFocusedTask.position + 1
+                const newTask: Todo = {
+                  id: cuid(),
+                  edit: true,
+                  status: 'TODO',
+                  content: '',
+                  position: nextPosition,
+                }
+                const updatedTasksPosition = currentTasks.map((task) => {
+                  if (task.position >= nextPosition) {
+                    return { ...task, position: task.position + 1 }
+                  }
+                  return task
+                })
+                return [
+                  ...updatedTasksPosition.slice(0, currentFocusedTaskIndex),
+                  currentFocusedTask,
+                  newTask,
+                  ...updatedTasksPosition.slice(currentFocusedTaskIndex + 1),
+                ]
+              }
 
-  const onBlurEmptyValue = (id: string) => {
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
-      currentTodos ? [...currentTodos.filter((todo) => todo.id !== id)] : undefined
-    )
-  }
+              return [
+                ...currentTasks.slice(0, currentFocusedTaskIndex),
+                currentFocusedTask,
+                ...currentTasks.slice(currentFocusedTaskIndex + 1),
+              ]
+            }
+          }
+          return undefined
+        })
 
-  const onDone = (id: string) => {
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
-      currentTodos
-        ? currentTodos.map((todo) =>
-            todo.id === id ? { ...todo, status: todo.status === 'TODO' ? 'DONE' : 'TODO' } : todo
-          )
-        : undefined
-    )
-  }
+        return { previousTasks }
+      },
+      /* onError: (_err, _varibles, context) => { */
+      /*   queryClient.setQueryData(['todos'], context?.previousTodos) */
+      /* }, */
+    }
+  )
+}
+
+const THREE_MINUTES = 1000 * 60 * 3
+
+export const Todos = () => {
+  const todosQuery = useQuery<Todo[]>(
+    ['todos'],
+    async () => {
+      const response = await fetch('http://localhost:3333/todos')
+      const todos = await response.json()
+      return todos
+    },
+    { staleTime: THREE_MINUTES }
+  )
 
   return (
     <div className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-auto">
@@ -118,14 +193,12 @@ export const Todos = () => {
             edit={todo.edit ?? false}
             id={todo.id}
             value={todo.content}
-            onSubmit={onSubmit}
-            onBlur={onBlur}
-            onBlurEmptyValue={onBlurEmptyValue}
-            onDone={() => onDone(todo.id)}
+            status={todo.status}
+            position={todo.position}
           />
         ))}
 
-        <AddTodoButton onClick={onAddTodo} />
+        <AddTodoButton />
       </Section>
     </div>
   )
