@@ -1,9 +1,9 @@
 import React from 'react'
+import { flushSync } from 'react-dom'
 import { Command as CmdkCommand } from 'cmdk'
 import Textarea from 'react-textarea-autosize'
 
 import * as Command from './Command'
-import { flushSync } from 'react-dom'
 import { useLazyRef } from '../hooks/useLazyRef'
 import { DoublyLinkedList } from '../lib/DoublyLinkedList'
 
@@ -28,7 +28,7 @@ export const ChatInputField = ({
   const [open, setOpen] = React.useState(false)
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [currentArg, setCurrentArg] = React.useState(0)
-  const shouldListening = React.useRef(true)
+  const shouldListeningCommand = React.useRef(true)
   const ref = React.useRef<HTMLTextAreaElement>(null)
   const formRef = React.useRef<HTMLFormElement>(null)
   const dll = useLazyRef(() => new DoublyLinkedList<string>())
@@ -41,7 +41,7 @@ export const ChatInputField = ({
       onValueChange(hasArgs ? value : '')
       setOpen(false)
     })
-    shouldListening.current = hasArgs ? false : true
+    shouldListeningCommand.current = hasArgs ? false : true
     if (hasArgs) {
       ref.current?.focus()
       ref.current?.setSelectionRange(start, end)
@@ -55,7 +55,7 @@ export const ChatInputField = ({
     dll.current.append(value)
     onValueChange('')
     setCurrentIndex((currentIndex) => currentIndex + 1)
-    shouldListening.current = true
+    shouldListeningCommand.current = true
 
     const isCommand = value.startsWith('/')
     if (isCommand) {
@@ -70,17 +70,24 @@ export const ChatInputField = ({
   const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = event.currentTarget.value
     if (value === '') {
-      shouldListening.current = true
+      shouldListeningCommand.current = true
       setOpen(false)
       setCurrentIndex(dll.current.length)
       setCurrentArg(0)
     }
-    if (shouldListening.current && value.startsWith('/')) setOpen(true)
+    const isCommand = value.startsWith('/')
+    if (shouldListeningCommand.current && isCommand) setOpen(true)
     onValueChange(value)
   }
 
   const onInputKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'ArrowUp') {
+    const isArrowUpKey = event.key === 'ArrowUp'
+    const isArrowDownKey = event.key === 'ArrowDown'
+    const isTabKey = event.key === 'Tab'
+    const isEnterKey = event.key === 'Enter'
+    const isModifierKey = event.ctrlKey && event.altKey && event.metaKey
+
+    if (isArrowUpKey) {
       if (open) return
       const node = dll.current.getAt(currentIndex - 1)
       setCurrentIndex((currentIndex) => Math.max(currentIndex - 1, 0))
@@ -88,7 +95,7 @@ export const ChatInputField = ({
       onValueChange(node.value)
     }
 
-    if (event.key === 'ArrowDown') {
+    if (isArrowDownKey) {
       if (open) return
       const node = dll.current.getAt(currentIndex + 1)
       setCurrentIndex((currentIndex) => Math.min(currentIndex + 1, dll.current.length - 1))
@@ -96,35 +103,35 @@ export const ChatInputField = ({
       onValueChange(node.value)
     }
 
-    if (event.key === 'Tab') {
-      if (!shouldListening.current) {
-        event.preventDefault()
+    if (isTabKey && !shouldListeningCommand.current) {
+      event.preventDefault()
 
-        if (event.shiftKey) {
-          const nextArg = currentArg - 1
-          if (nextArg < 0) return
-          const [, ...args] = value.split(' ')
-          const [start, end] = getStartEnd(value, args[nextArg])
-          const hasArgs = Boolean(start) && Boolean(end)
-          if (hasArgs) {
-            setCurrentArg(nextArg)
-            event.currentTarget.setSelectionRange(start, end)
-          }
-          return
-        }
-        const nextArg = currentArg + 1
+      if (event.shiftKey) {
+        // Go to previous arg
+        const previousArg = currentArg - 1
+        if (previousArg < 0) return
         const [, ...args] = value.split(' ')
-        if (nextArg >= args.length) return
-        const [start, end] = getStartEnd(value, args[nextArg])
-        const hasArgs = Boolean(start) && Boolean(end)
+        const [start, end] = getStartEnd(value, args[previousArg])
+        const hasArgs = !!start && !!end
         if (hasArgs) {
-          setCurrentArg(nextArg)
+          setCurrentArg(previousArg)
           event.currentTarget.setSelectionRange(start, end)
         }
+        return
+      }
+
+      const nextArg = currentArg + 1
+      const [, ...args] = value.split(' ')
+      if (nextArg >= args.length) return
+      const [start, end] = getStartEnd(value, args[nextArg])
+      const hasArgs = Boolean(start) && Boolean(end)
+      if (hasArgs) {
+        setCurrentArg(nextArg)
+        event.currentTarget.setSelectionRange(start, end)
       }
     }
 
-    if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey && !open) {
+    if (isEnterKey && !isModifierKey && !open) {
       event.preventDefault()
       formRef.current?.requestSubmit()
     }

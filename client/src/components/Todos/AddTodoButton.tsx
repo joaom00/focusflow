@@ -6,6 +6,7 @@ import cuid from 'cuid'
 
 export const AddTodoButton = React.forwardRef<HTMLButtonElement>((_props, forwardedRef) => {
   const queryClient = useQueryClient()
+  const ref = React.useRef<HTMLDivElement>(null)
 
   const onAddTodo = () => {
     const currentTodos = queryClient.getQueryData<Todo[]>(['todos'])
@@ -19,9 +20,15 @@ export const AddTodoButton = React.forwardRef<HTMLButtonElement>((_props, forwar
     queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
       currentTodos ? [...currentTodos, newTodo] : undefined
     )
+    setTimeout(() => {
+      if (ref.current) {
+        ref.current.scrollIntoView({ block: 'end', behavior: 'smooth' })
+      }
+    }, 110)
   }
+
   return (
-    <div className="border-t border-t-gray-700 w-full py-1 px-2">
+    <div className="border-t border-t-gray-700 w-full py-1 px-2" ref={ref}>
       <button
         ref={forwardedRef}
         type="button"

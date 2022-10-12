@@ -1,22 +1,27 @@
+import React from 'react'
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
 
 interface ScrollAreaProps {
   children?: React.ReactNode
 }
 
-export const ScrollArea = ({ children }: ScrollAreaProps) => {
-  return (
-    <ScrollAreaRoot>
-      <ScrollAreaScrollbar>
-        <ScrollAreaThumb />
-      </ScrollAreaScrollbar>
+export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
+  ({ children }, forwardedRef) => {
+    return (
+      <ScrollAreaRoot>
+        <ScrollAreaScrollbar>
+          <ScrollAreaThumb />
+        </ScrollAreaScrollbar>
 
-      <ScrollAreaPrimitive.Viewport className="w-full h-full">
-        {children}
-      </ScrollAreaPrimitive.Viewport>
-    </ScrollAreaRoot>
-  )
-}
+        <ScrollAreaPrimitive.Viewport ref={forwardedRef} className="w-full h-full">
+          {children}
+        </ScrollAreaPrimitive.Viewport>
+      </ScrollAreaRoot>
+    )
+  }
+)
+
+ScrollArea.displayName = 'ScrollArea'
 
 const ScrollAreaRoot = (props: { children: React.ReactNode }) => {
   return <ScrollAreaPrimitive.Root {...props} className="overflow-hidden" />

@@ -75,6 +75,7 @@ export const AudioPlayer = () => {
       >
         {isPlaying ? <RiPauseFill size={24} /> : <RiPlayFill size={24} />}
       </motion.button>
+
       {volume[0] === 0 ? (
         <motion.button
           whileTap={{ scale: 0.8, backgroundColor: 'rgb(39 39 42 / 25)', opacity: 0.7 }}

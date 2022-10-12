@@ -1,6 +1,12 @@
 import React from 'react'
 import { createContext } from '../lib/createContex'
 
+/**
+ * Credits
+ *
+ * @see {@link https://github.com/kevinsqi/react-circular-progressbar}
+ */
+
 const VIEWBOX_WIDTH = 100
 const VIEWBOX_HEIGHT = 100
 const VIEWBOX_HEIGHT_HALF = 50

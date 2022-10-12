@@ -26,6 +26,7 @@ export const Menu = ({ children }: MenuProps) => {
   )
 
   const queryClient = useQueryClient()
+
   const deleteTodo = useMutation(
     async (id: string) => {
       await fetch(`http://localhost:3333/todos/${id}`, {

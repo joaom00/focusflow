@@ -1,110 +1,22 @@
 import React from 'react'
 import clsx from 'clsx'
+import shallow from 'zustand/shallow'
+import Textarea from 'react-textarea-autosize'
+import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
 import { Pencil1Icon } from '@radix-ui/react-icons'
-import Textarea from 'react-textarea-autosize'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { createTodoStore, type TodoStore } from '@/stores'
+import { createStoreContext } from '@/lib/createContex'
+
 import { CheckboxTodo } from './CheckboxTodo'
 import { Menu } from './Menu'
-import { createStoreContext } from '../../lib/createContex'
-import { createStore as createStoreZT } from 'zustand'
-import shallow from 'zustand/shallow'
-import { Todo as TTodo, useCreateTodoMutation, useUpdateTodoMutation } from './Todos'
-import cuid from 'cuid'
-import { useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
+import { type Todo as TTodo, useCreateTodoMutation, useUpdateTodoMutation } from './Todos'
 
 // TODO: Controlar edit localmente pelo componente ou pelo cache do react query
 
-interface TodoStore {
-  id: string
-  value: string
-  status: 'TODO' | 'DONE' | 'INPROGRESS'
-  menuOpen: boolean
-  edit: boolean
-  position: number
-  setValue: (value: string) => void
-  setEdit: (edit: boolean) => void
-  setMenu: (open: boolean) => void
-  insertTaskBelow: (todos: TTodo[] | undefined) => TTodo[] | undefined
-  duplicateTask: (todos: TTodo[] | undefined) => TTodo[] | undefined
-  removeTask: (todos: TTodo[] | undefined) => TTodo[] | undefined
-}
-
 export const [TodoProvider, useTodo] = createStoreContext<TodoStore>('TodoStore')
-
-function createStore(store: Pick<TodoStore, 'id' | 'edit' | 'value' | 'status' | 'position'>) {
-  return createStoreZT<TodoStore>()((set, get) => ({
-    ...store,
-    menuOpen: false,
-    setValue: (value) => set((state) => ({ ...state, value })),
-    setEdit: (edit) => set((state) => ({ ...state, edit })),
-    setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
-    insertTaskBelow: (currentTasks) => {
-      if (currentTasks) {
-        const nextPosition = get().position + 1
-        const newTask: TTodo = {
-          id: cuid(),
-          edit: true,
-          status: 'TODO',
-          content: '',
-          position: nextPosition,
-        }
-        const updatedTasksPosition = currentTasks.map((task) => {
-          if (task.position >= nextPosition) {
-            return { ...task, position: task.position + 1 }
-          }
-          return task
-        })
-        const currentTaskIndex = updatedTasksPosition.findIndex((task) => task.id === get().id)
-        return [
-          ...updatedTasksPosition.slice(0, currentTaskIndex + 1),
-          newTask,
-          ...updatedTasksPosition.slice(currentTaskIndex + 1),
-        ]
-      }
-      return undefined
-    },
-    duplicateTask: (currentTasks) => {
-      if (currentTasks) {
-        const currentTaskIndex = currentTasks.findIndex((task) => task.id === get().id)
-        const nextPosition = get().position + 1
-        const newTask: TTodo = {
-          id: cuid(),
-          edit: false,
-          status: 'TODO',
-          content: get().value,
-          position: nextPosition,
-        }
-        const updatedTasksPosition = currentTasks.map((task) => {
-          if (task.position >= nextPosition) {
-            return { ...task, position: task.position + 1 }
-          }
-          return task
-        })
-        return [
-          ...updatedTasksPosition.slice(0, currentTaskIndex + 1),
-          newTask,
-          ...updatedTasksPosition.slice(currentTaskIndex + 1),
-        ]
-      }
-      return undefined
-    },
-    removeTask: (currentTasks) => {
-      if (currentTasks) {
-        const taskToDeleteId = get().id
-        const taskToDeletePosition = get().position
-        const updatedTasksPosition = currentTasks.map((task) => {
-          if (task.position && task.position >= taskToDeletePosition) {
-            return { ...task, position: task.position - 1 }
-          }
-          return task
-        })
-        return [...updatedTasksPosition.filter((task) => task.id !== taskToDeleteId)]
-      }
-      return undefined
-    },
-  }))
-}
 
 interface TodoProps {
   id: string
@@ -116,7 +28,7 @@ interface TodoProps {
 
 export const Todo = (props: TodoProps) => {
   return (
-    <TodoProvider store={createStore(props)}>
+    <TodoProvider store={createTodoStore(props)}>
       <TodoImpl />
     </TodoProvider>
   )
@@ -162,43 +74,51 @@ const TodoImpl = () => {
     if (!value && !prevValueRef.current) {
       return queryClient.setQueryData(['todos'], removeTask)
     }
+
     if (!value && prevValueRef.current) {
       setValue(prevValueRef.current)
       setEdit(false)
       return
     }
+
     setEdit(false)
     const isCreatingNewTodo = prevValueRef.current === ''
     if (isCreatingNewTodo) {
-      console.log('creating...')
       createTodo.mutate({ id, content: value, position, shoudlInsertTaskBelow: false })
     }
+
     const hasValueChanged = prevValueRef.current !== value
-    if (!isCreatingNewTodo && hasValueChanged) {
-      console.log('updating...')
+    const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
+    if (isUpdatingTodo) {
       updateTodo.mutate({ id, content: value, position })
     }
+
     prevValueRef.current = value
   }
 
-  const onKeyDown = (event: React.KeyboardEvent) => {
+  const onInputKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
         if (!value) {
           return queryClient.setQueryData(['todos'], removeTask)
         }
+
         const isCreatingNewTodo = prevValueRef.current === ''
         if (isCreatingNewTodo) {
           createTodo.mutate({ id, content: value, position })
         }
+
         const hasValueChanged = prevValueRef.current !== value
-        if (!isCreatingNewTodo && hasValueChanged) {
+        const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
+        if (isUpdatingTodo) {
           updateTodo.mutate({ id, content: value, position, shouldInsertTaskBelow: true })
         }
+
         if (!isCreatingNewTodo && !hasValueChanged) {
           queryClient.setQueryData(['todos'], insertTaskBelow)
         }
+
         prevValueRef.current = value
         break
       }
@@ -213,20 +133,25 @@ const TodoImpl = () => {
         if (!value && !prevValueRef.current) {
           return queryClient.setQueryData(['todos'], removeTask)
         }
+
         if (!value && prevValueRef.current) {
           setValue(prevValueRef.current)
           setEdit(false)
           return
         }
+
         setEdit(false)
         const isCreatingNewTodo = prevValueRef.current === ''
         if (isCreatingNewTodo) {
           createTodo.mutate({ id, content: value, shoudlInsertTaskBelow: false })
         }
+
         const hasValueChanged = prevValueRef.current !== value
-        if (!isCreatingNewTodo && hasValueChanged) {
+        const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
+        if (isUpdatingTodo) {
           updateTodo.mutate({ id, content: value, position })
         }
+
         prevValueRef.current = value
         break
       }
@@ -236,7 +161,6 @@ const TodoImpl = () => {
   const onTodoKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
-        console.log('alou')
         event.preventDefault()
         if (event.altKey) {
           queryClient.setQueryData<TTodo[]>(['todos'], insertTaskBelow)
@@ -323,7 +247,7 @@ const TodoImpl = () => {
                 onBlur={onBlur}
                 value={value}
                 onChange={onChange}
-                onKeyDown={onKeyDown}
+                onKeyDown={onInputKeyDown}
                 className={clsx(
                   'resize-none bg-gray-800 pl-10 pr-4 py-2 text-sm focus:outline-none border-t border-t-transparent focus:border-t-pink-500 absolute inset-x-0 shadow-lg shadow-black/50 rounded-md',
                   edit && 'pointer-events-auto z-40'
