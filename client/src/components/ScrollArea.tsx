@@ -38,6 +38,6 @@ const ScrollAreaScrollbar = (props: { children: React.ReactNode }) => {
 
 const ScrollAreaThumb = () => {
   return (
-    <ScrollAreaPrimitive.Thumb className="flex-1 bg-gray-500 rounded-[10px] relative before:content-[' '] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+    <ScrollAreaPrimitive.Thumb className="flex-1 bg-gray-500 rounded-[10px] relative before:content-[' '] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[22px] before:min-h-[44px]" />
   )
 }

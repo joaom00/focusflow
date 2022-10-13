@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { Todo } from './Todos'
 import cuid from 'cuid'
 
-export const AddTodoButton = React.forwardRef<HTMLButtonElement>((_props, forwardedRef) => {
+export const AddTodoButton = () => {
   const queryClient = useQueryClient()
   const ref = React.useRef<HTMLDivElement>(null)
 
@@ -30,7 +30,6 @@ export const AddTodoButton = React.forwardRef<HTMLButtonElement>((_props, forwar
   return (
     <div className="border-t border-t-gray-700 w-full py-1 px-2" ref={ref}>
       <button
-        ref={forwardedRef}
         type="button"
         className="text-sm flex items-center gap-2 rounded-lg text-gray-300 px-2 py-1 duration-200 relative add-task-button hover:text-white group transition-colors"
         onClick={onAddTodo}
@@ -42,6 +41,5 @@ export const AddTodoButton = React.forwardRef<HTMLButtonElement>((_props, forwar
       </button>
     </div>
   )
-})
+}
 
-AddTodoButton.displayName = 'AddTodoButton'

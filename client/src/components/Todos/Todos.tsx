@@ -1,7 +1,6 @@
 import cuid from 'cuid'
 import { Section } from './Section'
 import { Todo } from './Todo'
-import { AddTodoButton } from './AddTodoButton'
 import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ScrollArea } from '../ScrollArea'
@@ -9,7 +8,7 @@ import React from 'react'
 
 export interface Todo {
   id: string
-  status: 'TODO' | 'DONE' | 'INPROGRESS'
+  status: 'TODO' | 'DONE'
   edit: boolean
   content: string
   position: number
@@ -81,9 +80,6 @@ export const useCreateTodoMutation = () => {
 
         return { previousTasks }
       },
-      /* onError: (_err, _id, context) => { */
-      /*   queryClient.setQueryData(['todos'], context?.previousTodos) */
-      /* }, */
     }
   )
 }
@@ -155,9 +151,6 @@ export const useUpdateTodoMutation = () => {
 
         return { previousTasks }
       },
-      /* onError: (_err, _varibles, context) => { */
-      /*   queryClient.setQueryData(['todos'], context?.previousTodos) */
-      /* }, */
     }
   )
 }
@@ -182,11 +175,11 @@ export const Todos = () => {
       <header className="border-b border-b-gray-700 w-full text-center py-4 px-3 flex items-center justify-between">
         <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">To-do list</p>
         <div className="flex items-center gap-0.5">
-          <button className="p-2 rounded-md hover:bg-gray-750">
-            <GearIcon />
+          <button className="p-2 rounded-md hover:bg-gray-750" aria-label="Configuration">
+            <GearIcon aria-hidden />
           </button>
-          <button className="p-2 rounded-md hover:bg-gray-750">
-            <SpeakerLoudIcon />
+          <button className="p-2 rounded-md hover:bg-gray-750" aria-label="Turn on check sound">
+            <SpeakerLoudIcon aria-hidden />
           </button>
         </div>
       </header>
@@ -202,8 +195,19 @@ export const Todos = () => {
               position={todo.position}
             />
           ))}
+        </Section>
 
-          <AddTodoButton scrollViewportRef={scrollViewportRef} />
+        <Section name="Done">
+          {todosQuery.data?.map((todo) => (
+            <Todo
+              key={todo.id}
+              edit={todo.edit ?? false}
+              id={todo.id}
+              value={todo.content}
+              status={todo.status}
+              position={todo.position}
+            />
+          ))}
         </Section>
       </ScrollArea>
     </div>

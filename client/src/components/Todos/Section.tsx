@@ -2,6 +2,7 @@ import React from 'react'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
+import { AddTodoButton } from './AddTodoButton'
 
 interface SectionProps {
   name: string
@@ -15,7 +16,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
     return (
       <Collapsible.Root open={open} onOpenChange={setOpen}>
         <div
-          className="flex justify-between items-center px-4 py-3 sticky top-0 bg-transparent border-t border-t-gray-700 z-30"
+          className="flex justify-between items-center px-4 py-2 sticky top-0 bg-transparent border-t border-t-gray-700 z-30"
           style={{
             backgroundImage: 'radial-gradient(rgb(24 24 27 / 5%) 1px, rgb(24 24 27) 1px)',
             backgroundSize: '4px 4px',
@@ -30,8 +31,9 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
               animate={open ? 'open' : 'closed'}
               variants={{ open: { rotateX: '180deg' }, closed: { rotateX: '0deg' } }}
               transition={{ type: 'spring', duration: 0.6, bounce: 0.3 }}
+              className="p-2 rounded-md hover:bg-gray-750"
             >
-              <ChevronDownIcon />
+              <ChevronDownIcon aria-hidden />
             </motion.button>
           </Collapsible.Trigger>
         </div>
@@ -39,6 +41,8 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
         <Collapsible.Content>
           <ul ref={forwardedRef}>
             <AnimatePresence>{children}</AnimatePresence>
+
+            <AddTodoButton />
           </ul>
         </Collapsible.Content>
       </Collapsible.Root>

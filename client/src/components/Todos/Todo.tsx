@@ -227,7 +227,7 @@ const TodoImpl = () => {
         >
           <CheckboxTodo id={checkboxId} />
 
-          <div className="hidden absolute top-1/2 right-2 -translate-y-1/2 group-hover:flex">
+          <div className="hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex">
             <button className="hover:bg-gray-800 p-1.5 rounded-md" onClick={() => setEdit(true)}>
               <Pencil1Icon />
             </button>
