@@ -184,7 +184,7 @@ export const Todos = () => {
         </div>
       </header>
       <ScrollArea ref={scrollViewportRef}>
-        <Section name="To do">
+        <Section name="To do" tasksTotal={todosQuery.data?.length}>
           {todosQuery.data?.map((todo) => (
             <Todo
               key={todo.id}
@@ -197,18 +197,6 @@ export const Todos = () => {
           ))}
         </Section>
 
-        <Section name="Done">
-          {todosQuery.data?.map((todo) => (
-            <Todo
-              key={todo.id}
-              edit={todo.edit ?? false}
-              id={todo.id}
-              value={todo.content}
-              status={todo.status}
-              position={todo.position}
-            />
-          ))}
-        </Section>
       </ScrollArea>
     </div>
   )

@@ -6,11 +6,12 @@ import { AddTodoButton } from './AddTodoButton'
 
 interface SectionProps {
   name: string
+  tasksTotal?: number
   children?: React.ReactNode
 }
 
 export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
-  ({ name, children }, forwardedRef) => {
+  ({ name, tasksTotal = 0, children }, forwardedRef) => {
     const [open, setOpen] = React.useState(true)
 
     return (
@@ -24,13 +25,32 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
             backgroundColor: 'rgb(24 24 27 / 5%)',
           }}
         >
-          <p className="text-sm font-medium">{name}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium">{name}</p>
+            <motion.span
+              className="w-4 h-4 leading-none flex justify-center items-center rounded-full bg-pink-400 text-xs font-medium"
+              initial={false}
+              animate={open ? 'open' : 'closed'}
+              variants={{
+                open: {
+                  y: 5,
+                  opacity: 0,
+                  transition: { duration: 0.1 },
+                },
+                closed: {
+                  y: 0,
+                  opacity: 1,
+                },
+              }}
+            >
+              {tasksTotal}
+            </motion.span>
+          </div>
           <Collapsible.Trigger asChild>
             <motion.button
               initial={false}
-              animate={open ? 'open' : 'closed'}
-              variants={{ open: { rotateX: '180deg' }, closed: { rotateX: '0deg' } }}
-              transition={{ type: 'spring', duration: 0.6, bounce: 0.3 }}
+              animate={{ rotateX: open ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
               className="p-2 rounded-md hover:bg-gray-750"
             >
               <ChevronDownIcon aria-hidden />

@@ -1,11 +1,14 @@
 import React from 'react'
-import { flushSync } from 'react-dom'
 import { Command as CmdkCommand } from 'cmdk'
+import { flushSync } from 'react-dom'
 import Textarea from 'react-textarea-autosize'
 
 import * as Command from './Command'
 import { useLazyRef } from '../hooks/useLazyRef'
 import { DoublyLinkedList } from '../lib/DoublyLinkedList'
+import clsx from 'clsx'
+
+const is_authenticated = true
 
 interface ChatInputFieldProps {
   value: string
@@ -142,17 +145,27 @@ export const ChatInputField = ({
       <Command.Root onSelect={onCommandSelect} open={open}>
         <CmdkCommand.Input className="hidden" value={value} onValueChange={onValueChange} />
 
-        <Textarea
-          ref={ref}
-          name="message"
-          minRows={1}
-          maxRows={5}
-          placeholder="Send a message"
-          className="w-full px-4 py-3 text-xs font-medium bg-gray-700 outline-none placeholder-gray-400 resize-none rounded-md border border-transparent focus:bg-gray-900 focus:border-pink-600"
-          value={value}
-          onChange={onInputChange}
-          onKeyDown={onInputKeyDown}
-        />
+        <div className="relative">
+          <div
+            className={clsx(
+              'absolute bg-gray-800/40 inset-0 bottom-1.5 rounded-md flex justify-center items-center text-xs my-auto backdrop-filter backdrop-blur-[2px] opacity-0 duration-200 transition-all',
+              is_authenticated ? 'hidden' : 'hover:opacity-100'
+            )}
+          >
+            <p>You need to login to start conversation</p>
+          </div>
+          <Textarea
+            ref={ref}
+            name="message"
+            minRows={1}
+            maxRows={5}
+            placeholder="Send a message"
+            className="w-full px-4 py-3 text-xs font-medium bg-gray-700 outline-none placeholder-gray-400 resize-none rounded-md border border-transparent focus:bg-gray-900 focus:border-pink-600"
+            value={value}
+            onChange={onInputChange}
+            onKeyDown={onInputKeyDown}
+          />
+        </div>
       </Command.Root>
     </form>
   )
