@@ -60,12 +60,14 @@ export const Menu = ({ children }: MenuProps) => {
   }
 
   const onInsertTaskBelow = () => {
+    // TODO: add new task to db
     setTimeout(() => {
       queryClient.setQueryData<Todo[]>(['todos'], insertTaskBelow)
     }, 1)
   }
 
   const onDuplicateTask = () => {
+    // TODO: add new task to db
     setTimeout(() => {
       queryClient.setQueryData<Todo[]>(['todos'], duplicateTask)
     }, 1)
@@ -101,7 +103,7 @@ export const Menu = ({ children }: MenuProps) => {
           <MenuItem onSelect={onDuplicateTask}>
             <CopyIcon />
             Duplicate task
-            <RightSLot>Ctrl+Shift+V</RightSLot>
+            <RightSLot>Ctrl+D</RightSLot>
           </MenuItem>
 
           <MenuItem onSelect={onEdit}>
@@ -115,6 +117,7 @@ export const Menu = ({ children }: MenuProps) => {
           <MenuItem onSelect={onDelete}>
             <TrashIcon />
             Delete
+            <RightSLot>Delete</RightSLot>
           </MenuItem>
         </ContextMenu.Content>
       </ContextMenu.Portal>

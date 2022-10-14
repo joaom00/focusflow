@@ -44,18 +44,18 @@ export const AudioPlayer = () => {
     audioRef.current?.pause()
   }, [isPlaying])
 
-  // React.useEffect(() => {
-  //   async function getSongStatus() {
-  //     const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
-  //     const data = await response.json()
-  //     setSong({
-  //       title: data.current_track.title.split(' - ')[1],
-  //       artist: data.current_track.title.split(' - ')[0],
-  //       artwork_url: data.current_track.artwork_url,
-  //     })
-  //   }
-  //   getSongStatus()
-  // }, [])
+   React.useEffect(() => {
+     async function getSongStatus() {
+       const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
+       const data = await response.json()
+       setSong({
+         title: data.current_track.title.split(' - ')[1],
+         artist: data.current_track.title.split(' - ')[0],
+         artwork_url: data.current_track.artwork_url,
+       })
+     }
+     getSongStatus()
+   }, [])
 
   return (
     <div className="bg-gray-900/70 p-3 border-t border-t-gray-700 backdrop-blur-lg backdrop-saturate-[180%] flex items-center gap-5 px-5">

@@ -4,7 +4,7 @@ import shallow from 'zustand/shallow'
 import Textarea from 'react-textarea-autosize'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
-import { Pencil1Icon } from '@radix-ui/react-icons'
+import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { createTodoStore, type TodoStore } from '@/stores'
@@ -41,6 +41,7 @@ const TodoImpl = () => {
     id,
     value,
     setValue,
+    onOpenMenuChange,
     edit,
     position,
     setEdit,
@@ -52,6 +53,7 @@ const TodoImpl = () => {
       id: state.id,
       value: state.value,
       setValue: state.setValue,
+      onOpenMenuChange: state.setMenu,
       edit: state.edit,
       position: state.position,
       setEdit: state.setEdit,
@@ -169,17 +171,17 @@ const TodoImpl = () => {
         setEdit(true)
         break
       }
-      case 'V': {
-        event.preventDefault()
-        if (event.ctrlKey && event.shiftKey) {
+      case 'd': {
+        if (event.ctrlKey) {
+          event.preventDefault()
           queryClient.setQueryData<TTodo[]>(['todos'], duplicateTask)
           break
         }
         break
       }
       case 'c': {
-        event.preventDefault()
         if (event.ctrlKey) {
+          event.preventDefault()
           window.navigator.clipboard.writeText(value)
           toast('Copy task')
           break
@@ -230,6 +232,12 @@ const TodoImpl = () => {
           <div className="hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex">
             <button className="hover:bg-gray-800 p-1.5 rounded-md" onClick={() => setEdit(true)}>
               <Pencil1Icon />
+            </button>
+            <button
+              className="hover:bg-gray-800 p-1.5 rounded-md"
+              onClick={() => onOpenMenuChange(true)}
+            >
+              <DotsHorizontalIcon />
             </button>
           </div>
 

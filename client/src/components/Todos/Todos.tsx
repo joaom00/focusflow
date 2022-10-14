@@ -1,7 +1,7 @@
 import cuid from 'cuid'
 import { Section } from './Section'
 import { Todo } from './Todo'
-import { GearIcon, SpeakerLoudIcon } from '@radix-ui/react-icons'
+import { SpeakerLoudIcon } from '@radix-ui/react-icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ScrollArea } from '../ScrollArea'
 import React from 'react'
@@ -19,6 +19,7 @@ export const useCreateTodoMutation = () => {
 
   return useMutation(
     async ({
+      id,
       content,
       position,
     }: {
@@ -30,7 +31,7 @@ export const useCreateTodoMutation = () => {
       await fetch('http://localhost:3333/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, position }),
+        body: JSON.stringify({ id, content, position }),
       })
     },
     {
@@ -175,9 +176,6 @@ export const Todos = () => {
       <header className="border-b border-b-gray-700 w-full text-center py-4 px-3 flex items-center justify-between">
         <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">To-do list</p>
         <div className="flex items-center gap-0.5">
-          <button className="p-2 rounded-md hover:bg-gray-750" aria-label="Configuration">
-            <GearIcon aria-hidden />
-          </button>
           <button className="p-2 rounded-md hover:bg-gray-750" aria-label="Turn on check sound">
             <SpeakerLoudIcon aria-hidden />
           </button>
@@ -196,7 +194,6 @@ export const Todos = () => {
             />
           ))}
         </Section>
-
       </ScrollArea>
     </div>
   )

@@ -6,7 +6,7 @@ export interface TodoStore {
   id: string
   value: string
   status: 'TODO' | 'DONE' | 'INPROGRESS'
-  menuOpen: boolean
+  openMenu: boolean
   edit: boolean
   position: number
   setValue: (value: string) => void
@@ -22,7 +22,7 @@ type InitialTodoStore = Pick<TodoStore, 'id' | 'edit' | 'value' | 'status' | 'po
 export function createTodoStore(initialStore: InitialTodoStore) {
   return createStore<TodoStore>()((set, get) => ({
     ...initialStore,
-    menuOpen: false,
+    openMenu: false,
     setValue: (value) => set((state) => ({ ...state, value })),
     setEdit: (edit) => set((state) => ({ ...state, edit })),
     setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
