@@ -2,13 +2,19 @@ import React from 'react'
 import { Command as CmdkCommand } from 'cmdk'
 import { flushSync } from 'react-dom'
 import Textarea from 'react-textarea-autosize'
+import * as Dialog from '@radix-ui/react-dialog'
 
 import * as Command from './Command'
 import { useLazyRef } from '../hooks/useLazyRef'
 import { DoublyLinkedList } from '../lib/DoublyLinkedList'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { motion } from 'framer-motion'
 import clsx from 'clsx'
+import { ErrorIcon } from 'react-hot-toast'
 
-const is_authenticated = true
+const is_authenticated = false
 
 interface ChatInputFieldProps {
   value: string
@@ -145,15 +151,7 @@ export const ChatInputField = ({
       <Command.Root onSelect={onCommandSelect} open={open}>
         <CmdkCommand.Input className="hidden" value={value} onValueChange={onValueChange} />
 
-        <div className="relative">
-          <div
-            className={clsx(
-              'absolute bg-gray-800/40 inset-0 bottom-1.5 rounded-md flex justify-center items-center text-xs my-auto backdrop-filter backdrop-blur-[2px] opacity-0 duration-200 transition-all',
-              is_authenticated ? 'hidden' : 'hover:opacity-100'
-            )}
-          >
-            <p>You need to login to start conversation</p>
-          </div>
+        {is_authenticated ? (
           <Textarea
             ref={ref}
             name="message"
@@ -165,8 +163,138 @@ export const ChatInputField = ({
             onChange={onInputChange}
             onKeyDown={onInputKeyDown}
           />
-        </div>
+        ) : (
+          <SignInDialog>
+            <button className="w-full px-4 py-3 text-xs font-medium bg-pink-600 rounded-md border border-transparent text-center">
+              You need to login to start conversation
+            </button>
+          </SignInDialog>
+        )}
       </Command.Root>
     </form>
+  )
+}
+
+interface SignInDialogProps {
+  children?: React.ReactNode
+}
+
+const registerSchema = z.object({
+  username: z
+    .string()
+    .min(4, 'Usernames must be between 4 and 25 characters')
+    .max(25, 'Usernames must be between 4 and 25 characters'),
+  email: z.string().email('Please enter a valid email').min(1, 'Please enter a valid email'),
+  password: z
+    .string()
+    .min(6, 'Passwords must be at least 6 characters long')
+    .max(32, 'Passwords must be shorter than 32 characters'),
+})
+
+type FormData = z.infer<typeof registerSchema>
+
+const SignInDialog = ({ children }: SignInDialogProps) => {
+  const methods = useForm<FormData>({ resolver: zodResolver(registerSchema) })
+  const { handleSubmit } = methods
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data)
+  })
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="bg-gray-900/90 fixed inset-0" />
+        <Dialog.Content className="bg-gray-800 border border-gray-700 rounded-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-lg w-11/12">
+          <div className="border-b border-b-gray-700 px-5 py-3">
+            <Dialog.Title className="font-medium">Create an account</Dialog.Title>
+            <Dialog.Description className="text-sm text-gray-400">
+              Enter your details to create an account
+            </Dialog.Description>
+          </div>
+
+          <FormProvider {...methods}>
+            <form aria-labelledby="create-account" onSubmit={onSubmit} noValidate>
+              <fieldset>
+                <legend id="create-account" className="sr-only">
+                  Create an account
+                </legend>
+
+                <div className="px-5 py-5 flex flex-col gap-5">
+                  <Input label="Username" name="username" autoComplete="username" />
+
+                  <Input type="email" label="Email" name="email" autoComplete="email" />
+
+                  <Input
+                    type="password"
+                    label="Password"
+                    name="password"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className="border-t border-t-gray-700 px-5 py-2 flex justify-end items-center gap-3">
+                  <Dialog.Close className="bg-gray-800 hover:bg-gray-750 text-white hover:text-gray-100 shadow-sm border border-gray-700 px-5 py-2 rounded-md text-sm font-medium">
+                    Cancel
+                  </Dialog.Close>
+                  <button className="bg-pink-600 hover:bg-pink-700 text-white shadow-sm border border-pink-700 hover:border-pink-800 px-5 py-2 rounded-md text-sm font-medium">
+                    Create account
+                  </button>
+                </div>
+              </fieldset>
+            </form>
+          </FormProvider>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
+type NativeInputProps = React.ComponentPropsWithRef<'input'>
+
+type InputProps = NativeInputProps & {
+  label: string
+  name: keyof FormData
+}
+
+const Input = ({ name, label, ...props }: InputProps) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<FormData>()
+
+  const error = errors[name]
+  const hasError = !!error
+
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={name} className="text-sm select-none flex justify-between items-center">
+        {label}
+        {hasError && <ErrorIcon className="w-4 h-4 before:w-[10px] after:w-[10px] before:left-[3px] before:bottom-[7px] after:left-[3px] after:bottom-[7px]" />}
+      </label>
+
+      <input
+        {...props}
+        id={name}
+        className={clsx(
+          'h-9 rounded-md bg-gray-750 px-3 text-sm focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none transition duration-200 focus:bg-gray-850 caret-pink-300',
+          hasError ? 'focus:ring-red-400' : 'focus:ring-pink-400'
+        )}
+        aria-invalid={hasError ? 'true' : 'false'}
+        {...register(name)}
+      />
+
+      {!!error && (
+        <motion.span
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          role="alert"
+          className="text-xs font-medium text-red-400 mt-1"
+        >
+          {error.message}
+        </motion.span>
+      )}
+    </div>
   )
 }

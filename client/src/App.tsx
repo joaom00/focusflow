@@ -6,7 +6,7 @@ import { AudioPlayer } from './components/AudioPlayer'
 import { Chat } from './components/Chat'
 import { Todos } from './components/Todos/Todos'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } })
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
           <AudioPlayer />
         </div>
       </TooltipPrimitive.Provider>
-      <Toaster position="bottom-center" containerClassName='select-none' />
+      <Toaster position="bottom-center" containerClassName="select-none" />
       <ReactQueryDevtools />
     </QueryClientProvider>
   )

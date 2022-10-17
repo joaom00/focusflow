@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.8",
     "@radix-ui/react-checkbox": "^1.0.0",
     "@radix-ui/react-collapsible": "^1.0.0",
     "@radix-ui/react-context-menu": "^1.0.0",
+    "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-icons": "^1.1.1",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@radix-ui/react-slider": "^1.0.0",
@@ -24,9 +26,11 @@
     "framer-motion": "^7.3.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.37.0",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.4.0",
     "react-textarea-autosize": "^8.3.4",
+    "zod": "^3.19.1",
     "zustand": "^4.1.1"
   },
   "devDependencies": {
