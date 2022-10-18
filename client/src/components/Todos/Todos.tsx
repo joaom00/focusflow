@@ -159,16 +159,19 @@ export const useUpdateTodoMutation = () => {
 const THREE_MINUTES = 1000 * 60 * 3
 
 export const Todos = () => {
-  const todosQuery = useQuery<Todo[]>(
-    ['todos'],
-    async () => {
-      const response = await fetch('http://localhost:3333/todos')
-      const todos = await response.json()
-      return todos
-    },
-    { staleTime: THREE_MINUTES }
-  )
+  /* const todosQuery = useQuery<Todo[]>( */
+  /*   ['todos'], */
+  /*   async () => { */
+  /*     const response = await fetch('http://localhost:3333/todos') */
+  /*     const todos = await response.json() */
+  /*     return todos */
+  /*   }, */
+  /*   { staleTime: THREE_MINUTES } */
+  /* ) */
 
+  const todosQuery = {
+    data: [] as Todo[]
+  }
   const scrollViewportRef = React.useRef<HTMLDivElement>(null)
 
   return (
@@ -183,7 +186,7 @@ export const Todos = () => {
       </header>
       <ScrollArea ref={scrollViewportRef}>
         <Section name="To do" tasksTotal={todosQuery.data?.length}>
-          {todosQuery.data?.map((todo) => (
+          { todosQuery.data?.map((todo) => (
             <Todo
               key={todo.id}
               edit={todo.edit ?? false}

@@ -12,7 +12,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
-import { ErrorIcon } from 'react-hot-toast'
+import { CheckmarkIcon, ErrorIcon, LoaderIcon } from 'react-hot-toast'
+import { HiOutlineLightBulb } from 'react-icons/hi'
+import { PasswordTooltip } from './PasswordTooltip'
 
 const is_authenticated = false
 
@@ -179,19 +181,156 @@ interface SignInDialogProps {
   children?: React.ReactNode
 }
 
-const registerSchema = z.object({
-  username: z
-    .string()
-    .min(4, 'Usernames must be between 4 and 25 characters')
-    .max(25, 'Usernames must be between 4 and 25 characters'),
-  email: z.string().email('Please enter a valid email').min(1, 'Please enter a valid email'),
-  password: z
-    .string()
-    .min(6, 'Passwords must be at least 6 characters long')
-    .max(32, 'Passwords must be shorter than 32 characters'),
-})
+const registerSchema = z
+  .object({
+    username: z
+      .string()
+      .min(4, 'Usernames must be between 4 and 25 characters')
+      .max(25, 'Usernames must be between 4 and 25 characters'),
+    email: z.string().email('Please enter a valid email').min(1, 'Please enter a valid email'),
+    password: z
+      .string()
+      .min(6, 'Passwords must be at least 6 characters long')
+      .max(32, 'Passwords must be shorter than 32 characters'),
+    confirmPassword: z.string().min(1, 'Passwords do not match. Please try again'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match. Please try again',
+    path: ['confirmPassword'],
+  })
 
 type FormData = z.infer<typeof registerSchema>
+
+const useUsernameFieldValidation = () => {
+  const { watch, formState, clearErrors, setError } = useFormContext()
+  const username = watch('username')
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success'>('idle')
+
+  React.useEffect(() => {
+    if (!username) {
+      setStatus('idle')
+      return
+    }
+
+    const usernameError = formState.errors['username']
+    if (usernameError?.type === 'custom') {
+      clearErrors('username')
+    }
+
+    setStatus('loading')
+    const timeoutId = setTimeout(async () => {
+      const response = await fetch(`http://localhost:3333/users/${username}`)
+      const data = await response.json()
+      if (data.username) {
+        setError('username', { type: 'custom', message: 'This username is unavailable' })
+        setStatus('idle')
+        return
+      }
+      setStatus('success')
+    }, 500)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [clearErrors, formState.errors, setError, username])
+  return status
+}
+
+type SignInFormProps = {
+  onSubmit?: (event: React.FormEvent) => void
+}
+const SignInForm = ({ onSubmit }: SignInFormProps) => {
+  const { watch } = useFormContext()
+  const password = watch('password')
+  const usernameStatus = useUsernameFieldValidation()
+  const uppercaseRegex = new RegExp('[A-Z]')
+  const numberRegex = new RegExp('[0-9]')
+  const specialCharactersRegex = new RegExp(/[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/)
+  const hasUppercaseLetters = uppercaseRegex.test(password) ? 25 : 0
+  const hasNumber = numberRegex.test(password) ? 25 : 0
+  const hasSpecialCharacters = specialCharactersRegex.test(password) ? 25 : 0
+  const hasAtLeastEightCharacters = password ? (password.length >= 8 ? 25 : 0) : 0
+
+  const getBackgroundColor = () => {
+    let validationChecks = 0
+    if (hasUppercaseLetters) validationChecks += 1
+    if (hasNumber) validationChecks += 1
+    if (hasSpecialCharacters) validationChecks += 1
+    if (hasAtLeastEightCharacters) validationChecks += 1
+
+    switch (validationChecks) {
+      case 1: {
+        return 'bg-orange-400'
+      }
+      case 2: {
+        return 'bg-yellow-400'
+      }
+      case 3: {
+        return 'bg-blue-400'
+      }
+      case 4: {
+        return 'bg-green-400'
+      }
+    }
+  }
+
+  const translateX =
+    hasUppercaseLetters + hasNumber + hasSpecialCharacters + hasAtLeastEightCharacters
+
+  return (
+    <form aria-labelledby="create-account" onSubmit={onSubmit} noValidate>
+      <fieldset>
+        <legend id="create-account" className="sr-only">
+          Create an account
+        </legend>
+
+        <div className="px-5 py-5 flex flex-col gap-5">
+          <Input label="Username" name="username" autoComplete="username" status={usernameStatus} />
+
+          <Input type="email" label="Email" name="email" autoComplete="email" />
+
+          <div>
+            <Input type="password" label="Password" name="password" autoComplete="new-password" />
+            {!!password && (
+              <motion.div
+                className="flex items-center gap-2 mt-2"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <PasswordTooltip>
+                  <HiOutlineLightBulb aria-hidden className="flex-shrink-0 w-[18px] h-[18px]" />
+                </PasswordTooltip>
+
+                <div className="overflow-hidden w-full rounded-full flex">
+                  <motion.div
+                    className={clsx(
+                      "w-full h-1 rounded-full relative after:content-['Strong']",
+                      translateX === 0 ? 'opacity-0' : 'opacity-100',
+                      getBackgroundColor()
+                    )}
+                    initial={{ x: '-100%' }}
+                    animate={{ x: `-${100 - translateX}%` }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          <Input type="password" label="Confirm password" name="confirmPassword" />
+        </div>
+
+        <div className="border-t border-t-gray-700 px-5 py-2 flex justify-end items-center gap-3">
+          <Dialog.Close className="bg-gray-800 hover:bg-gray-750 text-white hover:text-gray-100 shadow-sm border border-gray-700 px-5 py-2 rounded-md text-sm font-medium">
+            Cancel
+          </Dialog.Close>
+          <button className="bg-pink-600 hover:bg-pink-700 text-white shadow-sm border border-pink-700 hover:border-pink-800 px-5 py-2 rounded-md text-sm font-medium">
+            Create account
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  )
+}
 
 const SignInDialog = ({ children }: SignInDialogProps) => {
   const methods = useForm<FormData>({ resolver: zodResolver(registerSchema) })
@@ -215,35 +354,7 @@ const SignInDialog = ({ children }: SignInDialogProps) => {
           </div>
 
           <FormProvider {...methods}>
-            <form aria-labelledby="create-account" onSubmit={onSubmit} noValidate>
-              <fieldset>
-                <legend id="create-account" className="sr-only">
-                  Create an account
-                </legend>
-
-                <div className="px-5 py-5 flex flex-col gap-5">
-                  <Input label="Username" name="username" autoComplete="username" />
-
-                  <Input type="email" label="Email" name="email" autoComplete="email" />
-
-                  <Input
-                    type="password"
-                    label="Password"
-                    name="password"
-                    autoComplete="new-password"
-                  />
-                </div>
-
-                <div className="border-t border-t-gray-700 px-5 py-2 flex justify-end items-center gap-3">
-                  <Dialog.Close className="bg-gray-800 hover:bg-gray-750 text-white hover:text-gray-100 shadow-sm border border-gray-700 px-5 py-2 rounded-md text-sm font-medium">
-                    Cancel
-                  </Dialog.Close>
-                  <button className="bg-pink-600 hover:bg-pink-700 text-white shadow-sm border border-pink-700 hover:border-pink-800 px-5 py-2 rounded-md text-sm font-medium">
-                    Create account
-                  </button>
-                </div>
-              </fieldset>
-            </form>
+            <SignInForm onSubmit={onSubmit} />
           </FormProvider>
         </Dialog.Content>
       </Dialog.Portal>
@@ -256,9 +367,10 @@ type NativeInputProps = React.ComponentPropsWithRef<'input'>
 type InputProps = NativeInputProps & {
   label: string
   name: keyof FormData
+  status?: 'idle' | 'loading' | 'success'
 }
 
-const Input = ({ name, label, ...props }: InputProps) => {
+const Input = ({ name, label, status, ...props }: InputProps) => {
   const {
     register,
     formState: { errors },
@@ -267,11 +379,18 @@ const Input = ({ name, label, ...props }: InputProps) => {
   const error = errors[name]
   const hasError = !!error
 
+  const isLoading = status === 'loading'
+  const isSuccess = status === 'success'
+
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={name} className="text-sm select-none flex justify-between items-center">
         {label}
-        {hasError && <ErrorIcon className="w-4 h-4 before:w-[10px] after:w-[10px] before:left-[3px] before:bottom-[7px] after:left-[3px] after:bottom-[7px]" />}
+        {isLoading && <LoaderIcon />}
+        {!isLoading && hasError && (
+          <ErrorIcon className="w-4 h-4 bg-red-500 before:w-[10px] after:w-[10px] before:left-[3px] before:bottom-[7px] after:left-[3px] after:bottom-[7px]" />
+        )}
+        {isSuccess && <CheckmarkIcon />}
       </label>
 
       <input

@@ -43,9 +43,14 @@ module.exports = {
             transform: 'translateX(0)',
           },
         },
+        slideDownAndFade: {
+          '0%': { opacity: 0, transform: 'translateY(-4px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
       },
       animation: {
         slideLeft: 'slideLeft 250ms both ease-in',
+        slideDownAndFade: 'slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
         'spin-slow': 'spin 3s linear infinite',
       },
     },

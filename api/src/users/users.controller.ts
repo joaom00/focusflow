@@ -18,6 +18,6 @@ export class UsersController {
     if (user) {
       return exclude(user, 'password')
     }
-    return user
+    return {}
   }
 }
