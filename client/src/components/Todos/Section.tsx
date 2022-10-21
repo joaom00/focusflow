@@ -51,7 +51,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
           </div>
           <Collapsible.Trigger asChild>
             <MotionIconButton
-              aria-label=''
+              aria-label=""
               initial={false}
               animate={{ rotateX: open ? 180 : 0 }}
               transition={{ duration: 0.2 }}

@@ -21,7 +21,10 @@ export const Todos = () => {
   const scrollViewportRef = React.useRef<HTMLDivElement>(null)
 
   return (
-    <div className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-none">
+    <div
+      id="task-sidebar"
+      className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-none"
+    >
       <header className="border-b border-b-gray-700 w-full text-center py-4 px-3 flex items-center justify-between">
         <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">To-do list</p>
         <div className="flex items-center gap-0.5">

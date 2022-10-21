@@ -6,12 +6,10 @@ export interface TaskStore {
   id: string
   value: string
   status: 'TODO' | 'DONE'
-  openMenu: boolean
   edit: boolean
   position: string
   setValue: (value: string) => void
   setEdit: (edit: boolean) => void
-  setMenu: (open: boolean) => void
   generateTaskWithPositionBelow: (tasks: Task[]) => Task
   insertTaskBelow: (tasks: Task[] | undefined) => Task[] | undefined
   duplicateTask: (task: Task) => (tasks: Task[] | undefined) => Task[] | undefined
@@ -23,10 +21,9 @@ type InitialTaskStore = Pick<TaskStore, 'id' | 'edit' | 'value' | 'status' | 'po
 export function createTaskStore(initialStore: InitialTaskStore) {
   return createStore<TaskStore>()((set, get) => ({
     ...initialStore,
-    openMenu: false,
+    dropdownMenuOpen: false,
     setValue: (value) => set((state) => ({ ...state, value })),
     setEdit: (edit) => set((state) => ({ ...state, edit })),
-    setMenu: (menuOpen) => set((state) => ({ ...state, menuOpen })),
     generateTaskWithPositionBelow: (currentTasks) => {
       const currentId = get().id
       const currentPosition = get().position

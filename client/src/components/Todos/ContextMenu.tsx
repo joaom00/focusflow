@@ -1,25 +1,24 @@
 import React from 'react'
-import * as ContextMenu from '@radix-ui/react-context-menu'
+import * as PrimitiveContextMenu from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
 import { useTask } from './Todo'
 import { Task } from './Todos'
-import {  useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import shallow from 'zustand/shallow'
 import toast from 'react-hot-toast'
 import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
 
-interface MenuProps {
+type MenuProps = {
   children: React.ReactNode
 }
 
-export const Menu = ({ children }: MenuProps) => {
+export const ContextMenu = ({ children }: MenuProps) => {
   const {
     id,
     value,
     status,
     setEdit,
-    setMenu,
     generateTaskWithPositionBelow,
     insertTaskBelow,
     duplicateTask,
@@ -30,7 +29,6 @@ export const Menu = ({ children }: MenuProps) => {
       value: state.value,
       status: state.status,
       setEdit: state.setEdit,
-      setMenu: state.setMenu,
       generateTaskWithPositionBelow: state.generateTaskWithPositionBelow,
       insertTaskBelow: state.insertTaskBelow,
       duplicateTask: state.duplicateTask,
@@ -83,17 +81,16 @@ export const Menu = ({ children }: MenuProps) => {
   }
 
   return (
-    <ContextMenu.Root onOpenChange={setMenu}>
-      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
-      <ContextMenu.Portal>
-        <ContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
+    <PrimitiveContextMenu.Root>
+      <PrimitiveContextMenu.Trigger asChild>{children}</PrimitiveContextMenu.Trigger>
+        <PrimitiveContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
           <MenuItem onSelect={onCopy}>
             <CopyIcon />
             Copy task
             <RightSLot>Ctrl+C</RightSLot>
           </MenuItem>
 
-          <ContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
+          <PrimitiveContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
 
           <MenuItem onSelect={onInsertTaskBelow}>
             <PlusIcon />
@@ -113,25 +110,24 @@ export const Menu = ({ children }: MenuProps) => {
             <RightSLot>Enter</RightSLot>
           </MenuItem>
 
-          <ContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
+          <PrimitiveContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
 
           <MenuItem onSelect={onDelete}>
             <TrashIcon />
             Delete
             <RightSLot>Delete</RightSLot>
           </MenuItem>
-        </ContextMenu.Content>
-      </ContextMenu.Portal>
-    </ContextMenu.Root>
+        </PrimitiveContextMenu.Content>
+    </PrimitiveContextMenu.Root>
   )
 }
 
-interface MenuItemProps {
+type MenuItemProps = {
   children?: React.ReactNode
   onSelect?: (event: Event) => void
 }
 
-const MotionContextMenuItem = motion(ContextMenu.Item)
+const MotionContextMenuItem = motion(PrimitiveContextMenu.Item)
 const MenuItem = ({ children, onSelect }: MenuItemProps) => {
   const [hovering, setHovering] = React.useState(false)
 

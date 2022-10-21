@@ -11,14 +11,15 @@ import { createTaskStore, type TaskStore } from '@/stores'
 import { createStoreContext } from '@/lib/createContex'
 
 import { CheckboxTodo } from './CheckboxTodo'
-import { Menu } from './Menu'
+import { ContextMenu } from './ContextMenu'
 import { type Task as TTask } from './Todos'
 import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries/todo'
 import { IconButton } from '../IconButton'
+import { DropdownMenu } from './DropdownMenu'
 
 export const [TaskProvider, useTask] = createStoreContext<TaskStore>('TaskStore')
 
-type TaskProps =  {
+type TaskProps = {
   id: string
   value: string
   edit: boolean
@@ -26,6 +27,7 @@ type TaskProps =  {
   position: string
 }
 
+// TODO: control show/hide of todo icons with react events (not control with hover)
 export const Task = (props: TaskProps) => {
   return (
     <TaskProvider store={createTaskStore(props)}>
@@ -42,7 +44,6 @@ const TaskImpl = () => {
     value,
     status,
     setValue,
-    onOpenMenuChange,
     edit,
     position,
     setEdit,
@@ -56,7 +57,6 @@ const TaskImpl = () => {
       value: state.value,
       status: state.status,
       setValue: state.setValue,
-      onOpenMenuChange: state.setMenu,
       edit: state.edit,
       position: state.position,
       setEdit: state.setEdit,
@@ -73,6 +73,7 @@ const TaskImpl = () => {
 
   const checkboxId = React.useId()
   const [hovering, setHovering] = React.useState(false)
+  const [openDropdownMenu, setOpenDropdownMenu] = React.useState(false)
   const prevValueRef = React.useRef(value)
   const taskElRef = React.useRef<HTMLLIElement>(null)
 
@@ -208,7 +209,7 @@ const TaskImpl = () => {
   return (
     <motion.li
       ref={taskElRef}
-      className="border-t border-t-gray-700 select-none focus:bg-gray-750"
+      className={clsx('border-t border-t-gray-700 focus:bg-gray-750')}
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{
@@ -218,7 +219,7 @@ const TaskImpl = () => {
       }}
       onKeyDown={onTaskKeyDown}
     >
-      <Menu>
+      <ContextMenu>
         <motion.div
           onHoverStart={() => setHovering(true)}
           onHoverEnd={() => setHovering(false)}
@@ -234,13 +235,17 @@ const TaskImpl = () => {
             },
           }}
           className={clsx(
-            'group hover:bg-gray-750 min-h-[36px] h-full grid relative',
-            edit ? 'pointer-events-none' : 'pointer-events-auto'
+            'group hover:bg-gray-750 min-h-[36px] h-full grid relative'
           )}
         >
           <CheckboxTodo id={checkboxId} />
 
-          <div className="hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex">
+          <div
+            className={clsx(
+              'hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex',
+              openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
+            )}
+          >
             <IconButton
               aria-label="Edit task"
               size="small"
@@ -249,14 +254,11 @@ const TaskImpl = () => {
             >
               <Pencil1Icon aria-hidden />
             </IconButton>
-            <IconButton
-              aria-label="Open task options"
-              size="small"
-              className="hover:bg-gray-800"
-              onClick={() => onOpenMenuChange(true)}
-            >
-              <DotsHorizontalIcon aria-hidden />
-            </IconButton>
+            <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
+              <IconButton aria-label="Open task options" size="small" className="hover:bg-gray-800">
+                <DotsHorizontalIcon aria-hidden />
+              </IconButton>
+            </DropdownMenu>
           </div>
 
           {edit ? (
@@ -287,6 +289,9 @@ const TaskImpl = () => {
             <label
               htmlFor={checkboxId}
               className="self-baseline pl-10 pr-5 text-sm break-all mt-[9px] w-fit"
+              onMouseDown={(event) => {
+                if (event.detail > 1) event.preventDefault()
+              }}
               style={{
                 gridColumn: '1/2',
                 gridRow: '1/2',
@@ -300,7 +305,7 @@ const TaskImpl = () => {
             </label>
           )}
         </motion.div>
-      </Menu>
+      </ContextMenu>
     </motion.li>
   )
 }
