@@ -120,6 +120,7 @@ export const AudioPlayer = () => {
           onPointerUp={() => setPressing(false)}
         >
           <motion.div
+            initial={false}
             animate={pressing ? 'pressing' : 'unpressed'}
             variants={{
               pressing: {

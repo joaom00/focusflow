@@ -1,177 +1,23 @@
-import cuid from 'cuid'
-import { Section } from './Section'
-import { Todo } from './Todo'
-import { SpeakerLoudIcon } from '@radix-ui/react-icons'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ScrollArea } from '../ScrollArea'
 import React from 'react'
+import { SpeakerLoudIcon } from '@radix-ui/react-icons'
 
-export interface Todo {
+import { useTasksQuery } from '@/queries/todo'
+
+import { Section } from './Section'
+import { ScrollArea } from '../ScrollArea'
+import { Task } from './Todo'
+
+export type Task = {
   id: string
   status: 'TODO' | 'DONE'
   edit: boolean
   content: string
-  position: number
+  position: string
 }
-
-export const useCreateTodoMutation = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation(
-    async ({
-      id,
-      content,
-      position,
-    }: {
-      id: string
-      content: string
-      position?: number
-      shoudlInsertTaskBelow?: boolean
-    }) => {
-      await fetch('http://localhost:3333/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, content, position }),
-      })
-    },
-    {
-      onMutate: async ({ id, content, shoudlInsertTaskBelow = true }) => {
-        await queryClient.cancelQueries(['todos'])
-        const previousTasks = queryClient.getQueryData<Todo[]>(['todos'])
-
-        queryClient.setQueryData<Todo[]>(['todos'], (currentTasks) => {
-          if (currentTasks) {
-            const currentFocusedTask = currentTasks.find((task) => task.id === id)
-            const currentFocusedTaskIndex = currentTasks.findIndex((task) => task.id === id)
-            if (currentFocusedTask) {
-              currentFocusedTask.content = content
-              currentFocusedTask.edit = false
-              if (shoudlInsertTaskBelow) {
-                const nextPosition = currentFocusedTask.position + 1
-                const newTask: Todo = {
-                  id: cuid(),
-                  edit: true,
-                  status: 'TODO',
-                  content: '',
-                  position: nextPosition,
-                }
-                const updatedTasksPosition = currentTasks.map((task) => {
-                  if (task.position >= nextPosition) {
-                    return { ...task, position: task.position + 1 }
-                  }
-                  return task
-                })
-                return [
-                  ...updatedTasksPosition.slice(0, currentFocusedTaskIndex),
-                  currentFocusedTask,
-                  newTask,
-                  ...updatedTasksPosition.slice(currentFocusedTaskIndex + 1),
-                ]
-              }
-
-              return [
-                ...currentTasks.slice(0, currentFocusedTaskIndex),
-                currentFocusedTask,
-                ...currentTasks.slice(currentFocusedTaskIndex + 1),
-              ]
-            }
-          }
-          return undefined
-        })
-
-        return { previousTasks }
-      },
-    }
-  )
-}
-
-export const useUpdateTodoMutation = () => {
-  const queryClient = useQueryClient()
-  return useMutation(
-    async ({
-      id,
-      content,
-      position,
-    }: {
-      id: string
-      content: string
-      position: number
-      shouldInsertTaskBelow?: boolean
-    }) => {
-      await fetch(`http://localhost:3333/todos/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, position }),
-      })
-    },
-    {
-      onMutate: async ({ id, content, shouldInsertTaskBelow = false }) => {
-        await queryClient.cancelQueries(['todos'])
-
-        const previousTasks = queryClient.getQueryData(['todos'])
-
-        queryClient.setQueryData<Todo[]>(['todos'], (currentTasks) => {
-          if (currentTasks) {
-            const currentFocusedTask = currentTasks.find((task) => task.id === id)
-            const currentFocusedTaskIndex = currentTasks.findIndex((task) => task.id === id)
-            if (currentFocusedTask) {
-              currentFocusedTask.content = content
-              currentFocusedTask.edit = false
-              if (shouldInsertTaskBelow) {
-                const nextPosition = currentFocusedTask.position + 1
-                const newTask: Todo = {
-                  id: cuid(),
-                  edit: true,
-                  status: 'TODO',
-                  content: '',
-                  position: nextPosition,
-                }
-                const updatedTasksPosition = currentTasks.map((task) => {
-                  if (task.position >= nextPosition) {
-                    return { ...task, position: task.position + 1 }
-                  }
-                  return task
-                })
-                return [
-                  ...updatedTasksPosition.slice(0, currentFocusedTaskIndex),
-                  currentFocusedTask,
-                  newTask,
-                  ...updatedTasksPosition.slice(currentFocusedTaskIndex + 1),
-                ]
-              }
-
-              return [
-                ...currentTasks.slice(0, currentFocusedTaskIndex),
-                currentFocusedTask,
-                ...currentTasks.slice(currentFocusedTaskIndex + 1),
-              ]
-            }
-          }
-          return undefined
-        })
-
-        return { previousTasks }
-      },
-    }
-  )
-}
-
-const THREE_MINUTES = 1000 * 60 * 3
 
 export const Todos = () => {
-  /* const todosQuery = useQuery<Todo[]>( */
-  /*   ['todos'], */
-  /*   async () => { */
-  /*     const response = await fetch('http://localhost:3333/todos') */
-  /*     const todos = await response.json() */
-  /*     return todos */
-  /*   }, */
-  /*   { staleTime: THREE_MINUTES } */
-  /* ) */
+  const tasksQuery = useTasksQuery()
 
-  const todosQuery = {
-    data: [] as Todo[]
-  }
   const scrollViewportRef = React.useRef<HTMLDivElement>(null)
 
   return (
@@ -184,10 +30,11 @@ export const Todos = () => {
           </button>
         </div>
       </header>
+
       <ScrollArea ref={scrollViewportRef}>
-        <Section name="To do" tasksTotal={todosQuery.data?.length}>
-          { todosQuery.data?.map((todo) => (
-            <Todo
+        <Section name="To do" tasksTotal={tasksQuery.data?.length}>
+          {tasksQuery.data?.map((todo) => (
+            <Task
               key={todo.id}
               edit={todo.edit ?? false}
               id={todo.id}

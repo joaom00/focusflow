@@ -28,7 +28,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium">{name}</p>
             <motion.span
-              className="w-4 h-4 leading-none flex justify-center items-center rounded-full bg-pink-400 text-xs font-medium"
+              className="w-5 h-5 leading-none inline-flex justify-center items-center rounded-full bg-pink-400 text-xs font-medium"
               initial={false}
               animate={open ? 'open' : 'closed'}
               variants={{

@@ -7,56 +7,59 @@ import { motion } from 'framer-motion'
 import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 
-import { createTodoStore, type TodoStore } from '@/stores'
+import { createTaskStore, type TaskStore } from '@/stores'
 import { createStoreContext } from '@/lib/createContex'
 
 import { CheckboxTodo } from './CheckboxTodo'
 import { Menu } from './Menu'
-import { type Todo as TTodo, useCreateTodoMutation, useUpdateTodoMutation } from './Todos'
+import { type Task as TTask } from './Todos'
+import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries/todo'
 
-// TODO: Controlar edit localmente pelo componente ou pelo cache do react query
+export const [TaskProvider, useTask] = createStoreContext<TaskStore>('TaskStore')
 
-export const [TodoProvider, useTodo] = createStoreContext<TodoStore>('TodoStore')
-
-interface TodoProps {
+interface TaskProps {
   id: string
   value: string
   edit: boolean
-  status: 'TODO' | 'DONE' | 'INPROGRESS'
-  position: number
+  status: 'TODO' | 'DONE'
+  position: string
 }
 
-export const Todo = (props: TodoProps) => {
+export const Task = (props: TaskProps) => {
   return (
-    <TodoProvider store={createTodoStore(props)}>
-      <TodoImpl />
-    </TodoProvider>
+    <TaskProvider store={createTaskStore(props)}>
+      <TaskImpl />
+    </TaskProvider>
   )
 }
 
-const TodoImpl = () => {
+const TaskImpl = () => {
   const queryClient = useQueryClient()
 
   const {
     id,
     value,
+    status,
     setValue,
     onOpenMenuChange,
     edit,
     position,
     setEdit,
+    generateTaskWithPositionBelow,
     insertTaskBelow,
     duplicateTask,
     removeTask,
-  } = useTodo(
+  } = useTask(
     (state) => ({
       id: state.id,
       value: state.value,
+      status: state.status,
       setValue: state.setValue,
       onOpenMenuChange: state.setMenu,
       edit: state.edit,
       position: state.position,
       setEdit: state.setEdit,
+      generateTaskWithPositionBelow: state.generateTaskWithPositionBelow,
       insertTaskBelow: state.insertTaskBelow,
       duplicateTask: state.duplicateTask,
       removeTask: state.removeTask,
@@ -64,17 +67,17 @@ const TodoImpl = () => {
     shallow
   )
 
-  const createTodo = useCreateTodoMutation()
-  const updateTodo = useUpdateTodoMutation()
+  const createTask = useCreateTaskMutation()
+  const updateTask = useUpdateTaskMutation()
 
   const checkboxId = React.useId()
   const [hovering, setHovering] = React.useState(false)
   const prevValueRef = React.useRef(value)
-  const todoElRef = React.useRef<HTMLLIElement>(null)
+  const taskElRef = React.useRef<HTMLLIElement>(null)
 
   const onBlur = () => {
     if (!value && !prevValueRef.current) {
-      return queryClient.setQueryData(['todos'], removeTask)
+      return queryClient.setQueryData(['tasks'], removeTask)
     }
 
     if (!value && prevValueRef.current) {
@@ -84,15 +87,15 @@ const TodoImpl = () => {
     }
 
     setEdit(false)
-    const isCreatingNewTodo = prevValueRef.current === ''
-    if (isCreatingNewTodo) {
-      createTodo.mutate({ id, content: value, position, shoudlInsertTaskBelow: false })
+    const isCreatingNewTask = prevValueRef.current === ''
+    if (isCreatingNewTask) {
+      createTask.mutate({ id, content: value, position, insertTaskBelow: false })
     }
 
     const hasValueChanged = prevValueRef.current !== value
-    const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
-    if (isUpdatingTodo) {
-      updateTodo.mutate({ id, content: value, position })
+    const isUpdatingTask = !isCreatingNewTask && hasValueChanged
+    if (isUpdatingTask) {
+      updateTask.mutate({ id, content: value })
     }
 
     prevValueRef.current = value
@@ -103,22 +106,22 @@ const TodoImpl = () => {
       case 'Enter': {
         event.preventDefault()
         if (!value) {
-          return queryClient.setQueryData(['todos'], removeTask)
+          return queryClient.setQueryData(['tasks'], removeTask)
         }
 
-        const isCreatingNewTodo = prevValueRef.current === ''
-        if (isCreatingNewTodo) {
-          createTodo.mutate({ id, content: value, position })
+        const isCreatingNewTask = prevValueRef.current === ''
+        if (isCreatingNewTask) {
+          createTask.mutate({ id, content: value, position })
         }
 
         const hasValueChanged = prevValueRef.current !== value
-        const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
-        if (isUpdatingTodo) {
-          updateTodo.mutate({ id, content: value, position, shouldInsertTaskBelow: true })
+        const isUpdatingTask = !isCreatingNewTask && hasValueChanged
+        if (isUpdatingTask) {
+          updateTask.mutate({ id, content: value,  insertTaskBelow: true })
         }
 
-        if (!isCreatingNewTodo && !hasValueChanged) {
-          queryClient.setQueryData(['todos'], insertTaskBelow)
+        if (!isCreatingNewTask && !hasValueChanged) {
+          queryClient.setQueryData(['tasks'], insertTaskBelow)
         }
 
         prevValueRef.current = value
@@ -127,13 +130,13 @@ const TodoImpl = () => {
       case 'Backspace': {
         if (!value) {
           event.preventDefault()
-          queryClient.setQueryData(['todos'], removeTask)
+          queryClient.setQueryData(['tasks'], removeTask)
         }
         break
       }
       case 'Escape': {
         if (!value && !prevValueRef.current) {
-          return queryClient.setQueryData(['todos'], removeTask)
+          return queryClient.setQueryData(['tasks'], removeTask)
         }
 
         if (!value && prevValueRef.current) {
@@ -143,15 +146,15 @@ const TodoImpl = () => {
         }
 
         setEdit(false)
-        const isCreatingNewTodo = prevValueRef.current === ''
-        if (isCreatingNewTodo) {
-          createTodo.mutate({ id, content: value, shoudlInsertTaskBelow: false })
+        const isCreatingNewTask = prevValueRef.current === ''
+        if (isCreatingNewTask) {
+          createTask.mutate({ id, content: value, position, insertTaskBelow: false })
         }
 
         const hasValueChanged = prevValueRef.current !== value
-        const isUpdatingTodo = !isCreatingNewTodo && hasValueChanged
-        if (isUpdatingTodo) {
-          updateTodo.mutate({ id, content: value, position })
+        const isUpdatingTask = !isCreatingNewTask && hasValueChanged
+        if (isUpdatingTask) {
+          updateTask.mutate({ id, content: value })
         }
 
         prevValueRef.current = value
@@ -160,12 +163,12 @@ const TodoImpl = () => {
     }
   }
 
-  const onTodoKeyDown = (event: React.KeyboardEvent) => {
+  const onTaskKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
         if (event.altKey) {
-          queryClient.setQueryData<TTodo[]>(['todos'], insertTaskBelow)
+          queryClient.setQueryData<TTask[]>(['tasks'], insertTaskBelow)
           break
         }
         setEdit(true)
@@ -174,7 +177,14 @@ const TodoImpl = () => {
       case 'd': {
         if (event.ctrlKey) {
           event.preventDefault()
-          queryClient.setQueryData<TTodo[]>(['todos'], duplicateTask)
+          const currentTasks = queryClient.getQueryData<TTask[]>(['tasks'])
+          if (!currentTasks) return
+
+          const duplicatedTask = generateTaskWithPositionBelow(currentTasks)
+          duplicatedTask.edit = false
+          duplicatedTask.status = status
+          duplicatedTask.content = value
+          queryClient.setQueryData<TTask[]>(['tasks'], duplicateTask(duplicatedTask))
           break
         }
         break
@@ -196,7 +206,7 @@ const TodoImpl = () => {
 
   return (
     <motion.li
-      ref={todoElRef}
+      ref={taskElRef}
       className="border-t border-t-gray-700 select-none focus:bg-gray-750"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
@@ -205,7 +215,7 @@ const TodoImpl = () => {
         height: 0,
         transition: { duration: 0.2 },
       }}
-      onKeyDown={onTodoKeyDown}
+      onKeyDown={onTaskKeyDown}
     >
       <Menu>
         <motion.div

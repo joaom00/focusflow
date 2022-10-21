@@ -47,11 +47,21 @@ module.exports = {
           '0%': { opacity: 0, transform: 'translateY(-4px)' },
           '100%': { opacity: 1, transform: 'translateY(0)' },
         },
+        overlayShow: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        contentShow: {
+          '0%': { opacity: 0, transform: 'translate(-50%, -48%) scale(.96)' },
+          '100%': { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+        },
       },
       animation: {
+        'spin-slow': 'spin 3s linear infinite',
         slideLeft: 'slideLeft 250ms both ease-in',
         slideDownAndFade: 'slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
-        'spin-slow': 'spin 3s linear infinite',
+        overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
+        contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },
@@ -60,6 +70,7 @@ module.exports = {
       addVariant('selected', '&[aria-selected="true"]')
       addVariant('radix-checked', '&[data-state="checked"]')
       addVariant('radix-highlighted', '&[data-highlighted]')
+      addVariant('radix-tab-active', '&[data-state="active"]')
       addVariant('command-heading', '& [cmdk-group-heading]')
     }),
   ],

@@ -1,7 +1,7 @@
 import React from 'react'
 import { PlusIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
-import type { Todo } from './Todos'
+import type { Task } from './Todos'
 import cuid from 'cuid'
 
 export const AddTodoButton = () => {
@@ -9,17 +9,21 @@ export const AddTodoButton = () => {
   const ref = React.useRef<HTMLDivElement>(null)
 
   const onAddTodo = () => {
-    const currentTodos = queryClient.getQueryData<Todo[]>(['todos'])
-    const newTodo: Todo = {
-      id: cuid(),
-      status: 'TODO',
-      edit: true,
-      content: '',
-      position: currentTodos ? currentTodos.length + 1 : 1,
-    }
-    queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
-      currentTodos ? [...currentTodos, newTodo] : undefined
-    )
+    queryClient.setQueryData<Task[]>(['tasks'], (currentTodos) => {
+      if (currentTodos?.length) {
+        const lastTodo = currentTodos[currentTodos.length - 1]
+        const position = parseInt(lastTodo.position) + 1
+        const newTodo: Task = {
+          id: cuid(),
+          status: 'TODO',
+          edit: true,
+          content: '',
+          position: String(position),
+        }
+        return [...currentTodos, newTodo]
+      }
+      return [{ id: cuid(), status: 'TODO', edit: true, content: '', position: '1' }]
+    })
     setTimeout(() => {
       if (ref.current) {
         ref.current.scrollIntoView({ block: 'end', behavior: 'smooth' })
@@ -42,4 +46,3 @@ export const AddTodoButton = () => {
     </div>
   )
 }
-

@@ -4,8 +4,8 @@ import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
 import shallow from 'zustand/shallow'
 import { CheckIcon } from '../../icons/CheckIcon'
-import { useTodo } from './Todo'
-import { Todo } from './Todos'
+import { useTask } from './Todo'
+import { Task } from './Todos'
 
 interface CheckboxTodoProps {
   id: string
@@ -14,7 +14,7 @@ interface CheckboxTodoProps {
 const MotionCheckboxRoot = motion(Checkbox.Root)
 
 export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
-  const { id, status, edit } = useTodo(
+  const { id, status, edit } = useTask(
     (state) => ({ id: state.id, status: state.status, edit: state.edit }),
     shallow
   )
@@ -32,7 +32,7 @@ export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
       onMutate: async () => {
         await queryClient.cancelQueries(['todos'])
 
-        queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
+        queryClient.setQueryData<Task[]>(['todos'], (currentTodos) =>
           currentTodos
             ? currentTodos.map((todo) =>
                 todo.id === id

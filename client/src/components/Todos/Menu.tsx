@@ -2,23 +2,36 @@ import React from 'react'
 import * as ContextMenu from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
-import { useTodo } from './Todo'
-import type { Todo } from './Todos'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTask } from './Todo'
+import { Task } from './Todos'
+import {  useQueryClient } from '@tanstack/react-query'
 import shallow from 'zustand/shallow'
 import toast from 'react-hot-toast'
+import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
 
 interface MenuProps {
   children: React.ReactNode
 }
 
 export const Menu = ({ children }: MenuProps) => {
-  const { id, value, setEdit, setMenu, insertTaskBelow, duplicateTask } = useTodo(
+  const {
+    id,
+    value,
+    status,
+    setEdit,
+    setMenu,
+    generateTaskWithPositionBelow,
+    insertTaskBelow,
+    duplicateTask,
+  } = useTask(
     (state) => ({
       id: state.id,
+      position: state.position,
       value: state.value,
+      status: state.status,
       setEdit: state.setEdit,
       setMenu: state.setMenu,
+      generateTaskWithPositionBelow: state.generateTaskWithPositionBelow,
       insertTaskBelow: state.insertTaskBelow,
       duplicateTask: state.duplicateTask,
     }),
@@ -26,27 +39,8 @@ export const Menu = ({ children }: MenuProps) => {
   )
 
   const queryClient = useQueryClient()
-
-  const deleteTodo = useMutation(
-    async (id: string) => {
-      await fetch(`http://localhost:3333/todos/${id}`, {
-        method: 'DELETE',
-      })
-    },
-    {
-      onMutate: async (id) => {
-        await queryClient.cancelQueries(['todos'])
-        const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
-        queryClient.setQueryData<Todo[]>(['todos'], (currentTodos) =>
-          currentTodos ? currentTodos.filter((todo) => todo.id !== id) : undefined
-        )
-        return { previousTodos }
-      },
-      onError: (_err, _id, context) => {
-        queryClient.setQueryData(['todos'], context?.previousTodos)
-      },
-    }
-  )
+  const createTask = useCreateTaskMutation()
+  const deleteTask = useDeleteTaskMutation()
 
   const onCopy = () => {
     window.navigator.clipboard.writeText(value)
@@ -60,21 +54,28 @@ export const Menu = ({ children }: MenuProps) => {
   }
 
   const onInsertTaskBelow = () => {
-    // TODO: add new task to db
     setTimeout(() => {
-      queryClient.setQueryData<Todo[]>(['todos'], insertTaskBelow)
+      queryClient.setQueryData<Task[]>(['tasks'], insertTaskBelow)
     }, 1)
   }
 
   const onDuplicateTask = () => {
-    // TODO: add new task to db
+    const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
+    if (!currentTasks) return
+
+    const duplicatedTask = generateTaskWithPositionBelow(currentTasks)
+    duplicatedTask.edit = false
+    duplicatedTask.status = status
+    duplicatedTask.content = value
+
     setTimeout(() => {
-      queryClient.setQueryData<Todo[]>(['todos'], duplicateTask)
+      queryClient.setQueryData<Task[]>(['tasks'], duplicateTask(duplicatedTask))
+      createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
     }, 1)
   }
 
   const onDelete = () => {
-    deleteTodo.mutate(id, {
+    deleteTask.mutate(id, {
       onSuccess: () => {
         toast('Delete todo')
       },
