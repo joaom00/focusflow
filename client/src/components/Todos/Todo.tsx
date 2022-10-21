@@ -14,10 +14,11 @@ import { CheckboxTodo } from './CheckboxTodo'
 import { Menu } from './Menu'
 import { type Task as TTask } from './Todos'
 import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries/todo'
+import { IconButton } from '../IconButton'
 
 export const [TaskProvider, useTask] = createStoreContext<TaskStore>('TaskStore')
 
-interface TaskProps {
+type TaskProps =  {
   id: string
   value: string
   edit: boolean
@@ -117,7 +118,7 @@ const TaskImpl = () => {
         const hasValueChanged = prevValueRef.current !== value
         const isUpdatingTask = !isCreatingNewTask && hasValueChanged
         if (isUpdatingTask) {
-          updateTask.mutate({ id, content: value,  insertTaskBelow: true })
+          updateTask.mutate({ id, content: value, insertTaskBelow: true })
         }
 
         if (!isCreatingNewTask && !hasValueChanged) {
@@ -240,15 +241,22 @@ const TaskImpl = () => {
           <CheckboxTodo id={checkboxId} />
 
           <div className="hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex">
-            <button className="hover:bg-gray-800 p-1.5 rounded-md" onClick={() => setEdit(true)}>
-              <Pencil1Icon />
-            </button>
-            <button
-              className="hover:bg-gray-800 p-1.5 rounded-md"
+            <IconButton
+              aria-label="Edit task"
+              size="small"
+              className="hover:bg-gray-800"
+              onClick={() => setEdit(true)}
+            >
+              <Pencil1Icon aria-hidden />
+            </IconButton>
+            <IconButton
+              aria-label="Open task options"
+              size="small"
+              className="hover:bg-gray-800"
               onClick={() => onOpenMenuChange(true)}
             >
-              <DotsHorizontalIcon />
-            </button>
+              <DotsHorizontalIcon aria-hidden />
+            </IconButton>
           </div>
 
           {edit ? (

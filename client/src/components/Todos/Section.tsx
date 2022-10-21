@@ -3,12 +3,15 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { AddTodoButton } from './AddTodoButton'
+import { IconButton } from '../IconButton'
 
 interface SectionProps {
   name: string
   tasksTotal?: number
   children?: React.ReactNode
 }
+
+const MotionIconButton = motion(IconButton)
 
 export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
   ({ name, tasksTotal = 0, children }, forwardedRef) => {
@@ -47,14 +50,14 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
             </motion.span>
           </div>
           <Collapsible.Trigger asChild>
-            <motion.button
+            <MotionIconButton
+              aria-label=''
               initial={false}
               animate={{ rotateX: open ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="p-2 rounded-md hover:bg-gray-750"
             >
               <ChevronDownIcon aria-hidden />
-            </motion.button>
+            </MotionIconButton>
           </Collapsible.Trigger>
         </div>
 
