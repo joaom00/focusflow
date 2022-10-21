@@ -20,12 +20,23 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     try {
       const user = await this.userService.create(registerDto)
-      return {
+
+      const payload = {
         id: user.id,
         email: user.email,
         username: user.username,
-        created_at: user.createdAt,
-        updated_at: user.updatedAt,
+      }
+
+      const token = this.jwtService.sign(payload)
+      return {
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          created_at: user.createdAt,
+          updated_at: user.updatedAt,
+        },
       }
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -38,7 +49,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userService.findByEmail(loginDto.email)
+    const user = await this.userService.findByUsername(loginDto.username)
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
@@ -47,7 +58,7 @@ export class AuthService {
     const passwordMatches = await bcrypt.compare(loginDto.password, user.password)
 
     if (!passwordMatches) {
-      throw new UnauthorizedException('Access Denied')
+      throw new UnauthorizedException('Invalid credentials')
     }
 
     const payload = {
@@ -55,9 +66,9 @@ export class AuthService {
       email: user.email,
       username: user.username,
     }
-    const access_token = this.jwtService.sign(payload)
+    const token = this.jwtService.sign(payload)
 
-    return { access_token }
+    return { token, user: {id: user.id, username: user.username, email: user.email, created_at: user.createdAt, updated_at: user.updatedAt} }
   }
 
   async validateUser(email: string, password: string) {

@@ -101,6 +101,7 @@ importers:
       '@radix-ui/react-icons': ^1.1.1
       '@radix-ui/react-scroll-area': ^1.0.0
       '@radix-ui/react-slider': ^1.0.0
+      '@radix-ui/react-tabs': ^1.0.0
       '@radix-ui/react-tooltip': ^1.0.0
       '@tanstack/react-query': ^4.9.0
       '@tanstack/react-query-devtools': ^4.9.0
@@ -108,6 +109,7 @@ importers:
       '@types/react-dom': ^18.0.6
       '@vitejs/plugin-react': ^2.1.0
       autoprefixer: ^10.4.11
+      axios: ^1.1.3
       clsx: ^1.2.1
       cmdk: ^0.1.20
       cuid: ^2.1.8
@@ -135,9 +137,11 @@ importers:
       '@radix-ui/react-icons': registry.npmmirror.com/@radix-ui/react-icons/1.1.1_react@18.2.0
       '@radix-ui/react-scroll-area': registry.npmmirror.com/@radix-ui/react-scroll-area/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-slider': registry.npmmirror.com/@radix-ui/react-slider/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-tabs': registry.npmmirror.com/@radix-ui/react-tabs/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tooltip': registry.npmmirror.com/@radix-ui/react-tooltip/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
       '@tanstack/react-query': registry.npmmirror.com/@tanstack/react-query/4.10.3_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query-devtools': registry.npmmirror.com/@tanstack/react-query-devtools/4.11.0_vhepussragssjkevgznguhxexq
+      axios: registry.npmmirror.com/axios/1.1.3
       clsx: registry.npmmirror.com/clsx/1.2.1
       cmdk: registry.npmmirror.com/cmdk/0.1.20_rj7ozvcq3uehdlnj3cbwzbi5ce
       cuid: registry.npmmirror.com/cuid/2.1.8
@@ -2127,6 +2131,28 @@ packages:
       react: registry.npmmirror.com/react/18.2.0
     dev: false
 
+  registry.npmmirror.com/@radix-ui/react-tabs/1.0.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-oKUwEDsySVC0uuSEH7SHCVt1+ijmiDFAI9p+fHCtuZdqrRDKIFs09zp5nrmu4ggP6xqSx9lj1VSblnDH+n3IBA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@radix-ui/react-tabs/-/react-tabs-1.0.0.tgz}
+    id: registry.npmmirror.com/@radix-ui/react-tabs/1.0.0
+    name: '@radix-ui/react-tabs'
+    version: 1.0.0
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.4
+      '@radix-ui/primitive': registry.npmmirror.com/@radix-ui/primitive/1.0.0
+      '@radix-ui/react-context': registry.npmmirror.com/@radix-ui/react-context/1.0.0_react@18.2.0
+      '@radix-ui/react-direction': registry.npmmirror.com/@radix-ui/react-direction/1.0.0_react@18.2.0
+      '@radix-ui/react-id': registry.npmmirror.com/@radix-ui/react-id/1.0.0_react@18.2.0
+      '@radix-ui/react-presence': registry.npmmirror.com/@radix-ui/react-presence/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-roving-focus': registry.npmmirror.com/@radix-ui/react-roving-focus/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-controllable-state': registry.npmmirror.com/@radix-ui/react-use-controllable-state/1.0.0_react@18.2.0
+      react: registry.npmmirror.com/react/18.2.0
+      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+    dev: false
+
   registry.npmmirror.com/@radix-ui/react-tooltip/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce:
     resolution: {integrity: sha512-RB06pov+O4Npy10ei1C6fsyB9QoOjz7Ubo8Sl3qdKtLgkL9iI96925DYtH0bxx6MH6YB2FuzLU6B75qn3AQQQw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@radix-ui/react-tooltip/-/react-tooltip-1.0.0.tgz}
     id: registry.npmmirror.com/@radix-ui/react-tooltip/1.0.0
@@ -3300,7 +3326,6 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/asynckit/-/asynckit-0.4.0.tgz}
     name: asynckit
     version: 0.4.0
-    dev: true
 
   registry.npmmirror.com/autoprefixer/10.4.12_postcss@8.4.18:
     resolution: {integrity: sha512-WrCGV9/b97Pa+jtwf5UGaRjgQIg7OK3D06GnoYoZNcG1Xb8Gt3EfuKjlhh9i/VtT16g6PYjZ69jdJ2g8FxSC4Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/autoprefixer/-/autoprefixer-10.4.12.tgz}
@@ -3320,6 +3345,18 @@ packages:
       postcss: registry.npmmirror.com/postcss/8.4.18
       postcss-value-parser: registry.npmmirror.com/postcss-value-parser/4.2.0
     dev: true
+
+  registry.npmmirror.com/axios/1.1.3:
+    resolution: {integrity: sha512-00tXVRwKx/FZr/IDVFt4C+f9FYairX517WoGCL6dpOntqLkZofjhu43F/Xl44UOpqa+9sLFDrG/XAnFsUYgkDA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/axios/-/axios-1.1.3.tgz}
+    name: axios
+    version: 1.1.3
+    dependencies:
+      follow-redirects: registry.npmmirror.com/follow-redirects/1.15.2
+      form-data: registry.npmmirror.com/form-data/4.0.0
+      proxy-from-env: registry.npmmirror.com/proxy-from-env/1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   registry.npmmirror.com/babel-jest/28.1.3_@babel+core@7.19.3:
     resolution: {integrity: sha512-epUaPOEWMk3cWX0M/sPvCHHCe9fMFAa/9hXEgKP8nFfNl/jlGkE9ucq9NqkZGXLDduCJYS0UvSlPUwC0S+rH6Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/babel-jest/-/babel-jest-28.1.3.tgz}
@@ -3843,7 +3880,6 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: registry.npmmirror.com/delayed-stream/1.0.0
-    dev: true
 
   registry.npmmirror.com/command-score/0.1.2:
     resolution: {integrity: sha512-VtDvQpIJBvBatnONUsPzXYFVKQQAhuf3XTNOAsdBxCNO/QCtUUd8LSgjn0GVarBkCad6aJCZfXgrjYbl/KRr7w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/command-score/-/command-score-0.1.2.tgz}
@@ -4092,7 +4128,6 @@ packages:
     name: delayed-stream
     version: 1.0.0
     engines: {node: '>=0.4.0'}
-    dev: true
 
   registry.npmmirror.com/delegates/1.0.0:
     resolution: {integrity: sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/delegates/-/delegates-1.0.0.tgz}
@@ -5100,6 +5135,18 @@ packages:
     version: 3.2.7
     dev: true
 
+  registry.npmmirror.com/follow-redirects/1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/follow-redirects/-/follow-redirects-1.15.2.tgz}
+    name: follow-redirects
+    version: 1.15.2
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
   registry.npmmirror.com/fork-ts-checker-webpack-plugin/7.2.13_kb3egcnme7w23lfa5xodfjfhge:
     resolution: {integrity: sha512-fR3WRkOb4bQdWB/y7ssDUlVdrclvwtyCUIHCfivAoYxq9dF7XfrDKbMdZIfwJ7hxIAqkYSGeU7lLJE6xrxIBdg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-7.2.13.tgz}
     id: registry.npmmirror.com/fork-ts-checker-webpack-plugin/7.2.13
@@ -5139,7 +5186,6 @@ packages:
       asynckit: registry.npmmirror.com/asynckit/0.4.0
       combined-stream: registry.npmmirror.com/combined-stream/1.0.8
       mime-types: registry.npmmirror.com/mime-types/2.1.35
-    dev: true
 
   registry.npmmirror.com/formidable/2.0.1:
     resolution: {integrity: sha512-rjTMNbp2BpfQShhFbR3Ruk3qk2y9jKpvMW78nJgx8QKtxjDVrwbZG+wvDOmVbifHyOUOQJXxqEy6r0faRrPzTQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/formidable/-/formidable-2.0.1.tgz}
@@ -7671,6 +7717,12 @@ packages:
     dependencies:
       forwarded: registry.npmmirror.com/forwarded/0.2.0
       ipaddr.js: registry.npmmirror.com/ipaddr.js/1.9.1
+
+  registry.npmmirror.com/proxy-from-env/1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz}
+    name: proxy-from-env
+    version: 1.1.0
+    dev: false
 
   registry.npmmirror.com/pump/3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/pump/-/pump-3.0.0.tgz}
