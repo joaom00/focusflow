@@ -34,7 +34,14 @@ export const Input = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={name} className="text-sm select-none flex justify-between items-center">
+      <label
+        htmlFor={name}
+        className="text-sm flex justify-between items-center"
+        onMouseDown={(event) => {
+          // prevent text selection when double clicking label
+          if (event.detail > 1) event.preventDefault()
+        }}
+      >
         {label}
 
         {isLoading && <LoaderIcon />}
