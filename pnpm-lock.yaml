@@ -98,6 +98,7 @@ importers:
       '@radix-ui/react-collapsible': ^1.0.0
       '@radix-ui/react-context-menu': ^1.0.0
       '@radix-ui/react-dialog': ^1.0.0
+      '@radix-ui/react-dropdown-menu': ^1.0.0
       '@radix-ui/react-icons': ^1.1.1
       '@radix-ui/react-scroll-area': ^1.0.0
       '@radix-ui/react-slider': ^1.0.0
@@ -134,6 +135,7 @@ importers:
       '@radix-ui/react-collapsible': registry.npmmirror.com/@radix-ui/react-collapsible/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-context-menu': registry.npmmirror.com/@radix-ui/react-context-menu/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
       '@radix-ui/react-dialog': registry.npmmirror.com/@radix-ui/react-dialog/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
+      '@radix-ui/react-dropdown-menu': registry.npmmirror.com/@radix-ui/react-dropdown-menu/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
       '@radix-ui/react-icons': registry.npmmirror.com/@radix-ui/react-icons/1.1.1_react@18.2.0
       '@radix-ui/react-scroll-area': registry.npmmirror.com/@radix-ui/react-scroll-area/1.0.0_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-slider': registry.npmmirror.com/@radix-ui/react-slider/1.0.0_biqbaboplfbrettd7655fr4n2y
@@ -1869,6 +1871,29 @@ packages:
       '@radix-ui/react-use-escape-keydown': registry.npmmirror.com/@radix-ui/react-use-escape-keydown/1.0.0_react@18.2.0
       react: registry.npmmirror.com/react/18.2.0
       react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+    dev: false
+
+  registry.npmmirror.com/@radix-ui/react-dropdown-menu/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce:
+    resolution: {integrity: sha512-Ptben3TxPWrZLbInO7zjAK73kmjYuStsxfg6ujgt+EywJyREoibhZYnsSNqC+UiOtl4PdW/MOHhxVDtew5fouQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@radix-ui/react-dropdown-menu/-/react-dropdown-menu-1.0.0.tgz}
+    id: registry.npmmirror.com/@radix-ui/react-dropdown-menu/1.0.0
+    name: '@radix-ui/react-dropdown-menu'
+    version: 1.0.0
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.19.4
+      '@radix-ui/primitive': registry.npmmirror.com/@radix-ui/primitive/1.0.0
+      '@radix-ui/react-compose-refs': registry.npmmirror.com/@radix-ui/react-compose-refs/1.0.0_react@18.2.0
+      '@radix-ui/react-context': registry.npmmirror.com/@radix-ui/react-context/1.0.0_react@18.2.0
+      '@radix-ui/react-id': registry.npmmirror.com/@radix-ui/react-id/1.0.0_react@18.2.0
+      '@radix-ui/react-menu': registry.npmmirror.com/@radix-ui/react-menu/1.0.0_rj7ozvcq3uehdlnj3cbwzbi5ce
+      '@radix-ui/react-primitive': registry.npmmirror.com/@radix-ui/react-primitive/1.0.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-use-controllable-state': registry.npmmirror.com/@radix-ui/react-use-controllable-state/1.0.0_react@18.2.0
+      react: registry.npmmirror.com/react/18.2.0
+      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+    transitivePeerDependencies:
+      - '@types/react'
     dev: false
 
   registry.npmmirror.com/@radix-ui/react-focus-guards/1.0.0_react@18.2.0:
