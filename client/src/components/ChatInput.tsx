@@ -162,7 +162,7 @@ export const ChatInputField = ({
     <div className="px-2 pb-2">
       <AccountDialog>
         <button className="w-full px-4 py-3 text-xs font-medium bg-pink-600 rounded-md border border-transparent text-center">
-          You need to login to start conversation
+Create an account to join the conversation!
         </button>
       </AccountDialog>
     </div>

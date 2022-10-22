@@ -68,6 +68,8 @@ const TaskImpl = () => {
     shallow
   )
 
+  const isDone = status === 'DONE'
+
   const createTask = useCreateTaskMutation()
   const updateTask = useUpdateTaskMutation()
 
@@ -234,9 +236,7 @@ const TaskImpl = () => {
               transition: { duration: 0.18 },
             },
           }}
-          className={clsx(
-            'group hover:bg-gray-750 min-h-[36px] h-full grid relative'
-          )}
+          className={clsx('group hover:bg-gray-750 min-h-[36px] h-full grid relative')}
         >
           <CheckboxTodo id={checkboxId} />
 
@@ -288,7 +288,10 @@ const TaskImpl = () => {
           ) : (
             <label
               htmlFor={checkboxId}
-              className="self-baseline pl-10 pr-5 text-sm break-all mt-[9px] w-fit"
+              className={clsx(
+                'self-baseline pl-10 pr-5 text-sm break-all mt-[9px] w-fit',
+                isDone && 'line-through decoration-pink-500 decoration-2 text-white/50'
+              )}
               onMouseDown={(event) => {
                 if (event.detail > 1) event.preventDefault()
               }}

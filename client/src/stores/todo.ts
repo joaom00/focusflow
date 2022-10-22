@@ -2,13 +2,16 @@ import cuid from 'cuid'
 import { createStore } from 'zustand'
 import type { Task } from '../components/Todos/Todos'
 
+type TaskStatus = 'TODO' | 'DONE'
+
 export interface TaskStore {
   id: string
   value: string
-  status: 'TODO' | 'DONE'
+  status: TaskStatus
   edit: boolean
   position: string
   setValue: (value: string) => void
+  updateStatus: (status: TaskStatus) => void
   setEdit: (edit: boolean) => void
   generateTaskWithPositionBelow: (tasks: Task[]) => Task
   insertTaskBelow: (tasks: Task[] | undefined) => Task[] | undefined
@@ -23,6 +26,7 @@ export function createTaskStore(initialStore: InitialTaskStore) {
     ...initialStore,
     dropdownMenuOpen: false,
     setValue: (value) => set((state) => ({ ...state, value })),
+    updateStatus: (status) => set(state => ({...state, status})),
     setEdit: (edit) => set((state) => ({ ...state, edit })),
     generateTaskWithPositionBelow: (currentTasks) => {
       const currentId = get().id
