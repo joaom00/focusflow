@@ -85,7 +85,7 @@ export const ContextMenu = ({ children }: MenuProps) => {
       <PrimitiveContextMenu.Trigger asChild>{children}</PrimitiveContextMenu.Trigger>
         <PrimitiveContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
           <MenuItem onSelect={onCopy}>
-            <CopyIcon />
+            <CopyIcon aria-hidden />
             Copy task
             <RightSLot>Ctrl+C</RightSLot>
           </MenuItem>
@@ -93,7 +93,7 @@ export const ContextMenu = ({ children }: MenuProps) => {
           <PrimitiveContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
 
           <MenuItem onSelect={onInsertTaskBelow}>
-            <PlusIcon />
+            <PlusIcon aria-hidden />
             Insert task below
             <RightSLot>Alt+Enter</RightSLot>
           </MenuItem>
@@ -147,7 +147,7 @@ const MenuItem = ({ children, onSelect }: MenuItemProps) => {
           transition: { duration: 0.18 },
         },
       }}
-      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none"
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:!bg-gray-750"
     >
       {children}
     </MotionContextMenuItem>

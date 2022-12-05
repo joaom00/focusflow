@@ -27,7 +27,6 @@ type TaskProps = {
   position: string
 }
 
-// TODO: control show/hide of todo icons with react events (not control with hover)
 export const Task = (props: TaskProps) => {
   return (
     <TaskProvider store={createTaskStore(props)}>
@@ -208,6 +207,8 @@ const TaskImpl = () => {
     setValue(event.currentTarget.value)
   }
 
+  const [hasPointerEnter, setHasPointerEnter] = React.useState(false)
+
   return (
     <motion.li
       ref={taskElRef}
@@ -223,47 +224,42 @@ const TaskImpl = () => {
     >
       <ContextMenu>
         <motion.div
-          onHoverStart={() => setHovering(true)}
-          onHoverEnd={() => setHovering(false)}
-          animate={hovering ? 'hovering' : 'unhovering'}
-          variants={{
-            hovering: {
-              backgroundColor: 'rgb(51 51 56)',
-              transition: { duration: 0 },
-            },
-            unhovering: {
-              backgroundColor: 'rgb(51 51 56 / 0)',
-              transition: { duration: 0.18 },
-            },
-          }}
           className={clsx('group hover:bg-gray-750 min-h-[36px] h-full grid relative')}
         >
           <CheckboxTodo id={checkboxId} />
 
-          <div
-            className={clsx(
-              'hidden absolute top-1/2 right-4 -translate-y-1/2 group-hover:flex',
-              openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
-            )}
-          >
-            <IconButton
-              aria-label="Edit task"
-              size="small"
-              className="hover:bg-gray-800"
-              onClick={() => setEdit(true)}
+          {hasPointerEnter && (
+            <div
+              className={clsx(
+                'absolute top-1/2 right-4 -translate-y-1/2 flex',
+                openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
+              )}
             >
-              <Pencil1Icon aria-hidden />
-            </IconButton>
-            <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
-              <IconButton aria-label="Open task options" size="small" className="hover:bg-gray-800">
-                <DotsHorizontalIcon aria-hidden />
+              <IconButton
+                aria-label="Edit task"
+                size="small"
+                className="hover:bg-gray-800"
+                onClick={() => setEdit(true)}
+              >
+                <Pencil1Icon aria-hidden />
               </IconButton>
-            </DropdownMenu>
-          </div>
+
+              <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
+                <IconButton
+                  aria-label="Open task options"
+                  size="small"
+                  className="hover:bg-gray-800"
+                >
+                  <DotsHorizontalIcon aria-hidden />
+                </IconButton>
+              </DropdownMenu>
+            </div>
+          )}
 
           {edit ? (
             <>
               <div className="fixed inset-0 z-30 pointer-events-auto" />
+
               <Textarea
                 ref={(node) => {
                   if (node) {

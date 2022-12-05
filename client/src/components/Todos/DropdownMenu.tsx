@@ -1,5 +1,5 @@
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
-import { PlusIcon } from '@radix-ui/react-icons'
+import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
 import React from 'react'
 
@@ -11,8 +11,12 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
       <Dropdown.Trigger asChild>{children}</Dropdown.Trigger>
       <Dropdown.Portal container={document.getElementById('task-sidebar')}>
         <div className="absolute inset-0 pointer-events-none z-50">
-          <Dropdown.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700 relative pointer-events-auto">
+          <Dropdown.Content
+            align="start"
+            className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700 relative pointer-events-auto"
+          >
             <DropdownItem>
+              <CopyIcon aria-hidden />
               Copy task
               <RightSLot>Ctrl+C</RightSLot>
             </DropdownItem>
@@ -20,9 +24,29 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
             <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
 
             <DropdownItem>
-              <PlusIcon />
+              <PlusIcon aria-hidden />
               Insert task below
               <RightSLot>Alt+Enter</RightSLot>
+            </DropdownItem>
+
+            <DropdownItem>
+              <CopyIcon aria-hidden />
+              Duplicate task
+              <RightSLot>Ctrl+D</RightSLot>
+            </DropdownItem>
+
+            <DropdownItem>
+              <Pencil1Icon aria-hidden />
+              Edit task
+              <RightSLot>Enter</RightSLot>
+            </DropdownItem>
+
+            <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
+
+            <DropdownItem>
+              <TrashIcon aria-hidden />
+              Delete
+              <RightSLot>Delete</RightSLot>
             </DropdownItem>
           </Dropdown.Content>
         </div>
@@ -56,7 +80,7 @@ const DropdownItem = ({ children, onSelect }: DropdownItemProps) => {
           transition: { duration: 0.18 },
         },
       }}
-      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none"
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:!bg-gray-750"
     >
       {children}
     </MotionDropdownItem>
