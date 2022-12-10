@@ -1,10 +1,9 @@
 import React from 'react'
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
-import { useTask } from './Todo'
+import { useTask, useTaskActions } from './Todo'
 import { Task } from './Todos'
 import { useQueryClient } from '@tanstack/react-query'
-import shallow from 'zustand/shallow'
 import toast from 'react-hot-toast'
 import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
 
@@ -13,46 +12,28 @@ type MenuProps = {
 }
 
 export const ContextMenu = ({ children }: MenuProps) => {
-  const {
-    id,
-    value,
-    status,
-    setEdit,
-    generateTaskWithPositionBelow,
-    insertTaskBelow,
-    duplicateTask,
-  } = useTask(
-    (state) => ({
-      id: state.id,
-      position: state.position,
-      value: state.value,
-      status: state.status,
-      setEdit: state.setEdit,
-      generateTaskWithPositionBelow: state.generateTaskWithPositionBelow,
-      insertTaskBelow: state.insertTaskBelow,
-      duplicateTask: state.duplicateTask,
-    }),
-    shallow
-  )
-
   const queryClient = useQueryClient()
   const createTask = useCreateTaskMutation()
   const deleteTask = useDeleteTaskMutation()
 
+  const task = useTask()
+  const actions = useTaskActions()
+
+
   const onCopy = () => {
-    window.navigator.clipboard.writeText(value)
+    window.navigator.clipboard.writeText(task.value)
     toast('Copy task')
   }
 
   const onEdit = () => {
     setTimeout(() => {
-      setEdit(true)
+      actions.updateEdit(true)
     }, 1)
   }
 
   const onInsertTaskBelow = () => {
     setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], insertTaskBelow)
+      queryClient.setQueryData<Task[]>(['tasks'], actions.insertTaskBelow)
     }, 1)
   }
 
@@ -60,19 +41,19 @@ export const ContextMenu = ({ children }: MenuProps) => {
     const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
     if (!currentTasks) return
 
-    const duplicatedTask = generateTaskWithPositionBelow(currentTasks)
+    const duplicatedTask = actions.generateTaskWithPositionBelow(currentTasks)
     duplicatedTask.edit = false
-    duplicatedTask.status = status
-    duplicatedTask.content = value
+    duplicatedTask.status = task.status
+    duplicatedTask.content = task.value
 
     setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], duplicateTask(duplicatedTask))
+      queryClient.setQueryData<Task[]>(['tasks'], actions.duplicateTask(duplicatedTask))
       createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
     }, 1)
   }
 
   const onDelete = () => {
-    deleteTask.mutate(id, {
+    deleteTask.mutate(task.id, {
       onSuccess: () => {
         toast('Delete todo')
       },

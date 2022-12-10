@@ -12,12 +12,25 @@ import { createStoreContext } from '@/lib/createContex'
 
 import { CheckboxTodo } from './CheckboxTodo'
 import { ContextMenu } from './ContextMenu'
-import { type Task as TTask } from './Todos'
 import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries/todo'
 import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
 
-export const [TaskProvider, useTask] = createStoreContext<TaskStore>('TaskStore')
+import { type Task as TTask } from './Todos'
+
+const [TaskProvider, useTaskStore] = createStoreContext<TaskStore>('TaskStore')
+export const useTask = () =>
+  useTaskStore(
+    (state) => ({
+      id: state.id,
+      value: state.value,
+      status: state.status,
+      edit: state.edit,
+      position: state.position,
+    }),
+    shallow
+  )
+export const useTaskActions = () => useTaskStore((state) => state.actions)
 
 type TaskProps = {
   id: string
@@ -38,142 +51,125 @@ export const Task = (props: TaskProps) => {
 const TaskImpl = () => {
   const queryClient = useQueryClient()
 
-  const {
-    id,
-    value,
-    status,
-    setValue,
-    edit,
-    position,
-    setEdit,
-    generateTaskWithPositionBelow,
-    insertTaskBelow,
-    duplicateTask,
-    removeTask,
-  } = useTask(
-    (state) => ({
-      id: state.id,
-      value: state.value,
-      status: state.status,
-      setValue: state.setValue,
-      edit: state.edit,
-      position: state.position,
-      setEdit: state.setEdit,
-      generateTaskWithPositionBelow: state.generateTaskWithPositionBelow,
-      insertTaskBelow: state.insertTaskBelow,
-      duplicateTask: state.duplicateTask,
-      removeTask: state.removeTask,
-    }),
-    shallow
-  )
-
-  const isDone = status === 'DONE'
-
   const createTask = useCreateTaskMutation()
   const updateTask = useUpdateTaskMutation()
 
+  const task = useTask()
+  const actions = useTaskActions()
+
   const checkboxId = React.useId()
-  const [openDropdownMenu, setOpenDropdownMenu] = React.useState(false)
-  const prevValueRef = React.useRef(value)
+  const prevValueRef = React.useRef(task.value)
   const taskElRef = React.useRef<HTMLLIElement>(null)
 
-  const onBlur = () => {
-    if (!value && !prevValueRef.current) {
-      return queryClient.setQueryData(['tasks'], removeTask)
+  const isDone = task.status === 'DONE'
+
+  const handleBlur = () => {
+    if (!task.value && !prevValueRef.current) {
+      return queryClient.setQueryData(['tasks'], actions.removeTask)
     }
 
-    if (!value && prevValueRef.current) {
-      setValue(prevValueRef.current)
-      setEdit(false)
+    if (!task.value && prevValueRef.current) {
+      actions.updateValue(prevValueRef.current)
+      actions.updateEdit(false)
       return
     }
 
-    setEdit(false)
+    actions.updateEdit(false)
     const isCreatingNewTask = prevValueRef.current === ''
     if (isCreatingNewTask) {
-      createTask.mutate({ id, content: value, position, insertTaskBelow: false })
+      createTask.mutate({
+        id: task.id,
+        content: task.value,
+        position: task.position,
+        insertTaskBelow: false,
+      })
     }
 
-    const hasValueChanged = prevValueRef.current !== value
+    const hasValueChanged = prevValueRef.current !== task.value
     const isUpdatingTask = !isCreatingNewTask && hasValueChanged
     if (isUpdatingTask) {
-      updateTask.mutate({ id, content: value })
+      updateTask.mutate({ id: task.id, content: task.value })
     }
 
-    prevValueRef.current = value
+    prevValueRef.current = task.value
   }
 
-  const onInputKeyDown = (event: React.KeyboardEvent) => {
+  const handleInputKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
-        if (!value) {
-          return queryClient.setQueryData(['tasks'], removeTask)
+        if (!task.value) {
+          return queryClient.setQueryData(['tasks'], actions.removeTask)
         }
 
         const isCreatingNewTask = prevValueRef.current === ''
         if (isCreatingNewTask) {
-          createTask.mutate({ id, content: value, position })
+          createTask.mutate({ id: task.id, content: task.value, position: task.position })
         }
 
-        const hasValueChanged = prevValueRef.current !== value
+        const hasValueChanged = prevValueRef.current !== task.value
         const isUpdatingTask = !isCreatingNewTask && hasValueChanged
         if (isUpdatingTask) {
-          updateTask.mutate({ id, content: value, insertTaskBelow: true })
+          updateTask.mutate({ id: task.id, content: task.value, insertTaskBelow: true })
         }
 
         if (!isCreatingNewTask && !hasValueChanged) {
-          queryClient.setQueryData(['tasks'], insertTaskBelow)
+          queryClient.setQueryData(['tasks'], actions.insertTaskBelow)
         }
 
-        prevValueRef.current = value
+        prevValueRef.current = task.value
         break
       }
       case 'Backspace': {
-        if (!value) {
+        if (!task.value) {
           event.preventDefault()
-          queryClient.setQueryData(['tasks'], removeTask)
+          queryClient.setQueryData(['tasks'], actions.removeTask)
         }
         break
       }
       case 'Escape': {
-        if (!value && !prevValueRef.current) {
-          return queryClient.setQueryData(['tasks'], removeTask)
+        if (!task.value && !prevValueRef.current) {
+          return queryClient.setQueryData(['tasks'], actions.removeTask)
         }
 
-        if (!value && prevValueRef.current) {
-          setValue(prevValueRef.current)
-          setEdit(false)
+        if (!task.value && prevValueRef.current) {
+          actions.updateValue(prevValueRef.current)
+          actions.updateEdit(false)
           return
         }
 
-        setEdit(false)
+        actions.updateEdit(false)
         const isCreatingNewTask = prevValueRef.current === ''
         if (isCreatingNewTask) {
-          createTask.mutate({ id, content: value, position, insertTaskBelow: false })
+          createTask.mutate({
+            id: task.id,
+            content: task.value,
+            position: task.position,
+            insertTaskBelow: false,
+          })
         }
 
-        const hasValueChanged = prevValueRef.current !== value
+        const hasValueChanged = prevValueRef.current !== task.value
         const isUpdatingTask = !isCreatingNewTask && hasValueChanged
         if (isUpdatingTask) {
-          updateTask.mutate({ id, content: value })
+          updateTask.mutate({ id: task.id, content: task.value })
         }
 
-        prevValueRef.current = value
+        prevValueRef.current = task.value
         break
       }
     }
   }
 
-  const onTaskKeyDown = (event: React.KeyboardEvent) => {
+  const handleTaskKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         event.preventDefault()
         if (event.altKey) {
-          queryClient.setQueryData<TTask[]>(['tasks'], insertTaskBelow)
+          queryClient.setQueryData<TTask[]>(['tasks'], actions.insertTaskBelow)
           break
         }
-        setEdit(true)
+        actions.updateEdit(true)
         break
       }
       case 'd': {
@@ -182,11 +178,11 @@ const TaskImpl = () => {
           const currentTasks = queryClient.getQueryData<TTask[]>(['tasks'])
           if (!currentTasks) return
 
-          const duplicatedTask = generateTaskWithPositionBelow(currentTasks)
+          const duplicatedTask = actions.generateTaskWithPositionBelow(currentTasks)
           duplicatedTask.edit = false
-          duplicatedTask.status = status
-          duplicatedTask.content = value
-          queryClient.setQueryData<TTask[]>(['tasks'], duplicateTask(duplicatedTask))
+          duplicatedTask.status = task.status
+          duplicatedTask.content = task.value
+          queryClient.setQueryData<TTask[]>(['tasks'], actions.duplicateTask(duplicatedTask))
           break
         }
         break
@@ -194,7 +190,7 @@ const TaskImpl = () => {
       case 'c': {
         if (event.ctrlKey) {
           event.preventDefault()
-          window.navigator.clipboard.writeText(value)
+          window.navigator.clipboard.writeText(task.value)
           toast('Copy task')
           break
         }
@@ -202,8 +198,8 @@ const TaskImpl = () => {
     }
   }
 
-  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.currentTarget.value)
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    actions.updateValue(event.currentTarget.value)
   }
 
   return (
@@ -217,28 +213,23 @@ const TaskImpl = () => {
         height: 0,
         transition: { duration: 0.2 },
       }}
-      onKeyDown={onTaskKeyDown}
+      onKeyDown={handleTaskKeyDown}
     >
       <ContextMenu>
-        <motion.div className={clsx('group hover:bg-gray-750 min-h-[36px] h-full grid relative')}>
+        <motion.div className="group hover:bg-gray-750 min-h-[36px] h-full grid relative">
           <CheckboxTodo id={checkboxId} />
 
-          <div
-            className={clsx(
-              'absolute top-1/2 right-4 -translate-y-1/2 flex gap-1',
-              openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
-            )}
-          >
+          <div className="absolute top-1/2 right-4 -translate-y-1/2 flex gap-1">
             <IconButton
               aria-label="Edit task"
               size="small"
               className="hover:bg-gray-800 hidden group-hover:flex"
-              onClick={() => setEdit(true)}
+              onClick={() => actions.updateEdit(true)}
             >
               <Pencil1Icon aria-hidden />
             </IconButton>
 
-            <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
+            <DropdownMenu>
               <IconButton
                 aria-label="Open task options"
                 size="small"
@@ -249,25 +240,25 @@ const TaskImpl = () => {
             </DropdownMenu>
           </div>
 
-          {edit ? (
+          {task.edit ? (
             <>
               <div className="fixed inset-0 z-30 pointer-events-auto" />
 
               <Textarea
                 ref={(node) => {
                   if (node) {
-                    const end = value.length
+                    const end = task.value.length
                     node.setSelectionRange(end, end)
                     node.focus()
                   }
                 }}
-                onBlur={onBlur}
-                value={value}
-                onChange={onChange}
-                onKeyDown={onInputKeyDown}
+                onBlur={handleBlur}
+                value={task.value}
+                onChange={handleChange}
+                onKeyDown={handleInputKeyDown}
                 className={clsx(
                   'resize-none bg-gray-800 pl-10 pr-4 py-2 text-sm focus:outline-none border-t border-t-transparent focus:border-t-pink-500 absolute inset-x-0 shadow-lg shadow-black/50 rounded-md',
-                  edit && 'pointer-events-auto z-40'
+                  task.edit && 'pointer-events-auto z-40'
                 )}
                 placeholder="Enter a name"
                 minRows={1}
@@ -293,7 +284,7 @@ const TaskImpl = () => {
                 overflow: 'hidden',
               }}
             >
-              {value}
+              {task.value}
             </label>
           )}
         </motion.div>
