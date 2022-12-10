@@ -19,25 +19,24 @@ export const ContextMenu = ({ children }: MenuProps) => {
   const task = useTask()
   const actions = useTaskActions()
 
-
-  const onCopy = () => {
+  const handleCopyText = () => {
     window.navigator.clipboard.writeText(task.value)
     toast('Copy task')
   }
 
-  const onEdit = () => {
+  const handleEdit = () => {
     setTimeout(() => {
       actions.updateEdit(true)
     }, 1)
   }
 
-  const onInsertTaskBelow = () => {
+  const handleInsertTaskBelow = () => {
     setTimeout(() => {
       queryClient.setQueryData<Task[]>(['tasks'], actions.insertTaskBelow)
     }, 1)
   }
 
-  const onDuplicateTask = () => {
+  const handleDuplicateTask = () => {
     const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
     if (!currentTasks) return
 
@@ -52,7 +51,7 @@ export const ContextMenu = ({ children }: MenuProps) => {
     }, 1)
   }
 
-  const onDelete = () => {
+  const handleDelete = () => {
     deleteTask.mutate(task.id, {
       onSuccess: () => {
         toast('Delete todo')
@@ -63,40 +62,40 @@ export const ContextMenu = ({ children }: MenuProps) => {
   return (
     <ContextMenuPrimitive.Root>
       <ContextMenuPrimitive.Trigger asChild>{children}</ContextMenuPrimitive.Trigger>
-      <ContextMenuPrimitive.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
-        <MenuItem onSelect={onCopy}>
+      <ContextMenuPrimitive.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700 z-50">
+        <ContextMenuItem onSelect={handleCopyText}>
           <CopyIcon aria-hidden />
           Copy text
           <RightSLot>Ctrl+C</RightSLot>
-        </MenuItem>
+        </ContextMenuItem>
 
-        <ContextMenuPrimitive.Separator className="h-[1px] bg-gray-700 my-1" />
+        <ContextSeparator />
 
-        <MenuItem onSelect={onInsertTaskBelow}>
+        <ContextMenuItem onSelect={handleInsertTaskBelow}>
           <PlusIcon aria-hidden />
           Insert task below
           <RightSLot>Alt+Enter</RightSLot>
-        </MenuItem>
+        </ContextMenuItem>
 
-        <MenuItem onSelect={onDuplicateTask}>
+        <ContextMenuItem onSelect={handleDuplicateTask}>
           <CopyIcon />
           Duplicate
           <RightSLot>Ctrl+D</RightSLot>
-        </MenuItem>
+        </ContextMenuItem>
 
-        <MenuItem onSelect={onEdit}>
+        <ContextMenuItem onSelect={handleEdit}>
           <Pencil1Icon />
           Edit
           <RightSLot>Enter</RightSLot>
-        </MenuItem>
+        </ContextMenuItem>
 
-        <ContextMenuPrimitive.Separator className="h-[1px] bg-gray-600 my-1" />
+        <ContextSeparator />
 
-        <MenuItem onSelect={onDelete}>
+        <ContextMenuItem onSelect={handleDelete}>
           <TrashIcon />
           Delete
           <RightSLot>Delete</RightSLot>
-        </MenuItem>
+        </ContextMenuItem>
       </ContextMenuPrimitive.Content>
     </ContextMenuPrimitive.Root>
   )
@@ -107,7 +106,7 @@ type MenuItemProps = {
   onSelect?: (event: Event) => void
 }
 
-const MenuItem = ({ children, onSelect }: MenuItemProps) => {
+const ContextMenuItem = ({ children, onSelect }: MenuItemProps) => {
   return (
     <ContextMenuPrimitive.Item
       onSelect={onSelect}
@@ -116,6 +115,10 @@ const MenuItem = ({ children, onSelect }: MenuItemProps) => {
       {children}
     </ContextMenuPrimitive.Item>
   )
+}
+
+const ContextSeparator = () => {
+  return <ContextMenuPrimitive.Separator className="h-[1px] bg-gray-600 my-1" />
 }
 
 const RightSLot = ({ children }: { children?: React.ReactNode }) => {

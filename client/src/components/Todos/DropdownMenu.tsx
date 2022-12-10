@@ -1,10 +1,62 @@
+import React from 'react'
+import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
-import React from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
+import { useTask, useTaskActions } from './Todo'
+
+import type { Task } from './Todos'
 
 type DropdownProps = Dropdown.DropdownMenuProps
 
 export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
+  const queryClient = useQueryClient()
+  const createTask = useCreateTaskMutation()
+  const deleteTask = useDeleteTaskMutation()
+
+  const task = useTask()
+  const actions = useTaskActions()
+
+  const handleCopyText = () => {
+    window.navigator.clipboard.writeText(task.value)
+    toast('Copy task')
+  }
+
+  const handleEdit = () => {
+    setTimeout(() => {
+      actions.updateEdit(true)
+    }, 1)
+  }
+
+  const handleInsertTaskBelow = () => {
+    setTimeout(() => {
+      queryClient.setQueryData<Task[]>(['tasks'], actions.insertTaskBelow)
+    }, 1)
+  }
+
+  const handleDuplicateTask = () => {
+    const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
+    if (!currentTasks) return
+
+    const duplicatedTask = actions.generateTaskWithPositionBelow(currentTasks)
+    duplicatedTask.edit = false
+    duplicatedTask.status = task.status
+    duplicatedTask.content = task.value
+
+    setTimeout(() => {
+      queryClient.setQueryData<Task[]>(['tasks'], actions.duplicateTask(duplicatedTask))
+      createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
+    }, 1)
+  }
+
+  const handleDelete = () => {
+    deleteTask.mutate(task.id, {
+      onSuccess: () => {
+        toast('Delete todo')
+      },
+    })
+  }
   return (
     <Dropdown.Root {...props}>
       <Dropdown.Trigger asChild>{children}</Dropdown.Trigger>
@@ -12,38 +64,37 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
         <div className="absolute inset-0 pointer-events-none z-50">
           <Dropdown.Content
             align="start"
-            className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700 relative pointer-events-auto"
+            className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700 relative pointer-events-auto z-50"
           >
-            <DropdownItem>
+            <DropdownItem onSelect={handleCopyText}>
               <CopyIcon aria-hidden />
               Copy text
               <RightSLot>Ctrl+C</RightSLot>
             </DropdownItem>
 
+            <DropdownSeparator />
 
-            <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
-
-            <DropdownItem>
+            <DropdownItem onSelect={handleInsertTaskBelow}>
               <PlusIcon aria-hidden />
               Insert task below
               <RightSLot>Alt+Enter</RightSLot>
             </DropdownItem>
 
-            <DropdownItem>
+            <DropdownItem onSelect={handleDuplicateTask}>
               <CopyIcon aria-hidden />
               Duplicate
               <RightSLot>Ctrl+D</RightSLot>
             </DropdownItem>
 
-            <DropdownItem>
+            <DropdownItem onSelect={handleEdit}>
               <Pencil1Icon aria-hidden />
               Edit
               <RightSLot>Enter</RightSLot>
             </DropdownItem>
 
-            <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
+            <DropdownSeparator />
 
-            <DropdownItem>
+            <DropdownItem onSelect={handleDelete}>
               <TrashIcon aria-hidden />
               Delete
               <RightSLot>Delete</RightSLot>
@@ -69,6 +120,10 @@ const DropdownItem = ({ children, onSelect }: DropdownItemProps) => {
       {children}
     </Dropdown.Item>
   )
+}
+
+const DropdownSeparator = () => {
+  return <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
 }
 
 const RightSLot = ({ children }: { children?: React.ReactNode }) => {

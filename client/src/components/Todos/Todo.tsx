@@ -205,7 +205,7 @@ const TaskImpl = () => {
   return (
     <motion.li
       ref={taskElRef}
-      className={clsx('border-t border-t-gray-700 focus:bg-gray-750')}
+      className="border-t border-t-gray-700 focus:bg-gray-750"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{
@@ -216,7 +216,7 @@ const TaskImpl = () => {
       onKeyDown={handleTaskKeyDown}
     >
       <ContextMenu>
-        <motion.div className="group hover:bg-gray-750 min-h-[36px] h-full grid relative">
+        <motion.div className="group hover:bg-gray-750 min-h-[36px] h-full grid relative data-[state=open]:bg-gray-750">
           <CheckboxTodo id={checkboxId} />
 
           <div className="absolute top-1/2 right-4 -translate-y-1/2 flex gap-1">
