@@ -73,7 +73,6 @@ const TaskImpl = () => {
   const updateTask = useUpdateTaskMutation()
 
   const checkboxId = React.useId()
-  const [hovering, setHovering] = React.useState(false)
   const [openDropdownMenu, setOpenDropdownMenu] = React.useState(false)
   const prevValueRef = React.useRef(value)
   const taskElRef = React.useRef<HTMLLIElement>(null)
@@ -207,8 +206,6 @@ const TaskImpl = () => {
     setValue(event.currentTarget.value)
   }
 
-  const [hasPointerEnter, setHasPointerEnter] = React.useState(false)
-
   return (
     <motion.li
       ref={taskElRef}
@@ -223,38 +220,34 @@ const TaskImpl = () => {
       onKeyDown={onTaskKeyDown}
     >
       <ContextMenu>
-        <motion.div
-          className={clsx('group hover:bg-gray-750 min-h-[36px] h-full grid relative')}
-        >
+        <motion.div className={clsx('group hover:bg-gray-750 min-h-[36px] h-full grid relative')}>
           <CheckboxTodo id={checkboxId} />
 
-          {hasPointerEnter && (
-            <div
-              className={clsx(
-                'absolute top-1/2 right-4 -translate-y-1/2 flex',
-                openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
-              )}
+          <div
+            className={clsx(
+              'absolute top-1/2 right-4 -translate-y-1/2 flex gap-1',
+              openDropdownMenu ? 'pointer-events-none' : 'pointer-events-auto'
+            )}
+          >
+            <IconButton
+              aria-label="Edit task"
+              size="small"
+              className="hover:bg-gray-800 hidden group-hover:flex"
+              onClick={() => setEdit(true)}
             >
-              <IconButton
-                aria-label="Edit task"
-                size="small"
-                className="hover:bg-gray-800"
-                onClick={() => setEdit(true)}
-              >
-                <Pencil1Icon aria-hidden />
-              </IconButton>
+              <Pencil1Icon aria-hidden />
+            </IconButton>
 
-              <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
-                <IconButton
-                  aria-label="Open task options"
-                  size="small"
-                  className="hover:bg-gray-800"
-                >
-                  <DotsHorizontalIcon aria-hidden />
-                </IconButton>
-              </DropdownMenu>
-            </div>
-          )}
+            <DropdownMenu open={openDropdownMenu} onOpenChange={setOpenDropdownMenu}>
+              <IconButton
+                aria-label="Open task options"
+                size="small"
+                className="hover:bg-gray-800 group-hover:flex data-[state=closed]:hidden data-[state=open]:bg-gray-800"
+              >
+                <DotsHorizontalIcon aria-hidden />
+              </IconButton>
+            </DropdownMenu>
+          </div>
 
           {edit ? (
             <>

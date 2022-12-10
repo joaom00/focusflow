@@ -1,7 +1,6 @@
 import React from 'react'
-import * as PrimitiveContextMenu from '@radix-ui/react-context-menu'
+import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
-import { motion } from 'framer-motion'
 import { useTask } from './Todo'
 import { Task } from './Todos'
 import { useQueryClient } from '@tanstack/react-query'
@@ -81,44 +80,44 @@ export const ContextMenu = ({ children }: MenuProps) => {
   }
 
   return (
-    <PrimitiveContextMenu.Root>
-      <PrimitiveContextMenu.Trigger asChild>{children}</PrimitiveContextMenu.Trigger>
-        <PrimitiveContextMenu.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
-          <MenuItem onSelect={onCopy}>
-            <CopyIcon aria-hidden />
-            Copy task
-            <RightSLot>Ctrl+C</RightSLot>
-          </MenuItem>
+    <ContextMenuPrimitive.Root>
+      <ContextMenuPrimitive.Trigger asChild>{children}</ContextMenuPrimitive.Trigger>
+      <ContextMenuPrimitive.Content className="min-w-[300px] w-full rounded-lg bg-gray-850 py-1 text-sm shadow-lg shadow-black/50 border border-gray-700">
+        <MenuItem onSelect={onCopy}>
+          <CopyIcon aria-hidden />
+          Copy text
+          <RightSLot>Ctrl+C</RightSLot>
+        </MenuItem>
 
-          <PrimitiveContextMenu.Separator className="h-[1px] bg-gray-700 my-1" />
+        <ContextMenuPrimitive.Separator className="h-[1px] bg-gray-700 my-1" />
 
-          <MenuItem onSelect={onInsertTaskBelow}>
-            <PlusIcon aria-hidden />
-            Insert task below
-            <RightSLot>Alt+Enter</RightSLot>
-          </MenuItem>
+        <MenuItem onSelect={onInsertTaskBelow}>
+          <PlusIcon aria-hidden />
+          Insert task below
+          <RightSLot>Alt+Enter</RightSLot>
+        </MenuItem>
 
-          <MenuItem onSelect={onDuplicateTask}>
-            <CopyIcon />
-            Duplicate task
-            <RightSLot>Ctrl+D</RightSLot>
-          </MenuItem>
+        <MenuItem onSelect={onDuplicateTask}>
+          <CopyIcon />
+          Duplicate
+          <RightSLot>Ctrl+D</RightSLot>
+        </MenuItem>
 
-          <MenuItem onSelect={onEdit}>
-            <Pencil1Icon />
-            Edit task
-            <RightSLot>Enter</RightSLot>
-          </MenuItem>
+        <MenuItem onSelect={onEdit}>
+          <Pencil1Icon />
+          Edit
+          <RightSLot>Enter</RightSLot>
+        </MenuItem>
 
-          <PrimitiveContextMenu.Separator className="h-[1px] bg-gray-600 my-1" />
+        <ContextMenuPrimitive.Separator className="h-[1px] bg-gray-600 my-1" />
 
-          <MenuItem onSelect={onDelete}>
-            <TrashIcon />
-            Delete
-            <RightSLot>Delete</RightSLot>
-          </MenuItem>
-        </PrimitiveContextMenu.Content>
-    </PrimitiveContextMenu.Root>
+        <MenuItem onSelect={onDelete}>
+          <TrashIcon />
+          Delete
+          <RightSLot>Delete</RightSLot>
+        </MenuItem>
+      </ContextMenuPrimitive.Content>
+    </ContextMenuPrimitive.Root>
   )
 }
 
@@ -127,30 +126,14 @@ type MenuItemProps = {
   onSelect?: (event: Event) => void
 }
 
-const MotionContextMenuItem = motion(PrimitiveContextMenu.Item)
 const MenuItem = ({ children, onSelect }: MenuItemProps) => {
-  const [hovering, setHovering] = React.useState(false)
-
   return (
-    <MotionContextMenuItem
+    <ContextMenuPrimitive.Item
       onSelect={onSelect}
-      onHoverStart={() => setHovering(true)}
-      onHoverEnd={() => setHovering(false)}
-      animate={hovering ? 'hovering' : 'unhovering'}
-      variants={{
-        hovering: {
-          backgroundColor: 'rgb(51 51 56)',
-          transition: { duration: 0 },
-        },
-        unhovering: {
-          backgroundColor: 'rgb(51 51 56 / 0)',
-          transition: { duration: 0.18 },
-        },
-      }}
-      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:!bg-gray-750"
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:bg-gray-750"
     >
       {children}
-    </MotionContextMenuItem>
+    </ContextMenuPrimitive.Item>
   )
 }
 

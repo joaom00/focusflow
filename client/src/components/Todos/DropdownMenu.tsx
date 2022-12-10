@@ -1,6 +1,5 @@
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
-import { motion } from 'framer-motion'
 import React from 'react'
 
 type DropdownProps = Dropdown.DropdownMenuProps
@@ -17,9 +16,10 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
           >
             <DropdownItem>
               <CopyIcon aria-hidden />
-              Copy task
+              Copy text
               <RightSLot>Ctrl+C</RightSLot>
             </DropdownItem>
+
 
             <Dropdown.Separator className="h-[1px] bg-gray-700 my-1" />
 
@@ -31,13 +31,13 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
 
             <DropdownItem>
               <CopyIcon aria-hidden />
-              Duplicate task
+              Duplicate
               <RightSLot>Ctrl+D</RightSLot>
             </DropdownItem>
 
             <DropdownItem>
               <Pencil1Icon aria-hidden />
-              Edit task
+              Edit
               <RightSLot>Enter</RightSLot>
             </DropdownItem>
 
@@ -60,30 +60,14 @@ type DropdownItemProps = {
   onSelect?: (event: Event) => void
 }
 
-const MotionDropdownItem = motion(Dropdown.Item)
 const DropdownItem = ({ children, onSelect }: DropdownItemProps) => {
-  const [hovering, setHovering] = React.useState(false)
-
   return (
-    <MotionDropdownItem
+    <Dropdown.Item
       onSelect={onSelect}
-      onHoverStart={() => setHovering(true)}
-      onHoverEnd={() => setHovering(false)}
-      animate={hovering ? 'hovering' : 'unhovering'}
-      variants={{
-        hovering: {
-          backgroundColor: 'rgb(51 51 56)',
-          transition: { duration: 0 },
-        },
-        unhovering: {
-          backgroundColor: 'rgb(51 51 56 / 0)',
-          transition: { duration: 0.18 },
-        },
-      }}
-      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:!bg-gray-750"
+      className="flex items-center gap-2 px-3 cursor-pointer h-[30px] text-gray-200 focus:outline-none radix-highlighted:bg-gray-750"
     >
       {children}
-    </MotionDropdownItem>
+    </Dropdown.Item>
   )
 }
 
