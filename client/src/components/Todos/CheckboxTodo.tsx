@@ -1,10 +1,12 @@
+import { api } from '@/lib/api'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
 import { CheckIcon } from '../../icons/CheckIcon'
-import { useTask, useTaskActions } from './Todo'
-import { Task } from './Todos'
+import { useTask } from './Todo'
+
+import type { Task } from './Todos'
 
 interface CheckboxTodoProps {
   id: string
@@ -14,16 +16,14 @@ const MotionCheckboxRoot = motion(Checkbox.Root)
 
 export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
   const task = useTask()
-  const { updateStatus } = useTaskActions()
   const queryClient = useQueryClient()
 
   const updateStatusMutation = useMutation(
     async (id: string) => {
-      fetch(`http://localhost:3333/todos/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: task.status === 'TODO' ? 'DONE' : 'TODO' }),
+      const { data } = await api.patch(`tasks/${id}`, {
+        status: task.status === 'TODO' ? 'DONE' : 'TODO',
       })
+      return data
     },
     {
       onMutate: async () => {
@@ -42,16 +42,15 @@ export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
     }
   )
 
-  const onDone = () => {
-    updateStatus(task.status === 'TODO' ? 'DONE' : 'TODO')
-    /* updateStatus.mutate(id) */
+  const handleClick = () => {
+    updateStatusMutation.mutate(task.id)
   }
 
   return (
     <MotionCheckboxRoot
       id={checkboxId}
       whileTap={{ scale: 0.8 }}
-      onClick={onDone}
+      onClick={handleClick}
       defaultChecked={task.status === 'DONE'}
       className={clsx(
         'border-2 border-gray-500 w-[14px] h-[14px] rounded-[5px] flex justify-center items-center radix-checked:bg-pink-500 radix-checked:border-transparent transition-colors ease-in-out duration-[250ms] ml-4 mt-3',
