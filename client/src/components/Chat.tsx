@@ -9,6 +9,8 @@ import { CircularProgress } from './CircularProgress'
 import { Tooltip } from './Tooltip'
 import shallow from 'zustand/shallow'
 import { usePomodoroStore } from '../stores'
+import { useTasksStore } from '@/stores/tasks'
+import { ReaderIcon } from '@radix-ui/react-icons'
 
 const CHAT_NAME = 'Chat'
 
@@ -34,6 +36,8 @@ export const Chat = () => {
     }),
     shallow
   )
+  const tasksOpen = useTasksStore((state) => state.open)
+  const toggleOpen = useTasksStore((state) => state.toggleOpen)
 
   const headerRef = React.useRef<HTMLElement>(null)
   const chatContainer = React.useRef<HTMLDivElement>(null)
@@ -57,6 +61,16 @@ export const Chat = () => {
           className="border-b border-b-gray-700 w-full grid grid-cols-3 items-center py-4 px-3"
         >
           <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">Chat</p>
+
+          <Tooltip content={tasksOpen ? 'Close tasks list' : 'Open tasks list'}>
+            <button
+              aria-label={tasksOpen ? 'Close tasks list' : 'Open tasks list'}
+              onClick={toggleOpen}
+              className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md ml-auto hover:text-gray-100 duration-150"
+            >
+              <ReaderIcon aria-hidden />
+            </button>
+          </Tooltip>
         </header>
 
         <div

@@ -43,6 +43,16 @@ module.exports = {
             transform: 'translateX(0)',
           },
         },
+        slideRightAndFade: {
+          '0%': {
+            opacity: 0,
+            transform: 'translateX(-100%)',
+          },
+          '100%': {
+            opacity: 1,
+            transform: 'translateX(0)',
+          },
+        },
         slideDownAndFade: {
           '0%': { opacity: 0, transform: 'translateY(-4px)' },
           '100%': { opacity: 1, transform: 'translateY(0)' },
@@ -59,6 +69,7 @@ module.exports = {
       animation: {
         'spin-slow': 'spin 3s linear infinite',
         slideLeft: 'slideLeft 250ms both ease-in',
+        slideRightAndFade: 'slideRightAndFade 250ms both ease-in',
         slideDownAndFade: 'slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
         overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
         contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
