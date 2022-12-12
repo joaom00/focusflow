@@ -1,24 +1,14 @@
 import React from 'react'
-import shallow from 'zustand/shallow'
-import { usePomodoroStore } from '../stores'
+import { usePomodoro } from '../stores'
 
 type Props = {
   timerStarted: boolean
 }
 
 export const useTimer = ({ timerStarted }: Props) => {
-  const { started, isPaused, workMinutes, breakMinutes } = usePomodoroStore(
-    (state) => ({
-      started: state.started,
-      isPaused: state.paused,
-      workMinutes: state.workMinutes,
-      breakMinutes: state.breakMinutes,
-    }),
-    shallow
-  )
-  console.log({workMinutes})
-  const workInitialSeconds = 60 * workMinutes
-  const breakInitialSeconds = 60 * breakMinutes
+  const pomodoro = usePomodoro()
+  const workInitialSeconds = 60 * pomodoro.workMinutes
+  const breakInitialSeconds = 60 * pomodoro.breakMinutes
   const [seconds, setSeconds] = React.useState(workInitialSeconds)
   const [mode, setMode] = React.useState<'work' | 'break'>('work')
   const totalSecondsRef = React.useRef(workInitialSeconds)
@@ -28,7 +18,7 @@ export const useTimer = ({ timerStarted }: Props) => {
 
     if (timerStarted) {
       timerId = setInterval(() => {
-        if (isPaused) return
+        if (pomodoro.paused) return
         setSeconds((currentSeconds) => currentSeconds - 1)
       }, 1000)
 
@@ -48,7 +38,14 @@ export const useTimer = ({ timerStarted }: Props) => {
     }
 
     return () => clearInterval(timerId)
-  }, [timerStarted, seconds, started, isPaused, workInitialSeconds, breakInitialSeconds])
+  }, [
+    timerStarted,
+    seconds,
+    pomodoro.started,
+    pomodoro.paused,
+    workInitialSeconds,
+    breakInitialSeconds,
+  ])
 
   return { seconds, setSeconds, mode, totalSeconds: totalSecondsRef.current }
 }

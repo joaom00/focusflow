@@ -7,8 +7,7 @@ import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
 import { ChatInputField } from './ChatInput'
 import { CircularProgress } from './CircularProgress'
 import { Tooltip } from './Tooltip'
-import shallow from 'zustand/shallow'
-import { usePomodoroStore } from '../stores'
+import { usePomodoro, usePomodoroActions } from '../stores'
 import { useTasksStore } from '@/stores/tasks'
 import { ReaderIcon } from '@radix-ui/react-icons'
 
@@ -24,20 +23,14 @@ const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
 export const Chat = () => {
-  const [messages, setMessages] = React.useState<string[]>([])
-  const [commandValue, setCommandValue] = React.useState('')
-  const { startPomodoro, pomodoroStarted, pomodoroMinimized } = usePomodoroStore(
-    (state) => ({
-      startPomodoro: state.start,
-      pomodoroStarted: state.started,
-      pomodoroMinimized: state.minimized,
-      setWorkMinutes: state.setWorkMinutes,
-      setBreakMinutes: state.setBreakMinutes,
-    }),
-    shallow
-  )
+  const pomodoro = usePomodoro()
+  const { start } = usePomodoroActions()
+
   const tasksOpen = useTasksStore((state) => state.open)
   const toggleOpen = useTasksStore((state) => state.toggleOpen)
+
+  const [messages, setMessages] = React.useState<string[]>([])
+  const [commandValue, setCommandValue] = React.useState('')
 
   const headerRef = React.useRef<HTMLElement>(null)
   const chatContainer = React.useRef<HTMLDivElement>(null)
@@ -47,7 +40,7 @@ export const Chat = () => {
     const workTime = Math.max(Number(args[0]), MIN_WORK_MINUTES)
     const breakTime = Math.max(Number(args[1]), MIN_BREAK_MINUTES)
 
-    startPomodoro(
+    start(
       isNaN(workTime) ? MIN_WORK_MINUTES : workTime,
       isNaN(breakTime) ? MIN_BREAK_MINUTES : breakTime
     )
@@ -77,9 +70,9 @@ export const Chat = () => {
           ref={messagesContainer}
           className="px-4 pt-3 mb-3 overflow-auto flex-1 basis-auto h-0 messages"
         >
-          {pomodoroStarted && <ChatPomodoro />}
+          {pomodoro.started && <ChatPomodoro />}
 
-          {(pomodoroMinimized || !pomodoroStarted) && (
+          {(pomodoro.minimized || !pomodoro.started) && (
             <div className="space-y-3.5" ref={chatContainer}>
               {messages.map((message, i) => (
                 <p className="text-sm" key={i} tabIndex={0}>
@@ -120,21 +113,17 @@ const CHAT_POMODORO_NAME = 'ChatPomodoro'
 
 const ChatPomodoro = () => {
   const context = useChatContext(CHAT_POMODORO_NAME)
-  const { started, minimized, minimize } = usePomodoroStore(
-    (state) => ({
-      started: state.started,
-      minimized: state.minimized,
-      minimize: state.minimize,
-    }),
-    shallow
-  )
+
+  const pomodoro = usePomodoro()
+  const { minimize } = usePomodoroActions()
+
   const { seconds, setSeconds, totalSeconds } = useTimer({
-    timerStarted: started,
+    timerStarted: pomodoro.started,
   })
 
   const onShowPomodoro = () => minimize(false)
 
-  return minimized ? (
+  return pomodoro.minimized ? (
     createPortal(
       <button className="justify-self-end font-bungee px-2" onClick={onShowPomodoro}>
         {formatSecondsIntoMinutesAndSeconds(seconds)}
@@ -161,28 +150,20 @@ const ChatPomodoroImpl = ({
   totalSeconds,
   children,
 }: ChatPomodoroImplProps) => {
-  const { started, minimizePomodoro, pausePomodoro, stopPomodoro, isPaused } = usePomodoroStore(
-    (state) => ({
-      started: state.started,
-      minimizePomodoro: state.minimize,
-      pausePomodoro: state.pause,
-      stopPomodoro: state.stop,
-      isPaused: state.paused,
-    }),
-    shallow
-  )
+  const pomodoro = usePomodoro()
+  const pomodoroActions = usePomodoroActions()
 
   const percentage = Math.max(((totalSeconds - seconds) / totalSeconds) * 100, 1)
 
-  const onPlay = () => pausePomodoro(false)
-  const onPause = () => pausePomodoro(true)
+  const onPlay = () => pomodoroActions.pause(false)
+  const onPause = () => pomodoroActions.pause(true)
   const onStop = () => {
-    stopPomodoro()
+    pomodoroActions.stop()
     setSeconds?.(60 * 30)
   }
-  const onShowChat = () => minimizePomodoro()
+  const onShowChat = () => pomodoroActions.minimize()
 
-  return started ? (
+  return pomodoro.started ? (
     <div className="justify-start items-center gap-8 h-full flex flex-col pt-8">
       <div className="w-[240px] h-[240px]">
         <CircularProgress value={percentage} className="w-full align-middle" strokeWidth={5}>
@@ -214,7 +195,7 @@ const ChatPomodoroImpl = ({
           </button>
         </Tooltip>
 
-        {isPaused ? (
+        {pomodoro.paused ? (
           <Tooltip content="Play">
             <button
               className="hover:bg-gray-800 text-gray-200 p-2 rounded-lg select-none"
