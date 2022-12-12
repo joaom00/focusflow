@@ -11,7 +11,7 @@ import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from '@/s
 
 import { CheckboxTodo } from './CheckboxTodo'
 import { ContextMenu } from './ContextMenu'
-import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries/todo'
+import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries'
 import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
 

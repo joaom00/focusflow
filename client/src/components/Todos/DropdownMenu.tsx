@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
+import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries'
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
@@ -20,7 +20,7 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
     (state) => ({ id: state.id, value: state.value, status: state.status }),
     shallow
   )
-  const actions = useTaskActions()
+  const taskActions = useTaskActions()
 
   const handleCopyText = () => {
     window.navigator.clipboard.writeText(task.value)
@@ -29,13 +29,13 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
 
   const handleEdit = () => {
     setTimeout(() => {
-      actions.updateEdit(true)
+      taskActions.updateEdit(true)
     }, 1)
   }
 
   const handleInsertTaskBelow = () => {
     setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], actions.insertTaskBelow)
+      queryClient.setQueryData<Task[]>(['tasks'], taskActions.insertTaskBelow)
     }, 1)
   }
 
@@ -43,13 +43,13 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
     const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
     if (!currentTasks) return
 
-    const duplicatedTask = actions.generateTaskWithPositionBelow(currentTasks)
+    const duplicatedTask = taskActions.generateTaskWithPositionBelow(currentTasks)
     duplicatedTask.edit = false
     duplicatedTask.status = task.status
     duplicatedTask.content = task.value
 
     setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], actions.duplicateTask(duplicatedTask))
+      queryClient.setQueryData<Task[]>(['tasks'], taskActions.duplicateTask(duplicatedTask))
       createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
     }, 1)
   }

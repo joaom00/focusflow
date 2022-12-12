@@ -22,29 +22,26 @@ export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
   )
   const queryClient = useQueryClient()
 
-  const updateStatusMutation = useMutation(
-    async (id: string) => {
-      const { data } = await api.patch(`tasks/${id}`, {
+  const updateStatusMutation = useMutation({
+    mutationFn: async (id: string) => {
+      api.patch(`tasks/${id}`, {
         status: task.status === 'TODO' ? 'DONE' : 'TODO',
       })
-      return data
     },
-    {
-      onMutate: async () => {
-        await queryClient.cancelQueries(['tasks'])
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] })
 
-        queryClient.setQueryData<Task[]>(['tasks'], (currentTasks) =>
-          currentTasks
-            ? currentTasks.map((currentTask) =>
-                currentTask.id === task.id
-                  ? { ...currentTask, status: currentTask.status === 'TODO' ? 'DONE' : 'TODO' }
-                  : currentTask
-              )
-            : undefined
-        )
-      },
-    }
-  )
+      queryClient.setQueryData<Task[]>(['tasks'], (currentTasks) =>
+        currentTasks
+          ? currentTasks.map((currentTask) =>
+              currentTask.id === task.id
+                ? { ...currentTask, status: currentTask.status === 'TODO' ? 'DONE' : 'TODO' }
+                : currentTask
+            )
+          : undefined
+      )
+    },
+  })
 
   const handleClick = () => {
     updateStatusMutation.mutate(task.id)

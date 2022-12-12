@@ -1,7 +1,7 @@
 import React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { useTasksQuery } from '@/queries/todo'
+import { useTasksQuery } from '@/queries'
 
 import { ScrollArea } from '../ScrollArea'
 import { Task } from './Todo'
