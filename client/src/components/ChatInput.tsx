@@ -8,6 +8,7 @@ import { useLazyRef } from '../hooks/useLazyRef'
 import { DoublyLinkedList } from '../lib/DoublyLinkedList'
 import { AccountDialog } from './AccountDialog'
 import { useUserAuthenticated } from '@/stores'
+import { motion } from 'framer-motion'
 
 type ChatInputFieldProps = {
   value: string
@@ -146,17 +147,41 @@ export const ChatInputField = ({
       <Command.Root onSelect={onCommandSelect} open={open}>
         <CmdkCommand.Input className="hidden" value={value} onValueChange={onValueChange} />
 
-        <Textarea
-          ref={ref}
-          name="message"
-          minRows={1}
-          maxRows={5}
-          placeholder="Send a message"
-          className="w-full px-4 py-3 text-xs font-medium bg-gray-700 outline-none placeholder-gray-400 resize-none rounded-md border border-transparent focus:bg-gray-900 focus:border-pink-600 transition-all duration-150"
-          value={value}
-          onChange={onInputChange}
-          onKeyDown={onInputKeyDown}
-        />
+        <div className="relative">
+          <motion.div
+            className="absolute left-[17px] top-1/2 text-xs font-medium text-gray-400 leading-none pointer-events-none"
+            initial="noTyping"
+            animate={value.length ? 'typing' : 'noTyping'}
+            variants={{
+              noTyping: {
+                x: 0,
+                y: 'calc(-50% - 3.2px)',
+                opacity: 1,
+              },
+              typing: {
+                x: 8,
+                y: 'calc(-50% - 3.2px)',
+                opacity: 0,
+              },
+            }}
+            transition={{
+              duration: 0.4,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            Send a message
+          </motion.div>
+          <Textarea
+            ref={ref}
+            name="message"
+            minRows={1}
+            maxRows={5}
+            className="w-full px-4 py-3 text-xs font-medium bg-gray-700 outline-none placeholder-gray-400 resize-none rounded-md border border-transparent focus:bg-gray-900 focus:border-pink-600 transition-all duration-150"
+            value={value}
+            onChange={onInputChange}
+            onKeyDown={onInputKeyDown}
+          />
+        </div>
       </Command.Root>
     </form>
   ) : (

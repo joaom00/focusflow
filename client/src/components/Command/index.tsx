@@ -3,6 +3,7 @@ import { Command as Cmdk, useCommandState } from 'cmdk'
 import { PomodoroItems } from './PomodoroItems'
 import { useAudioPlayerStore } from '../../stores'
 import { composeEventHandlers } from '../../utils/composeEventHandlers'
+import clsx from 'clsx'
 
 /* -------------------------------------------------------------------------------------------------
  * Root
@@ -17,9 +18,12 @@ export const Root = ({ onSelect, open, children }: RootProps) => {
   return (
     <div className="relative">
       <Cmdk
-        className={`border w-full px-1 rounded-md transition-colors ease-linear duration-100 absolute bottom-1 ${
-          open ? 'bg-gray-800 border-gray-700' : 'bg-transparent border-transparent'
-        }`}
+        className={clsx(
+          'border w-full px-1 rounded-md transition-colors ease-linear duration-100 absolute bottom-1',
+          open
+            ? 'bg-gray-800/50 border-gray-700 backdrop-filter backdrop-blur-lg'
+            : 'bg-transparent border-transparent'
+        )}
       >
         <Empty open={open} />
 
@@ -48,6 +52,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>(({ onSelect, open }, fo
       className="px-2 py-2 gap-10 command-heading:text-xs command-heading:uppercase command-heading:tracking-widest command-heading:font-medium command-heading:py-2 command-heading:text-gray-400"
     >
       <PomodoroItems onSelect={onSelect} />
+
       <Cmdk.Group heading="Song">
         <Item
           value="/play"
@@ -59,7 +64,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>(({ onSelect, open }, fo
         <Item
           value="/pause-song"
           onSelect={composeEventHandlers(onSelect, () => play(false))}
-          description='Pause current song'
+          description="Pause current song"
         >
           /pause
         </Item>
@@ -82,7 +87,7 @@ type ItemProps = React.ComponentProps<typeof Cmdk.Item> & {
 export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
   ({ description, className, children, ...props }, forwardedRef) => {
     const baseClasses =
-      'px-2 py-1.5 rounded-sm cursor-pointer selected:bg-gray-750 text-sm font-medium select-none'
+      'px-2 py-1.5 rounded-md cursor-pointer selected:bg-gray-750 text-[13px] font-medium select-none'
 
     return (
       <Cmdk.Item {...props} ref={forwardedRef} className={`${baseClasses} ${className}`}>

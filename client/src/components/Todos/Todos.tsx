@@ -27,7 +27,7 @@ export const Todos = () => {
     <motion.div
       id="task-sidebar"
       className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-none"
-      initial="closed"
+      initial={tasksSidebarOpen ? 'open' : 'closed'}
       animate={tasksSidebarOpen ? 'open' : 'closed'}
       variants={{
         open: { x: 0 },
