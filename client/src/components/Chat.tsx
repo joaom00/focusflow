@@ -9,7 +9,8 @@ import { CircularProgress } from './CircularProgress'
 import { Tooltip } from './Tooltip'
 import { usePomodoro, usePomodoroActions } from '../stores'
 import { useTasksStore } from '@/stores/tasks'
-import { ReaderIcon } from '@radix-ui/react-icons'
+import { ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
+import { useAuthStore } from '@/stores/auth'
 
 const CHAT_NAME = 'Chat'
 
@@ -23,6 +24,8 @@ const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
 export const Chat = () => {
+  const userAuthenticated = useAuthStore((state) => state.authenticated)
+  const logout = useAuthStore((state) => state.logout)
   const pomodoro = usePomodoro()
   const { start } = usePomodoroActions()
 
@@ -55,15 +58,28 @@ export const Chat = () => {
         >
           <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">Chat</p>
 
-          <Tooltip content={tasksOpen ? 'Close tasks list' : 'Open tasks list'}>
-            <button
-              aria-label={tasksOpen ? 'Close tasks list' : 'Open tasks list'}
-              onClick={toggleOpen}
-              className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md ml-auto hover:text-gray-100 duration-150"
-            >
-              <ReaderIcon aria-hidden />
-            </button>
-          </Tooltip>
+          {userAuthenticated && (
+            <div className="ml-auto flex items-center gap-1">
+              <Tooltip content={tasksOpen ? 'Close tasks list' : 'Open tasks list'}>
+                <button
+                  aria-label={tasksOpen ? 'Close tasks list' : 'Open tasks list'}
+                  onClick={toggleOpen}
+                  className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md hover:text-gray-100 duration-150"
+                >
+                  <ReaderIcon aria-hidden />
+                </button>
+              </Tooltip>
+              <Tooltip content="Log out">
+                <button
+                  aria-label="Log out"
+                  onClick={logout}
+                  className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md hover:text-gray-100 duration-150"
+                >
+                  <ExitIcon aria-hidden />
+                </button>
+              </Tooltip>
+            </div>
+          )}
         </header>
 
         <div

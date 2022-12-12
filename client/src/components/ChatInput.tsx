@@ -28,6 +28,7 @@ export const ChatInputField = ({
   onCommandEnter,
 }: ChatInputFieldProps) => {
   const authenticated = useAuthStore((state) => state.authenticated)
+
   const [open, setOpen] = React.useState(false)
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [currentArg, setCurrentArg] = React.useState(0)
@@ -162,7 +163,7 @@ export const ChatInputField = ({
     <div className="px-2 pb-2">
       <AccountDialog>
         <button className="w-full px-4 py-3 text-xs font-medium bg-pink-600 rounded-md border border-transparent text-center">
-Create an account to join the conversation!
+          Create an account to join the conversation!
         </button>
       </AccountDialog>
     </div>

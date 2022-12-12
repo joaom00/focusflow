@@ -16,19 +16,24 @@ type AuthStore = {
   setUser: (user: User) => void
   setAuthenticated: (authenticated: boolean) => void
   setToken: (token: string) => void
+  logout: () => void
+}
+
+const initialState = {
+  user: null,
+  token: '',
+  authenticated: false,
 }
 
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      user: null,
-      token: '',
-      authenticated: false,
+      ...initialState,
       setUser: (user) => set((state) => ({ ...state, user })),
       setAuthenticated: (authenticated) => set((state) => ({ ...state, authenticated })),
       setToken: (token) => set((state) => ({ ...state, token })),
+      logout: () => set((state) => ({ ...state, ...initialState })),
     }),
     { name: 'auth-storage' }
   )
 )
-

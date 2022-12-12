@@ -33,7 +33,7 @@ export const Todos = () => {
         open: { x: 0 },
         closed: { x: '-100%' },
       }}
-      transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+      transition={{ ease: [0.53, 0.21, 0, 1], duration: 0.5 }}
     >
       <header className="border-b border-b-gray-700 w-full text-center py-4 px-3 flex items-center justify-between">
         <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">To-do list</p>

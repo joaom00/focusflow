@@ -22,13 +22,15 @@ const useAxiosToken = () => {
 function App() {
   useAxiosToken()
 
+  const userAuthenticated = useAuthStore((state) => state.authenticated)
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipPrimitive.Provider>
         <div className="flex flex-col min-h-screen">
           <div className="relative flex-1">
             <Chat />
-            <Todos />
+            {userAuthenticated && <Todos />}
           </div>
           <AudioPlayer />
         </div>
