@@ -1,12 +1,21 @@
 import React from 'react'
-import { usePomodoro } from '../stores'
+import shallow from 'zustand/shallow'
+import {  usePomodoroStore } from '../stores'
 
 type Props = {
   timerStarted: boolean
 }
 
 export const useTimer = ({ timerStarted }: Props) => {
-  const pomodoro = usePomodoro()
+  const pomodoro = usePomodoroStore(
+    (state) => ({
+      workMinutes: state.workMinutes,
+      breakMinutes: state.breakMinutes,
+      started: state.started,
+      paused: state.paused,
+    }),
+    shallow
+  )
   const workInitialSeconds = 60 * pomodoro.workMinutes
   const breakInitialSeconds = 60 * pomodoro.breakMinutes
   const [seconds, setSeconds] = React.useState(workInitialSeconds)

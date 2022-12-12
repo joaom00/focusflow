@@ -1,10 +1,11 @@
+import { createStoreContext } from '@/lib/createContex'
 import cuid from 'cuid'
 import { createStore } from 'zustand'
 import type { Task } from '../components/Todos/Todos'
 
 type TaskStatus = 'TODO' | 'DONE'
 
-export interface TaskStore {
+export type TaskStore = {
   id: string
   value: string
   status: TaskStatus
@@ -28,9 +29,9 @@ export function createTaskStore(initialStore: InitialTaskStore) {
     ...initialStore,
     dropdownMenuOpen: false,
     actions: {
-      updateValue: (value) => set((state) => ({ ...state, value })),
-      updateStatus: (status) => set((state) => ({ ...state, status })),
-      updateEdit: (edit) => set((state) => ({ ...state, edit })),
+      updateValue: (value) => set({ value }),
+      updateStatus: (status) => set({ status }),
+      updateEdit: (edit) => set({ edit }),
       generateTaskWithPositionBelow: (currentTasks) => {
         const currentId = get().id
         const currentPosition = get().position
@@ -83,3 +84,6 @@ export function createTaskStore(initialStore: InitialTaskStore) {
     },
   }))
 }
+
+export const [TaskProvider, useTaskStore] = createStoreContext<TaskStore>('TaskStore')
+export const useTaskActions = () => useTaskStore((state) => state.actions)

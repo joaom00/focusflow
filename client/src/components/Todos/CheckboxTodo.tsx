@@ -1,10 +1,11 @@
 import { api } from '@/lib/api'
+import { useTaskStore } from '@/stores'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
+import shallow from 'zustand/shallow'
 import { CheckIcon } from '../../icons/CheckIcon'
-import { useTask } from './Todo'
 
 import type { Task } from './Todos'
 
@@ -15,7 +16,10 @@ interface CheckboxTodoProps {
 const MotionCheckboxRoot = motion(Checkbox.Root)
 
 export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
-  const task = useTask()
+  const task = useTaskStore(
+    (state) => ({ id: state.id, status: state.status, edit: state.edit }),
+    shallow
+  )
   const queryClient = useQueryClient()
 
   const updateStatusMutation = useMutation(

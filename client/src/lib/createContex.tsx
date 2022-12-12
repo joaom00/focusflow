@@ -35,21 +35,19 @@ export function createStoreContext<ContextValueType extends object | null>(
   function Provider(props: { store: StoreApi<ContextValueType> } & { children: React.ReactNode }) {
     const { children, store } = props
     return <Context.Provider value={store}>{children}</Context.Provider>
-  }
 
+  }
   function useContext<StateSlice>(
     selector: (state: ContextValueType) => StateSlice,
     equalityFn?: (a: StateSlice, b: StateSlice) => boolean
   ) {
-    const context = React.useContext(Context)
-    if (!context) {
-      // if a defaultContext wasn't specified, it's a required context.
+    const store = React.useContext(Context)
+    if (!store) {
       throw new Error(`\`useContext\` must be used within \`${rootComponentName}\``)
     }
-    return useStore<StoreApi<ContextValueType>, StateSlice>(context, selector, equalityFn)
+    return useStore<StoreApi<ContextValueType>, StateSlice>(store, selector, equalityFn)
   }
 
   Provider.displayName = rootComponentName + 'Provider'
   return [Provider, useContext] as const
 }
-

@@ -1,13 +1,17 @@
 import { Command as Cmdk } from 'cmdk'
 
-import { usePomodoro, usePomodoroActions } from '../../stores'
+import { usePomodoroActions, usePomodoroStore } from '../../stores'
 import { Presence } from '../Presence'
 import { Item } from '.'
 import { composeEventHandlers } from '../../utils/composeEventHandlers'
+import shallow from 'zustand/shallow'
 
 export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void }) => {
-  const pomodoro = usePomodoro()
-  const pomodoroActions = usePomodoroActions()
+  const pomodoro = usePomodoroStore(
+    (state) => ({ started: state.started, minimized: state.minimized, paused: state.paused }),
+    shallow
+  )
+  const { pause, stop, minimize } = usePomodoroActions()
 
   return (
     <Cmdk.Group heading="Pomodoro">
@@ -15,7 +19,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/stop"
           description="Stop timer"
-          onSelect={composeEventHandlers(onSelect, () => pomodoroActions.stop())}
+          onSelect={composeEventHandlers(onSelect, () => stop())}
         >
           /stop
         </Item>
@@ -35,7 +39,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/show-timer"
           description="Minimize chat and show timer"
-          onSelect={composeEventHandlers(onSelect, () => pomodoroActions.minimize(false))}
+          onSelect={composeEventHandlers(onSelect, () => minimize(false))}
         >
           /show-timer
         </Item>
@@ -45,7 +49,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/minimize"
           description="Minimize timer and show chat"
-          onSelect={composeEventHandlers(onSelect, () => pomodoroActions.minimize(true))}
+          onSelect={composeEventHandlers(onSelect, () => minimize(true))}
         >
           /minimize
         </Item>
@@ -55,7 +59,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/play-timer"
           description="Play timer"
-          onSelect={composeEventHandlers(onSelect, () => pomodoroActions.pause(false))}
+          onSelect={composeEventHandlers(onSelect, () => pause(false))}
         >
           /play
         </Item>
@@ -65,7 +69,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/pause-timer"
           description="Pause timer"
-          onSelect={composeEventHandlers(onSelect, () => pomodoroActions.pause())}
+          onSelect={composeEventHandlers(onSelect, () => pause())}
         >
           /pause
         </Item>

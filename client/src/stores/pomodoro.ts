@@ -1,7 +1,6 @@
 import create from 'zustand'
-import shallow from 'zustand/shallow'
 
-interface PomodoroState {
+type PomodoroState = {
   workMinutes: number
   breakMinutes: number
   started: boolean
@@ -24,26 +23,13 @@ export const usePomodoroStore = create<PomodoroState>()((set) => ({
   paused: false,
   minimized: false,
   actions: {
-    start: (workMinutes, breakMinutes) =>
-      set((state) => ({ ...state, started: true, workMinutes, breakMinutes })),
-    pause: (paused = true) => set((state) => ({ ...state, paused })),
-    minimize: (minimized = true) => set((state) => ({ ...state, minimized })),
-    stop: () => set((state) => ({ ...state, started: false, paused: false })),
-    setWorkMinutes: (workMinutes) => set((state) => ({ ...state, workMinutes })),
-    setBreakMinutes: (breakMinutes) => set((state) => ({ ...state, breakMinutes })),
+    start: (workMinutes, breakMinutes) => set({ started: true, workMinutes, breakMinutes }),
+    pause: (paused = true) => set({ paused }),
+    minimize: (minimized = true) => set({ minimized }),
+    stop: () => set({ started: false, paused: false }),
+    setWorkMinutes: (workMinutes) => set({ workMinutes }),
+    setBreakMinutes: (breakMinutes) => set({ breakMinutes }),
   },
 }))
 
-export const usePomodoro = () =>
-  usePomodoroStore(
-    (state) => ({
-      workMinutes: state.workMinutes,
-      breakMinutes: state.breakMinutes,
-      started: state.started,
-      paused: state.paused,
-      minimized: state.minimized,
-    }),
-    shallow
-  )
-
-export const usePomodoroActions = () => usePomodoroStore(state => state.actions)
+export const usePomodoroActions = () => usePomodoroStore((state) => state.actions)

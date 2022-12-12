@@ -13,10 +13,12 @@ type AuthStore = {
   authenticated: boolean
   user: User | null
   token: string
-  setUser: (user: User) => void
-  setAuthenticated: (authenticated: boolean) => void
-  setToken: (token: string) => void
-  logout: () => void
+  actions: {
+    setUser: (user: User) => void
+    setAuthenticated: (authenticated: boolean) => void
+    setToken: (token: string) => void
+    logout: () => void
+  }
 }
 
 const initialState = {
@@ -29,11 +31,18 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       ...initialState,
-      setUser: (user) => set((state) => ({ ...state, user })),
-      setAuthenticated: (authenticated) => set((state) => ({ ...state, authenticated })),
-      setToken: (token) => set((state) => ({ ...state, token })),
-      logout: () => set((state) => ({ ...state, ...initialState })),
+      actions: {
+        setUser: (user) => set({ user }),
+        setAuthenticated: (authenticated) => set({ authenticated }),
+        setToken: (token) => set({ token }),
+        logout: () => set({ ...initialState }),
+      },
     }),
-    { name: 'auth-storage' }
+    { name: 'auth-storage', partialize: (state) => ({ user: state.user, token: state.token, authenticated: state.authenticated }) }
   )
 )
+
+export const useUser = () => useAuthStore((state) => state.user)
+export const useToken = () => useAuthStore((state) => state.token)
+export const useUserAuthenticated = () => useAuthStore((state) => state.authenticated)
+export const useAuthActions = () => useAuthStore((state) => state.actions)

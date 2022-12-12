@@ -7,7 +7,7 @@ import * as Command from './Command'
 import { useLazyRef } from '../hooks/useLazyRef'
 import { DoublyLinkedList } from '../lib/DoublyLinkedList'
 import { AccountDialog } from './AccountDialog'
-import { useAuthStore } from '@/stores/auth'
+import { useUserAuthenticated } from '@/stores'
 
 type ChatInputFieldProps = {
   value: string
@@ -27,7 +27,7 @@ export const ChatInputField = ({
   onSubmit: onSubmitProp,
   onCommandEnter,
 }: ChatInputFieldProps) => {
-  const authenticated = useAuthStore((state) => state.authenticated)
+  const authenticated = useUserAuthenticated()
 
   const [open, setOpen] = React.useState(false)
   const [currentIndex, setCurrentIndex] = React.useState(0)

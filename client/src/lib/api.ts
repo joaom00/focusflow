@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores'
 import axios from 'axios'
 
 export const api = axios.create({
@@ -6,11 +6,10 @@ export const api = axios.create({
 })
 
 api.interceptors.response.use(
-  (response) => response
-  ,
+  (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      useAuthStore.setState({ user: null, token: '', authenticated: false })
+      useAuthStore.getState().actions.logout()
     }
     return Promise.reject(error)
   }

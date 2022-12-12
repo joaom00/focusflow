@@ -1,11 +1,12 @@
 import React from 'react'
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
-import { useTask, useTaskActions } from './Todo'
 import { Task } from './Todos'
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries/todo'
+import { useTaskActions, useTaskStore } from '@/stores'
+import shallow from 'zustand/shallow'
 
 type MenuProps = {
   children: React.ReactNode
@@ -16,7 +17,10 @@ export const ContextMenu = ({ children }: MenuProps) => {
   const createTask = useCreateTaskMutation()
   const deleteTask = useDeleteTaskMutation()
 
-  const task = useTask()
+  const task = useTaskStore(
+    (state) => ({ id: state.id, value: state.value, status: state.status }),
+    shallow
+  )
   const actions = useTaskActions()
 
   const handleCopyText = () => {

@@ -1,5 +1,5 @@
 import { useUsernameFieldValidation } from '@/hooks/useUsernameFieldValidation'
-import { useAuthStore, User } from '@/stores/auth'
+import { useAuthActions, User } from '@/stores'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -12,7 +12,6 @@ import { PasswordTooltip } from './PasswordTooltip'
 import { Button } from './Button'
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import shallow from 'zustand/shallow'
 
 const registerSchema = z
   .object({
@@ -64,10 +63,7 @@ const useSignUpMutation = () => {
 }
 
 export const SignUpForm = () => {
-  const {setUser, setToken, setAuthtenticated } = useAuthStore(
-    (state) => ({ setUser: state.setUser, setToken: state.setToken, setAuthtenticated: state.setAuthenticated }),
-    shallow
-  )
+  const authActions = useAuthActions()
   const methods = useForm<FormData>({ resolver: zodResolver(registerSchema) })
   const { handleSubmit } = methods
   const signUpMutation = useSignUpMutation()
@@ -76,10 +72,10 @@ export const SignUpForm = () => {
     signUpMutation.mutate(
       { username, email, password },
       {
-        onSuccess: ({user, token }) => {
-          setUser(user)
-          setToken(token)
-          setAuthtenticated(true)
+        onSuccess: ({ user, token }) => {
+          authActions.setUser(user)
+          authActions.setToken(token)
+          authActions.setAuthenticated(true)
           toast.success('Account created successfully!')
         },
       }

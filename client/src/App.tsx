@@ -7,12 +7,12 @@ import { Button } from './components/Button'
 import { Chat } from './components/Chat'
 import { Todos } from './components/Todos/Todos'
 import { api } from './lib/api'
-import { useAuthStore } from './stores/auth'
+import { useToken, useUserAuthenticated } from '@/stores'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } })
 
 const useAxiosToken = () => {
-  const token = useAuthStore((state) => state.token)
+  const token = useToken()
 
   if (token) {
     api.defaults.headers.authorization = `Bearer ${token}`
@@ -22,7 +22,7 @@ const useAxiosToken = () => {
 function App() {
   useAxiosToken()
 
-  const userAuthenticated = useAuthStore((state) => state.authenticated)
+  const userAuthenticated = useUserAuthenticated()
 
   return (
     <QueryClientProvider client={queryClient}>

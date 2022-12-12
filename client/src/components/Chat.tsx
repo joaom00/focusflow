@@ -7,10 +7,16 @@ import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
 import { ChatInputField } from './ChatInput'
 import { CircularProgress } from './CircularProgress'
 import { Tooltip } from './Tooltip'
-import { usePomodoro, usePomodoroActions } from '../stores'
-import { useTasksStore } from '@/stores/tasks'
+import {
+  usePomodoroStore,
+  usePomodoroActions,
+  useTasksSidebarOpen,
+  useToggleTasksSidebar,
+  useUserAuthenticated,
+  useAuthActions,
+} from '@/stores'
 import { ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
-import { useAuthStore } from '@/stores/auth'
+import shallow from 'zustand/shallow'
 
 const CHAT_NAME = 'Chat'
 
@@ -24,13 +30,19 @@ const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
 export const Chat = () => {
-  const userAuthenticated = useAuthStore((state) => state.authenticated)
-  const logout = useAuthStore((state) => state.logout)
-  const pomodoro = usePomodoro()
-  const { start } = usePomodoroActions()
+  const userAuthenticated = useUserAuthenticated()
+  const authActions = useAuthActions()
+  const pomodoro = usePomodoroStore(
+    (state) => ({
+      started: state.started,
+      minimized: state.minimized,
+    }),
+    shallow
+  )
+  const pomodoroActions = usePomodoroActions()
 
-  const tasksOpen = useTasksStore((state) => state.open)
-  const toggleOpen = useTasksStore((state) => state.toggleOpen)
+  const tasksSidebarOpen = useTasksSidebarOpen()
+  const toggleTasksSidebar = useToggleTasksSidebar()
 
   const [messages, setMessages] = React.useState<string[]>([])
   const [commandValue, setCommandValue] = React.useState('')
@@ -43,7 +55,7 @@ export const Chat = () => {
     const workTime = Math.max(Number(args[0]), MIN_WORK_MINUTES)
     const breakTime = Math.max(Number(args[1]), MIN_BREAK_MINUTES)
 
-    start(
+    pomodoroActions.start(
       isNaN(workTime) ? MIN_WORK_MINUTES : workTime,
       isNaN(breakTime) ? MIN_BREAK_MINUTES : breakTime
     )
@@ -60,10 +72,10 @@ export const Chat = () => {
 
           {userAuthenticated && (
             <div className="ml-auto flex items-center gap-1">
-              <Tooltip content={tasksOpen ? 'Close tasks list' : 'Open tasks list'}>
+              <Tooltip content={tasksSidebarOpen ? 'Close tasks list' : 'Open tasks list'}>
                 <button
-                  aria-label={tasksOpen ? 'Close tasks list' : 'Open tasks list'}
-                  onClick={toggleOpen}
+                  aria-label={tasksSidebarOpen ? 'Close tasks list' : 'Open tasks list'}
+                  onClick={toggleTasksSidebar}
                   className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md hover:text-gray-100 duration-150"
                 >
                   <ReaderIcon aria-hidden />
@@ -72,7 +84,7 @@ export const Chat = () => {
               <Tooltip content="Log out">
                 <button
                   aria-label="Log out"
-                  onClick={logout}
+                  onClick={authActions.logout}
                   className="text-gray-400 hover:bg-gray-700/50 w-8 h-8 flex items-center justify-center rounded-md hover:text-gray-100 duration-150"
                 >
                   <ExitIcon aria-hidden />
@@ -130,7 +142,13 @@ const CHAT_POMODORO_NAME = 'ChatPomodoro'
 const ChatPomodoro = () => {
   const context = useChatContext(CHAT_POMODORO_NAME)
 
-  const pomodoro = usePomodoro()
+  const pomodoro = usePomodoroStore(
+    (state) => ({
+      started: state.started,
+      minimized: state.minimized,
+    }),
+    shallow
+  )
   const { minimize } = usePomodoroActions()
 
   const { seconds, setSeconds, totalSeconds } = useTimer({
@@ -166,18 +184,21 @@ const ChatPomodoroImpl = ({
   totalSeconds,
   children,
 }: ChatPomodoroImplProps) => {
-  const pomodoro = usePomodoro()
-  const pomodoroActions = usePomodoroActions()
+  const pomodoro = usePomodoroStore(
+    (state) => ({ started: state.started, paused: state.paused }),
+    shallow
+  )
+  const { pause, minimize, stop } = usePomodoroActions()
 
   const percentage = Math.max(((totalSeconds - seconds) / totalSeconds) * 100, 1)
 
-  const onPlay = () => pomodoroActions.pause(false)
-  const onPause = () => pomodoroActions.pause(true)
+  const onPlay = () => pause(false)
+  const onPause = () => pause(true)
   const onStop = () => {
-    pomodoroActions.stop()
+    stop()
     setSeconds?.(60 * 30)
   }
-  const onShowChat = () => pomodoroActions.minimize()
+  const onShowChat = () => minimize()
 
   return pomodoro.started ? (
     <div className="justify-start items-center gap-8 h-full flex flex-col pt-8">

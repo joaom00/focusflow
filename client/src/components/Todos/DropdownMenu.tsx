@@ -4,9 +4,10 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useTask, useTaskActions } from './Todo'
 
 import type { Task } from './Todos'
+import { useTaskStore, useTaskActions } from '@/stores'
+import shallow from 'zustand/shallow'
 
 type DropdownProps = Dropdown.DropdownMenuProps
 
@@ -15,7 +16,10 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
   const createTask = useCreateTaskMutation()
   const deleteTask = useDeleteTaskMutation()
 
-  const task = useTask()
+  const task = useTaskStore(
+    (state) => ({ id: state.id, value: state.value, status: state.status }),
+    shallow
+  )
   const actions = useTaskActions()
 
   const handleCopyText = () => {

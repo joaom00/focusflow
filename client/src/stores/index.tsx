@@ -1,3 +1,5 @@
 export * from './pomodoro'
 export * from './audio-player'
-export * from './todo'
+export * from './tasks-sidebar'
+export * from './task'
+export * from './auth'

@@ -1,11 +1,10 @@
 import { api } from '@/lib/api'
-import { useAuthStore, User } from '@/stores/auth'
+import { useAuthActions, User } from '@/stores'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import shallow from 'zustand/shallow'
 import { Button } from './Button'
 import { Input } from './Input'
 
@@ -42,14 +41,7 @@ const useSignInMutation = () => {
 }
 
 export const SignInForm = () => {
-  const { setUser, setToken, setAuthtenticated } = useAuthStore(
-    (state) => ({
-      setUser: state.setUser,
-      setToken: state.setToken,
-      setAuthtenticated: state.setAuthenticated,
-    }),
-    shallow
-  )
+  const authActions = useAuthActions()
   const methods = useForm<FormData>({ resolver: zodResolver(loginSchema) })
   const { handleSubmit } = methods
   const signInMutation = useSignInMutation()
@@ -57,9 +49,9 @@ export const SignInForm = () => {
   const onSubmit = handleSubmit((data) => {
     signInMutation.mutate(data, {
       onSuccess: ({ user, token }) => {
-        setUser(user)
-        setToken(token)
-        setAuthtenticated(true)
+        authActions.setUser(user)
+        authActions.setToken(token)
+        authActions.setAuthenticated(true)
       },
     })
   })

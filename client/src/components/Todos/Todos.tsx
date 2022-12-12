@@ -6,7 +6,7 @@ import { useTasksQuery } from '@/queries/todo'
 import { ScrollArea } from '../ScrollArea'
 import { Task } from './Todo'
 import { AddTodoButton } from './AddTodoButton'
-import { useTasksStore } from '@/stores/tasks'
+import { useTasksSidebarOpen } from '@/stores'
 
 export type Task = {
   id: string
@@ -19,7 +19,7 @@ export type Task = {
 export const Todos = () => {
   const tasksQuery = useTasksQuery()
 
-  const open = useTasksStore((state) => state.open)
+  const tasksSidebarOpen = useTasksSidebarOpen()
 
   const scrollViewportRef = React.useRef<HTMLDivElement>(null)
 
@@ -28,7 +28,7 @@ export const Todos = () => {
       id="task-sidebar"
       className="bg-gray-900 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-r border-r-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:left-0 md:right-auto overflow-none"
       initial="closed"
-      animate={open ? 'open' : 'closed'}
+      animate={tasksSidebarOpen ? 'open' : 'closed'}
       variants={{
         open: { x: 0 },
         closed: { x: '-100%' },

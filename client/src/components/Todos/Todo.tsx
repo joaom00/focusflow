@@ -7,8 +7,7 @@ import { motion } from 'framer-motion'
 import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 
-import { createTaskStore, type TaskStore } from '@/stores'
-import { createStoreContext } from '@/lib/createContex'
+import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from '@/stores'
 
 import { CheckboxTodo } from './CheckboxTodo'
 import { ContextMenu } from './ContextMenu'
@@ -17,20 +16,6 @@ import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
 
 import { type Task as TTask } from './Todos'
-
-const [TaskProvider, useTaskStore] = createStoreContext<TaskStore>('TaskStore')
-export const useTask = () =>
-  useTaskStore(
-    (state) => ({
-      id: state.id,
-      value: state.value,
-      status: state.status,
-      edit: state.edit,
-      position: state.position,
-    }),
-    shallow
-  )
-export const useTaskActions = () => useTaskStore((state) => state.actions)
 
 type TaskProps = {
   id: string
@@ -54,7 +39,16 @@ const TaskImpl = () => {
   const createTask = useCreateTaskMutation()
   const updateTask = useUpdateTaskMutation()
 
-  const task = useTask()
+  const task = useTaskStore(
+    (state) => ({
+      id: state.id,
+      value: state.value,
+      status: state.status,
+      edit: state.edit,
+      position: state.position,
+    }),
+    shallow
+  )
   const actions = useTaskActions()
 
   const checkboxId = React.useId()
