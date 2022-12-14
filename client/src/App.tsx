@@ -5,7 +5,7 @@ import { ToastBar, Toaster } from 'react-hot-toast'
 import { AudioPlayer } from './components/AudioPlayer'
 import { Button } from './components/Button'
 import { Chat } from './components/Chat'
-import { Todos } from './components/Todos/Todos'
+import { Tasks } from './components/Tasks/Tasks'
 import { api } from './lib/api'
 import { useToken, useUserAuthenticated } from '@/stores'
 
@@ -21,7 +21,6 @@ const useAxiosToken = () => {
 
 function App() {
   useAxiosToken()
-
   const userAuthenticated = useUserAuthenticated()
 
   return (
@@ -30,7 +29,7 @@ function App() {
         <div className="flex flex-col min-h-screen">
           <div className="relative flex-1">
             <Chat />
-            {userAuthenticated && <Todos />}
+            {userAuthenticated && <Tasks />}
           </div>
           <AudioPlayer />
         </div>

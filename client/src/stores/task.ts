@@ -1,7 +1,7 @@
 import { createStoreContext } from '@/lib/createContex'
 import cuid from 'cuid'
 import { createStore } from 'zustand'
-import type { Task } from '../components/Todos/Todos'
+import type { Task } from '../components/Tasks/Tasks'
 
 type TaskStatus = 'TODO' | 'DONE'
 
@@ -36,11 +36,11 @@ export function createTaskStore(initialStore: InitialTaskStore) {
         const currentId = get().id
         const currentPosition = get().position
         const currentTaskIndex = currentTasks.findIndex((task) => task.id === currentId)
-        const nextTodo = currentTasks[currentTaskIndex + 1]
+        const nextTask = currentTasks[currentTaskIndex + 1]
         let newTaskPosition = parseFloat(currentPosition) + 1
-        if (nextTodo) {
-          const nextTodoPosition = nextTodo.position
-          newTaskPosition = (parseFloat(currentPosition) + parseFloat(nextTodoPosition)) / 2
+        if (nextTask) {
+          const nextTaskPosition = nextTask.position
+          newTaskPosition = (parseFloat(currentPosition) + parseFloat(nextTaskPosition)) / 2
         }
         const newTask: Task = {
           id: cuid(),

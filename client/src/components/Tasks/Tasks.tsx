@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useTasksQuery } from '@/queries'
 
 import { ScrollArea } from '../ScrollArea'
-import { Task } from './Todo'
-import { AddTodoButton } from './AddTodoButton'
+import { Task } from './Task'
+import { AddTaskButton } from './AddTaskButton'
 import { useTasksSidebarOpen } from '@/stores'
 
 export type Task = {
@@ -16,11 +16,9 @@ export type Task = {
   position: string
 }
 
-export const Todos = () => {
+export const Tasks = () => {
   const tasksQuery = useTasksQuery()
-
   const tasksSidebarOpen = useTasksSidebarOpen()
-
   const scrollViewportRef = React.useRef<HTMLDivElement>(null)
 
   return (
@@ -54,7 +52,7 @@ export const Todos = () => {
             ))}
           </AnimatePresence>
         </ul>
-        <AddTodoButton />
+        <AddTaskButton />
       </ScrollArea>
     </motion.div>
   )

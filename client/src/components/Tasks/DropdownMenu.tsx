@@ -5,7 +5,7 @@ import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icon
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
-import type { Task } from './Todos'
+import type { Task } from './Tasks'
 import { useTaskStore, useTaskActions } from '@/stores'
 import shallow from 'zustand/shallow'
 

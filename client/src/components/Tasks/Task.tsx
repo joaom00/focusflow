@@ -9,13 +9,13 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from '@/stores'
 
-import { CheckboxTodo } from './CheckboxTodo'
+import { CheckboxTask } from './CheckboxTask'
 import { ContextMenu } from './ContextMenu'
 import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries'
 import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
 
-import { type Task as TTask } from './Todos'
+import { type Task as TTask } from './Tasks'
 
 type TaskProps = {
   id: string
@@ -211,7 +211,7 @@ const TaskImpl = () => {
     >
       <ContextMenu>
         <motion.div className="group hover:bg-gray-750 min-h-[36px] h-full grid relative data-[state=open]:bg-gray-750">
-          <CheckboxTodo id={checkboxId} />
+          <CheckboxTask id={checkboxId} />
 
           <div className="absolute top-1/2 right-4 -translate-y-1/2 flex gap-1">
             <IconButton

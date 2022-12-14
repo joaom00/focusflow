@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { api } from '@/lib/api'
 
-import type { Task } from '@/components/Todos/Todos'
+import type { Task } from '@/components/Tasks/Tasks'
 
 /* -------------------------------------------------------------------------------------------------
  * useTasksQuery
@@ -66,8 +66,8 @@ export const useCreateTaskMutation = () => {
         const nextTask = currentTasks[currentFocusedTaskIndex + 1]
         let newTaskPosition = parseFloat(currentPosition) + 1
         if (nextTask) {
-          const nextTodoPosition = nextTask.position
-          newTaskPosition = (parseFloat(currentPosition) + parseFloat(nextTodoPosition)) / 2
+          const nextTaskPosition = nextTask.position
+          newTaskPosition = (parseFloat(currentPosition) + parseFloat(nextTaskPosition)) / 2
         }
         const newTask: Task = {
           id: cuid(),
@@ -168,7 +168,7 @@ export const useDeleteTaskMutation = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-     api.delete(`tasks/${id}`)
+      api.delete(`tasks/${id}`)
     },
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] })

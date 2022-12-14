@@ -1,26 +1,27 @@
 import React from 'react'
 import { PlusIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
-import type { Task } from './Todos'
 import cuid from 'cuid'
 
-export const AddTodoButton = () => {
+import type { Task } from './Tasks'
+
+export const AddTaskButton = () => {
   const queryClient = useQueryClient()
   const ref = React.useRef<HTMLDivElement>(null)
 
-  const onAddTodo = () => {
-    queryClient.setQueryData<Task[]>(['tasks'], (currentTodos) => {
-      if (currentTodos?.length) {
-        const lastTodo = currentTodos[currentTodos.length - 1]
-        const position = parseInt(lastTodo.position) + 1
-        const newTodo: Task = {
+  const handleAddTask = () => {
+    queryClient.setQueryData<Task[]>(['tasks'], (currentTasks) => {
+      if (currentTasks?.length) {
+        const lastTask = currentTasks[currentTasks.length - 1]
+        const position = parseInt(lastTask.position) + 1
+        const newTask: Task = {
           id: cuid(),
           status: 'TODO',
           edit: true,
           content: '',
           position: String(position),
         }
-        return [...currentTodos, newTodo]
+        return [...currentTasks, newTask]
       }
       return [{ id: cuid(), status: 'TODO', edit: true, content: '', position: '1' }]
     })
@@ -36,9 +37,12 @@ export const AddTodoButton = () => {
       <button
         type="button"
         className="text-sm flex items-center gap-2 rounded-lg text-gray-300 px-2 py-1 duration-200 relative add-task-button hover:text-white group transition-colors"
-        onClick={onAddTodo}
+        onClick={handleAddTask}
       >
-        <div className="border-2 border-gray-400 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center group-hover:border-white transition-colors duration-200">
+        <div
+          aria-hidden
+          className="border-2 border-gray-400 w-[14px] h-[14px] rounded-[4px] flex justify-center items-center group-hover:border-white transition-colors duration-200"
+        >
           <PlusIcon className="group-hover:text-white" />
         </div>
         New task

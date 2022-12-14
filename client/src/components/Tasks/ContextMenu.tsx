@@ -1,7 +1,7 @@
 import React from 'react'
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
-import { Task } from './Todos'
+import { Task } from './Tasks'
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries'

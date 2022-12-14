@@ -128,7 +128,7 @@ importers:
       vite: ^3.1.0
       vite-tsconfig-paths: ^3.5.1
       zod: ^3.19.1
-      zustand: ^4.1.1
+      zustand: ^4.1.5
     dependencies:
       '@hookform/resolvers': registry.npmmirror.com/@hookform/resolvers/2.9.8_react-hook-form@7.37.0
       '@radix-ui/react-checkbox': registry.npmmirror.com/@radix-ui/react-checkbox/1.0.0_biqbaboplfbrettd7655fr4n2y
@@ -155,7 +155,7 @@ importers:
       react-icons: registry.npmmirror.com/react-icons/4.4.0_react@18.2.0
       react-textarea-autosize: registry.npmmirror.com/react-textarea-autosize/8.3.4_iapumuv4e6jcjznwuxpf4tt22e
       zod: registry.npmmirror.com/zod/3.19.1
-      zustand: registry.npmmirror.com/zustand/4.1.2_react@18.2.0
+      zustand: 4.1.5_react@18.2.0
     devDependencies:
       '@types/react': registry.npmmirror.com/@types/react/18.0.21
       '@types/react-dom': registry.npmmirror.com/@types/react-dom/18.0.6
@@ -797,6 +797,14 @@ packages:
       is-number: 7.0.0
     dev: true
 
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: registry.npmmirror.com/react/18.2.0
+    dev: false
+
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
@@ -810,6 +818,22 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
     dev: true
+
+  /zustand/4.1.5_react@18.2.0:
+    resolution: {integrity: sha512-PsdRT8Bvq22Yyh1tvpgdHNE7OAeFKqJXUxtJvj1Ixw2B9O2YZ1M34ImQ+xyZah4wZrR4lENMoDUutKPpyXCQ/Q==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      react: registry.npmmirror.com/react/18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
 
   registry.npmmirror.com/@ampproject/remapping/2.2.0:
     resolution: {integrity: sha512-qRmjj8nj9qmLTQXXmaR1cck3UXSRMPrbsLJAasZpF+t3riI71BXed5ebIOYwQntykeZuhjsdweEc9BxH5Jc26w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@ampproject/remapping/-/remapping-2.2.0.tgz}
@@ -9757,23 +9781,4 @@ packages:
     resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/zod/-/zod-3.19.1.tgz}
     name: zod
     version: 3.19.1
-    dev: false
-
-  registry.npmmirror.com/zustand/4.1.2_react@18.2.0:
-    resolution: {integrity: sha512-gcRaKchcxFPbImrBb/BKgujOhHhik9YhVpIeP87ETT7uokEe2Szu7KkuZ9ghjtD+/KKkcrRNktR2AiLXPIbKIQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/zustand/-/zustand-4.1.2.tgz}
-    id: registry.npmmirror.com/zustand/4.1.2
-    name: zustand
-    version: 4.1.2
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      immer: '>=9.0'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      immer:
-        optional: true
-      react:
-        optional: true
-    dependencies:
-      react: registry.npmmirror.com/react/18.2.0
-      use-sync-external-store: registry.npmmirror.com/use-sync-external-store/1.2.0_react@18.2.0
     dev: false

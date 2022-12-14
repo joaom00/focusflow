@@ -7,15 +7,15 @@ import { motion } from 'framer-motion'
 import shallow from 'zustand/shallow'
 import { CheckIcon } from '../../icons/CheckIcon'
 
-import type { Task } from './Todos'
+import type { Task } from './Tasks'
 
-interface CheckboxTodoProps {
+interface CheckboxTaskProps {
   id: string
 }
 
 const MotionCheckboxRoot = motion(Checkbox.Root)
 
-export const CheckboxTodo = ({ id: checkboxId }: CheckboxTodoProps) => {
+export const CheckboxTask = ({ id: checkboxId }: CheckboxTaskProps) => {
   const task = useTaskStore(
     (state) => ({ id: state.id, status: state.status, edit: state.edit }),
     shallow

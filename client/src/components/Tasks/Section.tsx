@@ -2,7 +2,7 @@ import React from 'react'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
-import { AddTodoButton } from './AddTodoButton'
+import { AddTaskButton } from './AddTaskButton'
 import { IconButton } from '../IconButton'
 
 type SectionProps = {
@@ -65,7 +65,7 @@ export const Section = React.forwardRef<HTMLUListElement, SectionProps>(
           <ul ref={forwardedRef}>
             <AnimatePresence>{children}</AnimatePresence>
 
-            <AddTodoButton />
+            <AddTaskButton />
           </ul>
         </Collapsible.Content>
       </Collapsible.Root>
