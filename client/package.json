@@ -19,6 +19,7 @@
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@radix-ui/react-slider": "^1.0.0",
     "@radix-ui/react-tabs": "^1.0.0",
+    "@radix-ui/react-toast": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.0.0",
     "@tanstack/react-query": "^4.9.0",
     "@tanstack/react-query-devtools": "^4.9.0",
@@ -33,6 +34,7 @@
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.4.0",
     "react-textarea-autosize": "^8.3.4",
+    "socket.io-client": "^4.5.4",
     "zod": "^3.19.1",
     "zustand": "^4.1.5"
   },

@@ -14,7 +14,7 @@ type ChatInputFieldProps = {
   value: string
   onValueChange: (value: string) => void
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
-  onCommandEnter?: (command: string, args: string[]) => void
+  onCommand?: (command: string, args: string[]) => void
 }
 
 const getStartEnd = (value: string, subString: string) => [
@@ -25,8 +25,8 @@ const getStartEnd = (value: string, subString: string) => [
 export const ChatInputField = ({
   value,
   onValueChange,
-  onSubmit: onSubmitProp,
-  onCommandEnter,
+  onSubmit,
+  onCommand,
 }: ChatInputFieldProps) => {
   const authenticated = useUserAuthenticated()
 
@@ -53,7 +53,7 @@ export const ChatInputField = ({
     }
   }
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!value.trim()) return
 
@@ -65,11 +65,11 @@ export const ChatInputField = ({
     const isCommand = value.startsWith('/')
     if (isCommand) {
       const [command, ...args] = value.split(' ')
-      onCommandEnter?.(command, args)
+      onCommand?.(command, args)
       return
     }
 
-    onSubmitProp?.(event)
+    onSubmit?.(event)
   }
 
   const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -143,7 +143,7 @@ export const ChatInputField = ({
   }
 
   return authenticated ? (
-    <form ref={formRef} onSubmit={onSubmit} className="px-2">
+    <form ref={formRef} onSubmit={handleSubmit} className="px-2">
       <Command.Root onSelect={onCommandSelect} open={open}>
         <CmdkCommand.Input className="hidden" value={value} onValueChange={onValueChange} />
 

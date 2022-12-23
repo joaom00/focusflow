@@ -1,3 +1,4 @@
+import React from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Tabs from '@radix-ui/react-tabs'
 
@@ -20,19 +21,18 @@ export const AccountDialog = ({ children }: AccountDialogProps) => {
               <Tabs.Trigger
                 type="button"
                 value="login"
-                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:border-b-pink-500 radix-tab-active:text-white"
+                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:border-b-pink-500 radix-tab-active:text-white relative transition-colors duration-150"
               >
                 Log in to your account
               </Tabs.Trigger>
               <Tabs.Trigger
                 type="button"
                 value="register"
-                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:border-b-pink-500 radix-tab-active:text-white"
+                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:text-white relative"
               >
                 Create an account
               </Tabs.Trigger>
             </Tabs.List>
-            {/* <Dialog.Title className="font-medium">Create an account</Dialog.Title> */}
 
             <Tabs.Content value="login">
               <Dialog.Description className="text-sm text-gray-400 pl-5 pt-5">

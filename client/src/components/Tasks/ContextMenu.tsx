@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries'
 import { useTaskActions, useTaskStore } from '@/stores'
 import shallow from 'zustand/shallow'
+import { useNotification } from '../Notification'
 
 type MenuProps = {
   children: React.ReactNode
@@ -16,16 +17,16 @@ export const ContextMenu = ({ children }: MenuProps) => {
   const queryClient = useQueryClient()
   const createTask = useCreateTaskMutation()
   const deleteTask = useDeleteTaskMutation()
-
   const task = useTaskStore(
     (state) => ({ id: state.id, value: state.value, status: state.status }),
     shallow
   )
   const actions = useTaskActions()
+  const notification = useNotification()
 
   const handleCopyText = () => {
     window.navigator.clipboard.writeText(task.value)
-    toast('Copy task')
+    notification.success('Text copied!')
   }
 
   const handleEdit = () => {

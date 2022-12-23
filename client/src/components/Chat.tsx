@@ -14,9 +14,11 @@ import {
   useToggleTasksSidebar,
   useUserAuthenticated,
   useAuthActions,
+  useUser,
 } from '@/stores'
 import { ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
 import shallow from 'zustand/shallow'
+import io from 'socket.io-client'
 
 const CHAT_NAME = 'Chat'
 
@@ -29,7 +31,15 @@ const [ChatProvider, useChatContext] = createContext<ChatContextValue>(CHAT_NAME
 const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
+const socket = io('http://localhost:3333')
+
+type MessagePayload = {
+  author: string
+  content: string
+}
+
 export const Chat = () => {
+  const user = useUser()
   const userAuthenticated = useUserAuthenticated()
   const authActions = useAuthActions()
   const pomodoro = usePomodoroStore(
@@ -44,8 +54,8 @@ export const Chat = () => {
   const tasksSidebarOpen = useTasksSidebarOpen()
   const toggleTasksSidebar = useToggleTasksSidebar()
 
-  const [messages, setMessages] = React.useState<string[]>([])
-  const [commandValue, setCommandValue] = React.useState('')
+  const [messages, setMessages] = React.useState<MessagePayload[]>([])
+  const [value, setValue] = React.useState('')
 
   const headerRef = React.useRef<HTMLElement>(null)
   const chatContainer = React.useRef<HTMLDivElement>(null)
@@ -59,6 +69,45 @@ export const Chat = () => {
       isNaN(workTime) ? MIN_WORK_MINUTES : workTime,
       isNaN(breakTime) ? MIN_BREAK_MINUTES : breakTime
     )
+  }
+
+  React.useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected!')
+    })
+
+    socket.on('onMessage', (data: MessagePayload) => {
+      console.log('onMessage event received!')
+
+      flushSync(() => {
+        setMessages((currentMessages) => [...currentMessages, data])
+      })
+      const lastChild = messagesContainer.current?.lastChild as HTMLElement
+      lastChild.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    })
+
+    return () => {
+      socket.off('connect')
+      socket.off('onMessage')
+    }
+  }, [])
+
+  const handleSubmit = () => {
+    socket.emit('newMessage', {
+      author: user?.username,
+      content: value,
+    })
+  }
+
+  const handleCommand = (command: string, args: string[]) => {
+    switch (command) {
+      case '/pomodoro':
+        onPomodoro(args)
+        break
+    }
   }
 
   return (
@@ -96,15 +145,16 @@ export const Chat = () => {
 
         <div
           ref={messagesContainer}
-          className="px-4 pt-3 mb-3 overflow-auto flex-1 basis-auto h-0 messages"
+          className="px-4 pt-3 mb-[60px] overflow-y-auto flex-1 basis-auto h-0 messages"
         >
           {pomodoro.started && <ChatPomodoro />}
 
           {(pomodoro.minimized || !pomodoro.started) && (
             <div className="space-y-3.5" ref={chatContainer}>
-              {messages.map((message, i) => (
-                <p className="text-sm" key={i} tabIndex={0}>
-                  <span className="text-gray-400 font-medium">joaom00</span> {message}
+              {messages.map((message, index) => (
+                <p className="text-sm" key={index} tabIndex={0}>
+                  <span className="text-gray-400 font-medium">{message.author}</span>{' '}
+                  {message.content}
                 </p>
               ))}
             </div>
@@ -112,25 +162,10 @@ export const Chat = () => {
         </div>
 
         <ChatInputField
-          value={commandValue}
-          onValueChange={setCommandValue}
-          onSubmit={() => {
-            flushSync(() => {
-              setMessages((currentMessages) => [...currentMessages, commandValue])
-            })
-            const lastChild = messagesContainer.current?.lastChild as HTMLElement
-            lastChild.scrollIntoView({
-              behavior: 'smooth',
-              block: 'end',
-            })
-          }}
-          onCommandEnter={(command, args) => {
-            switch (command) {
-              case '/pomodoro':
-                onPomodoro(args)
-                break
-            }
-          }}
+          value={value}
+          onValueChange={setValue}
+          onSubmit={handleSubmit}
+          onCommand={handleCommand}
         />
       </div>
     </ChatProvider>
