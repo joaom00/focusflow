@@ -44,4 +44,13 @@ export class TasksService {
       },
     })
   }
+
+  async deleteUndo(taskId: string) {
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: {
+        deletedAt: null,
+      },
+    })
+  }
 }

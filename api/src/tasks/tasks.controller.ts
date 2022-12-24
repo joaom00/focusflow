@@ -30,6 +30,12 @@ export class TasksController {
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async delete(@Param('id') taskId: string) {
-    return this.tasksService.delete( taskId)
+    return this.tasksService.delete(taskId)
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id/undo')
+  async deleteUndo(@Param('id') taskId: string) {
+    return this.tasksService.deleteUndo(taskId)
   }
 }
