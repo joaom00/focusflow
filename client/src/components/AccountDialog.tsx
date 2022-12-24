@@ -14,7 +14,7 @@ export const AccountDialog = ({ children }: AccountDialogProps) => {
     <Dialog.Root>
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-gray-900/90 fixed inset-0 motion-safe:animate-overlayShow" />
+        <Dialog.Overlay className="bg-gray-900/90 inset-0 motion-safe:animate-overlayShow fixed" />
         <Dialog.Content className="bg-gray-800 border border-gray-700 rounded-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-lg w-11/12 motion-safe:animate-contentShow">
           <Tabs.Root defaultValue="login">
             <Tabs.List className="grid grid-cols-2">
@@ -28,7 +28,7 @@ export const AccountDialog = ({ children }: AccountDialogProps) => {
               <Tabs.Trigger
                 type="button"
                 value="register"
-                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:text-white relative"
+                className="py-3 px-5 text-gray-400 border-b border-b-gray-700 radix-tab-active:border-b-pink-500 radix-tab-active:text-white relative"
               >
                 Create an account
               </Tabs.Trigger>

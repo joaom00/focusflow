@@ -2,8 +2,10 @@ import React from 'react'
 import { RiPlayFill, RiPauseFill, RiVolumeUpFill, RiVolumeMuteFill } from 'react-icons/ri'
 import * as SliderPrimitive from '@radix-ui/react-slider'
 import shallow from 'zustand/shallow'
-import { motion } from 'framer-motion'
+import { motion, MotionConfig } from 'framer-motion'
 import { useAudioPlayerStore } from '../stores'
+
+const clamp = (num: number, min: number, max: number) => Math.max(Math.min(num, max), min)
 
 export const AudioPlayer = () => {
   const { play, isPlaying } = useAudioPlayerStore(
@@ -15,7 +17,6 @@ export const AudioPlayer = () => {
   )
   const [song, setSong] = React.useState({ title: '', artist: '', artwork_url: '' })
   const [volume, setVolume] = React.useState([50])
-  const [pressing, setPressing] = React.useState(false)
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const previouslyVolume = React.useRef(50)
 
@@ -44,18 +45,26 @@ export const AudioPlayer = () => {
     audioRef.current?.pause()
   }, [isPlaying])
 
-   React.useEffect(() => {
-     async function getSongStatus() {
-       const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
-       const data = await response.json()
-       setSong({
-         title: data.current_track.title.split(' - ')[1],
-         artist: data.current_track.title.split(' - ')[0],
-         artwork_url: data.current_track.artwork_url,
-       })
-     }
-     getSongStatus()
-   }, [])
+  React.useEffect(() => {
+    async function getSongStatus() {
+      const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
+      const data = await response.json()
+      setSong({
+        title: data.current_track.title.split(' - ')[1],
+        artist: data.current_track.title.split(' - ')[0],
+        artwork_url: data.current_track.artwork_url,
+      })
+    }
+    getSongStatus()
+  }, [])
+
+  const [panning, setPanning] = React.useState(false)
+  const [hovered, setHovered] = React.useState(false)
+  const state = panning ? 'panning' : hovered ? 'hovered' : 'idle'
+
+  const initialHeight = 6
+  const height = 8
+  const buffer = 8
 
   return (
     <div className="bg-gray-900/70 p-3 border-t border-t-gray-700 backdrop-blur-lg backdrop-saturate-[180%] flex items-center gap-5 px-5">
@@ -104,58 +113,84 @@ export const AudioPlayer = () => {
           <RiVolumeUpFill size={24} />
         </motion.button>
       )}
-      <SliderPrimitive.Root
-        className="relative flex items-center select-none touch-none w-[150px] h-5 slider-root"
-        defaultValue={[50]}
-        aria-label="Volume"
-        value={volume}
-        onValueChange={onRangeChange}
-      >
-        <SliderPrimitive.Track className="bg-gray-400 relative flex-grow rounded-full h-[3px]">
-          <SliderPrimitive.Range className="absolute bg-white h-full rounded-full" />
-        </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb
-          className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)] z-20"
-          onPointerDown={() => setPressing(true)}
-          onPointerUp={() => setPressing(false)}
+      <MotionConfig transition={{ type: 'spring', bounce: 0, duration: 0.3 }}>
+        <SliderPrimitive.Root
+          asChild
+          className="relative flex justify-center items-center select-none touch-none max-w-[200px] w-full"
+          defaultValue={[50]}
+          aria-label="Volume"
+          value={volume}
+          onValueChange={onRangeChange}
+          onPointerDown={(event) => event.preventDefault()}
+          style={{ height: height + buffer }}
         >
-          <motion.div
+          <motion.span
             initial={false}
-            animate={pressing ? 'pressing' : 'unpressed'}
-            variants={{
-              pressing: {
-                x: '-12%',
-                opacity: 1,
-                y: -35,
-                scaleX: [null, 0.6, 1],
-                transition: {
-                  scaleX: {
-                    type: 'spring',
-                    duration: 0.3,
-                    delay: 0.05,
-                  },
-                  y: {
-                    duration: 0.3,
-                  },
-                },
-              },
-              unpressed: {
-                x: '-12%',
-                opacity: 0,
-                y: [-35, -45, -10],
-                scaleX: 0.2,
-                transition: {
-                  scaleX: { duration: 0.2 },
-                  y: { duration: 0.3 },
-                },
-              },
+            animate={state}
+            onPanStart={() => setPanning(true)}
+            onPanEnd={() => setPanning(false)}
+            onPointerEnter={() => setHovered(true)}
+            onPointerLeave={() => setHovered(false)}
+            onPan={(_, info) => {
+              const newVolume = clamp(volume[0] + info.delta.x * 0.55, 0, 100)
+              setVolume([newVolume])
             }}
-            className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center origin-bottom z-10 border border-pink-700"
           >
-            {volume[0]}
-          </motion.div>
-        </SliderPrimitive.Thumb>
-      </SliderPrimitive.Root>
+            <SliderPrimitive.Track asChild>
+              <motion.span
+                initial={false}
+                variants={{
+                  idle: { height: initialHeight, width: '90%' },
+                  hovered: { height, width: '100%' },
+                  panning: { height, width: '100%' },
+                }}
+                className="bg-white/20 relative rounded-full w-full"
+              >
+                <SliderPrimitive.Range className="absolute bg-white h-full rounded-full" />
+              </motion.span>
+            </SliderPrimitive.Track>
+            <SliderPrimitive.Thumb
+              className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)] z-20"
+            >
+              <motion.div
+                initial={false}
+                animate={state}
+                variants={{
+                  panning: {
+                    x: '-12%',
+                    opacity: 1,
+                    y: -35,
+                    scaleX: [null, 0.6, 1],
+                    transition: {
+                      scaleX: {
+                        type: 'spring',
+                        duration: 0.3,
+                        delay: 0.05,
+                      },
+                      y: {
+                        duration: 0.3,
+                      },
+                    },
+                  },
+                  idle: {
+                    x: '-12%',
+                    opacity: 0,
+                    y: [-35, -45, -10],
+                    scaleX: 0.2,
+                    transition: {
+                      scaleX: { duration: 0.2 },
+                      y: { duration: 0.3 },
+                    },
+                  },
+                }}
+                className="w-7 h-7 bg-pink-600 rounded-full text-xs flex justify-center items-center origin-bottom z-10 border border-pink-700"
+              >
+                {Math.floor(volume[0])}
+              </motion.div>
+            </SliderPrimitive.Thumb>
+          </motion.span>
+        </SliderPrimitive.Root>
+      </MotionConfig>
 
       <audio ref={audioRef} src="https://s2.radio.co/s83d70ae1d/listen" crossOrigin="" />
     </div>
