@@ -3,9 +3,11 @@ import * as ToastPrimitive from '@radix-ui/react-toast'
 import { AnimatePresence } from 'framer-motion'
 import { motion } from 'framer-motion'
 
+type DispatchFn = (message: string, options?: Omit<NotificationOptions, 'type' | 'message'>) => void
+
 type NotificationContextValue = {
-  success: (message: string, options?: Omit<NotificationOptions, 'type' | 'message'>) => void
-  error: (message: string, options?: Omit<NotificationOptions, 'type' | 'message'>) => void
+  success: DispatchFn
+  error: DispatchFn
 }
 
 const NotificationContext = React.createContext<NotificationContextValue | undefined>(undefined)
@@ -14,7 +16,7 @@ type NotificationOptions = {
   type: string
   message: string
   description?: string
-  undoAction?: () => void
+  undoAction?: () => void | Promise<void>
 }
 
 type NotificationsProps = {
@@ -42,13 +44,13 @@ export const Notifications = ({ children }: NotificationsProps) => {
     })
   }, [])
 
-  const handleDispatchSuccess = React.useCallback(
-    (message: string) => handleAddToast({ message, type: 'success' }),
+  const handleDispatchSuccess: DispatchFn = React.useCallback(
+    (message, options) => handleAddToast({ message, type: 'success', ...options }),
     [handleAddToast]
   )
 
-  const handleDispatchError = React.useCallback(
-    (message: string) => handleAddToast({ message, type: 'error' }),
+  const handleDispatchError: DispatchFn = React.useCallback(
+    (message, options) => handleAddToast({ message, type: 'error', ...options }),
     [handleAddToast]
   )
 
@@ -71,13 +73,15 @@ export const Notifications = ({ children }: NotificationsProps) => {
               onOpenChange={(open) => {
                 if (!open) handleRemoveToast(key)
               }}
+              onSwipeEnd={(event) => event.preventDefault()}
+              duration={notification.undoAction ? 5000 : 3000}
               asChild
               forceMount
             >
               <motion.li
-                className="flex bg-gray-800 w-[356px] min-h-[58px] rounded-md overflow-hidden"
+                className="flex bg-gray-800 w-[356px] min-h-[48px] rounded-md overflow-hidden border border-gray-750"
                 initial={{
-                  y: 100,
+                  y: -100,
                   scale: 0.6,
                   opacity: 0,
                 }}
@@ -105,10 +109,13 @@ export const Notifications = ({ children }: NotificationsProps) => {
                     </ToastPrimitive.Description>
                   )}
                 </div>
-                {notification.undoAction && (
+                {notification.undoAction != undefined && (
                   <button
                     className="px-4 border-l border-gray-700 text-sm hover:bg-gray-750 duration-200"
-                    onClick={notification.undoAction}
+                    onClick={async () => {
+                      await notification.undoAction?.()
+                      handleRemoveToast(key)
+                    }}
                   >
                     Undo
                   </button>
@@ -118,7 +125,7 @@ export const Notifications = ({ children }: NotificationsProps) => {
           ))}
         </AnimatePresence>
 
-        <ToastPrimitive.Viewport className="fixed flex flex-col gap-4 outline-none bottom-4 left-4 pointer-events-none" />
+        <ToastPrimitive.Viewport className="fixed flex flex-col-reverse gap-4 outline-none top-4 left-1/2 -translate-x-1/2" />
       </ToastPrimitive.Provider>
     </NotificationContext.Provider>
   )

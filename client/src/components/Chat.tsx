@@ -153,7 +153,7 @@ export const Chat = () => {
             <div className="space-y-3.5" ref={chatContainer}>
               {messages.map((message, index) => (
                 <p className="text-sm" key={index} tabIndex={0}>
-                  <span className="text-gray-400 font-medium">{message.author}</span>{' '}
+                  <span className="text-gray-400 font-medium">{message.author}:</span>{' '}
                   {message.content}
                 </p>
               ))}

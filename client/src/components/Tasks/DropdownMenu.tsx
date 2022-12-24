@@ -1,13 +1,13 @@
 import React from 'react'
-import { useCreateTaskMutation, useDeleteTaskMutation } from '@/queries'
+import { useCreateTaskMutation, useDeleteTaskMutation, useUndoDeleteTaskMutation } from '@/queries'
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
 
 import type { Task } from './Tasks'
 import { useTaskStore, useTaskActions } from '@/stores'
 import shallow from 'zustand/shallow'
+import { useNotification } from '../Notification'
 
 type DropdownProps = Dropdown.DropdownMenuProps
 
@@ -15,16 +15,18 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
   const queryClient = useQueryClient()
   const createTask = useCreateTaskMutation()
   const deleteTask = useDeleteTaskMutation()
+  const undoDeleteTask = useUndoDeleteTaskMutation()
 
   const task = useTaskStore(
     (state) => ({ id: state.id, value: state.value, status: state.status }),
     shallow
   )
   const taskActions = useTaskActions()
+  const notification = useNotification()
 
   const handleCopyText = () => {
     window.navigator.clipboard.writeText(task.value)
-    toast('Copy task')
+    notification.success('Text copied!')
   }
 
   const handleEdit = () => {
@@ -57,7 +59,11 @@ export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
   const handleDelete = () => {
     deleteTask.mutate(task.id, {
       onSuccess: () => {
-        toast('Delete todo')
+        notification.success('Task deleted', {
+          undoAction: () => {
+            undoDeleteTask.mutate(task.id)
+          },
+        })
       },
     })
   }

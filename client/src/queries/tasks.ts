@@ -184,3 +184,32 @@ export const useDeleteTaskMutation = () => {
     },
   })
 }
+
+/* -------------------------------------------------------------------------------------------------
+ * useUndoDeleteTaskMutation
+ * -----------------------------------------------------------------------------------------------*/
+
+export const useUndoDeleteTaskMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      api.patch(`tasks/${id}/undo`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['tasks']})
+    },
+    // onMutate: async (id) => {
+    //   await queryClient.cancelQueries({ queryKey: ['tasks'] })
+    //   const previousTasks = queryClient.getQueryData<Task[]>(['tasks'])
+
+    //   queryClient.setQueryData<Task[]>(['tasks'], (currentTasks) =>
+    //     currentTasks ? currentTasks.filter((task) => task.id !== id) : undefined
+    //   )
+    //   return { previousTasks }
+    // },
+    // onError: (_err, _id, context) => {
+    //   queryClient.setQueryData(['tasks'], context?.previousTasks)
+    // },
+  })
+}
