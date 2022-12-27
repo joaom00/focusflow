@@ -1,72 +1,19 @@
 import React from 'react'
-import { useCreateTaskMutation, useDeleteTaskMutation, useUndoDeleteTaskMutation } from '@/queries'
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
-import { useQueryClient } from '@tanstack/react-query'
+import { useHandleCopyText, useHandleEdit, useHandleInsertTaskBelow, useHandleDuplicateTask, useHandleDelete } from './hooks'
 
-import type { Task } from './Tasks'
-import { useTaskStore, useTaskActions } from '@/stores'
-import shallow from 'zustand/shallow'
-import { useNotification } from '../Notification'
 
 type DropdownProps = Dropdown.DropdownMenuProps
 
+
 export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
-  const queryClient = useQueryClient()
-  const createTask = useCreateTaskMutation()
-  const deleteTask = useDeleteTaskMutation()
-  const undoDeleteTask = useUndoDeleteTaskMutation()
+  const handleCopyText = useHandleCopyText()
+  const handleEdit = useHandleEdit()
+  const handleInsertTaskBelow = useHandleInsertTaskBelow()
+  const handleDuplicateTask = useHandleDuplicateTask()
+  const handleDelete = useHandleDelete()
 
-  const task = useTaskStore(
-    (state) => ({ id: state.id, value: state.value, status: state.status }),
-    shallow
-  )
-  const taskActions = useTaskActions()
-  const notification = useNotification()
-
-  const handleCopyText = () => {
-    window.navigator.clipboard.writeText(task.value)
-    notification.success('Text copied!')
-  }
-
-  const handleEdit = () => {
-    setTimeout(() => {
-      taskActions.updateEdit(true)
-    }, 1)
-  }
-
-  const handleInsertTaskBelow = () => {
-    setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], taskActions.insertTaskBelow)
-    }, 1)
-  }
-
-  const handleDuplicateTask = () => {
-    const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
-    if (!currentTasks) return
-
-    const duplicatedTask = taskActions.generateTaskWithPositionBelow(currentTasks)
-    duplicatedTask.edit = false
-    duplicatedTask.status = task.status
-    duplicatedTask.content = task.value
-
-    setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], taskActions.duplicateTask(duplicatedTask))
-      createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
-    }, 1)
-  }
-
-  const handleDelete = () => {
-    deleteTask.mutate(task.id, {
-      onSuccess: () => {
-        notification.success('Task deleted', {
-          undoAction: () => {
-            undoDeleteTask.mutate(task.id)
-          },
-        })
-      },
-    })
-  }
   return (
     <Dropdown.Root {...props}>
       <Dropdown.Trigger asChild>{children}</Dropdown.Trigger>

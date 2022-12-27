@@ -7,11 +7,11 @@ import { motion } from 'framer-motion'
 import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 
-import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from '@/stores'
+import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from './stores'
 
 import { CheckboxTask } from './CheckboxTask'
 import { ContextMenu } from './ContextMenu'
-import { useCreateTaskMutation, useUpdateTaskMutation } from '@/queries'
+import { useCreateTaskMutation, useUpdateTaskMutation } from './queries'
 import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
 

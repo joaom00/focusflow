@@ -1,72 +1,24 @@
 import React from 'react'
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
 import { CopyIcon, PlusIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
-import { Task } from './Tasks'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCreateTaskMutation, useDeleteTaskMutation, useUndoDeleteTaskMutation } from '@/queries'
-import { useTaskActions, useTaskStore } from '@/stores'
-import shallow from 'zustand/shallow'
-import { useNotification } from '../Notification'
+import {
+  useHandleCopyText,
+  useHandleEdit,
+  useHandleInsertTaskBelow,
+  useHandleDuplicateTask,
+  useHandleDelete,
+} from './hooks'
 
 type MenuProps = {
   children: React.ReactNode
 }
 
 export const ContextMenu = ({ children }: MenuProps) => {
-  const queryClient = useQueryClient()
-  const createTask = useCreateTaskMutation()
-  const deleteTask = useDeleteTaskMutation()
-  const undoDeleteTask = useUndoDeleteTaskMutation()
-  const task = useTaskStore(
-    (state) => ({ id: state.id, value: state.value, status: state.status }),
-    shallow
-  )
-  const taskActions = useTaskActions()
-  const notification = useNotification()
-
-  const handleCopyText = () => {
-    window.navigator.clipboard.writeText(task.value)
-    notification.success('Text copied!')
-  }
-
-  const handleEdit = () => {
-    setTimeout(() => {
-      taskActions.updateEdit(true)
-    }, 1)
-  }
-
-  const handleInsertTaskBelow = () => {
-    setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], taskActions.insertTaskBelow)
-    }, 1)
-  }
-
-  const handleDuplicateTask = () => {
-    const currentTasks = queryClient.getQueryData<Task[]>(['tasks'])
-    if (!currentTasks) return
-
-    const duplicatedTask = taskActions.generateTaskWithPositionBelow(currentTasks)
-    duplicatedTask.edit = false
-    duplicatedTask.status = task.status
-    duplicatedTask.content = task.value
-
-    setTimeout(() => {
-      queryClient.setQueryData<Task[]>(['tasks'], taskActions.duplicateTask(duplicatedTask))
-      createTask.mutate({ ...duplicatedTask, insertTaskBelow: false })
-    }, 1)
-  }
-
-  const handleDelete = () => {
-    deleteTask.mutate(task.id, {
-      onSuccess: () => {
-        notification.success('Task deleted', {
-          undoAction: () => {
-            undoDeleteTask.mutate(task.id)
-          },
-        })
-      },
-    })
-  }
+  const handleCopyText = useHandleCopyText()
+  const handleEdit = useHandleEdit()
+  const handleInsertTaskBelow = useHandleInsertTaskBelow()
+  const handleDuplicateTask = useHandleDuplicateTask()
+  const handleDelete = useHandleDelete()
 
   return (
     <ContextMenuPrimitive.Root>

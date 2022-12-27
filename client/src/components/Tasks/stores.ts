@@ -1,7 +1,8 @@
 import { createStoreContext } from '@/lib/createContex'
 import cuid from 'cuid'
 import { createStore } from 'zustand'
-import type { Task } from '../components/Tasks/Tasks'
+
+import type { Task } from './Tasks'
 
 type TaskStatus = 'TODO' | 'DONE'
 
@@ -24,7 +25,7 @@ export type TaskStore = {
 
 type InitialTaskStore = Pick<TaskStore, 'id' | 'edit' | 'value' | 'status' | 'position'>
 
-export function createTaskStore(initialStore: InitialTaskStore) {
+export const createTaskStore = (initialStore: InitialTaskStore) => {
   return createStore<TaskStore>()((set, get) => ({
     ...initialStore,
     dropdownMenuOpen: false,
