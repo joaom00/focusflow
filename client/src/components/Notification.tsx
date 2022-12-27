@@ -3,6 +3,12 @@ import * as ToastPrimitive from '@radix-ui/react-toast'
 import { AnimatePresence } from 'framer-motion'
 import { motion } from 'framer-motion'
 
+type NotificationOptions = {
+  type: string
+  message: string
+  description?: string
+  undoAction?: () => void | Promise<void>
+}
 type DispatchFn = (message: string, options?: Omit<NotificationOptions, 'type' | 'message'>) => void
 
 type NotificationContextValue = {
@@ -12,18 +18,12 @@ type NotificationContextValue = {
 
 const NotificationContext = React.createContext<NotificationContextValue | undefined>(undefined)
 
-type NotificationOptions = {
-  type: string
-  message: string
-  description?: string
-  undoAction?: () => void | Promise<void>
-}
 
 type NotificationsProps = {
   children: React.ReactNode
 }
 
-export const Notifications = ({ children }: NotificationsProps) => {
+export const NotificationsProvider = ({ children }: NotificationsProps) => {
   const [notifications, setNotifications] = React.useState<Map<string, NotificationOptions>>(
     new Map()
   )
@@ -133,6 +133,6 @@ export const Notifications = ({ children }: NotificationsProps) => {
 
 export const useNotification = () => {
   const context = React.useContext(NotificationContext)
-  if (!context) throw new Error('useNotification must be used within Notifications')
+  if (!context) throw new Error('useNotification must be used within NotificationsProvider')
   return context
 }

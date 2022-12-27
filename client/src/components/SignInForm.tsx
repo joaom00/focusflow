@@ -21,24 +21,6 @@ const loginSchema = z.object({
 
 type FormData = z.infer<typeof loginSchema>
 
-type SignInResponse = {
-  user: User
-  token: string
-}
-
-const useSignInMutation = () => {
-  return useMutation(
-    async (payload: FormData) => {
-      const { data } = await api.post<SignInResponse>('auth/login', payload)
-      return data
-    },
-    {
-      onSuccess: ({ token }) => {
-        api.defaults.headers.authorization = `Bearer ${token}`
-      },
-    }
-  )
-}
 
 export const SignInForm = () => {
   const authActions = useAuthActions()
@@ -46,8 +28,8 @@ export const SignInForm = () => {
   const { handleSubmit } = methods
   const signInMutation = useSignInMutation()
 
-  const onSubmit = handleSubmit((data) => {
-    signInMutation.mutate(data, {
+  const onSubmit = handleSubmit((payload) => {
+    signInMutation.mutate(payload, {
       onSuccess: ({ user, token }) => {
         authActions.setUser(user)
         authActions.setToken(token)
@@ -87,5 +69,24 @@ export const SignInForm = () => {
         </fieldset>
       </form>
     </FormProvider>
+  )
+}
+
+type SignInResponse = {
+  user: User
+  token: string
+}
+
+const useSignInMutation = () => {
+  return useMutation(
+    async (payload: FormData) => {
+      const { data } = await api.post<SignInResponse>('auth/login', payload)
+      return data
+    },
+    {
+      onSuccess: ({ token }) => {
+        api.defaults.headers.authorization = `Bearer ${token}`
+      },
+    }
   )
 }

@@ -123,6 +123,7 @@ const useSignUpMutation = () => {
   )
 }
 
+
 export const useUsernameFieldValidation = () => {
   const { watch, formState, clearErrors, setError } = useFormContext()
   const username = watch('username')

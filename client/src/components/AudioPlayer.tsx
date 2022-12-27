@@ -49,9 +49,10 @@ export const AudioPlayer = () => {
     async function getSongStatus() {
       const response = await fetch('https://public.radio.co/stations/s83d70ae1d/status')
       const data = await response.json()
+      const [artist, title] = data.current_track.title.split(' - ')
       setSong({
-        title: data.current_track.title.split(' - ')[1],
-        artist: data.current_track.title.split(' - ')[0],
+        title,
+        artist,
         artwork_url: data.current_track.artwork_url,
       })
     }

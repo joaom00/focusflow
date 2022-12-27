@@ -6,7 +6,7 @@ import { Chat } from '@/components/Chat'
 import { Tasks } from '@/components/Tasks/Tasks'
 import { api } from './lib/api'
 import { useToken, useUserAuthenticated } from '@/stores'
-import { Notifications } from '@/components/Notification'
+import { NotificationsProvider } from '@/components/Notification'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } })
 
@@ -21,7 +21,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Notifications>
+      <NotificationsProvider>
         <TooltipPrimitive.Provider>
           <div className="flex flex-col min-h-screen">
             <div className="relative flex-1">
@@ -31,7 +31,7 @@ function App() {
             <AudioPlayer />
           </div>
         </TooltipPrimitive.Provider>
-      </Notifications>
+      </NotificationsProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   )

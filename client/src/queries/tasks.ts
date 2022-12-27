@@ -8,7 +8,7 @@ import type { Task } from '@/components/Tasks/Tasks'
  * useTasksQuery
  * -----------------------------------------------------------------------------------------------*/
 
-const THREE_MINUTES = 1000 * 60 * 3
+const ONE_MINUTE = 1000 * 60 * 1
 
 export const useTasksQuery = () => {
   return useQuery<Task[]>({
@@ -17,7 +17,7 @@ export const useTasksQuery = () => {
       const { data } = await api.get('tasks')
       return data
     },
-    staleTime: THREE_MINUTES,
+    staleTime: ONE_MINUTE,
     retry: 0,
   })
 }
@@ -37,9 +37,7 @@ export const useCreateTaskMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, content, position }: CreateTaskPayload) => {
-      api.post('tasks', { id, content, position })
-    },
+    mutationFn: (payload: CreateTaskPayload) => api.post('tasks', payload),
     onMutate: async ({ id, content, insertTaskBelow = true }) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] })
       const previousTasks = queryClient.getQueryData<Task[]>(['tasks'])
@@ -104,9 +102,7 @@ export const useUpdateTaskMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, content }: UpdateTaskPayload) => {
-      await api.patch(`tasks/${id}`, { content })
-    },
+    mutationFn: ({ id, content }: UpdateTaskPayload) => api.patch(`tasks/${id}`, { content }),
     onMutate: async ({ id, content, insertTaskBelow }) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] })
       const previousTasks = queryClient.getQueryData(['tasks'])
@@ -160,16 +156,14 @@ export const useUpdateTaskMutation = () => {
 }
 
 /* -------------------------------------------------------------------------------------------------
- * useUpdateTaskMutation
+ * useDeleteTaskMutation
  * -----------------------------------------------------------------------------------------------*/
 
 export const useDeleteTaskMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      api.delete(`tasks/${id}`)
-    },
+    mutationFn: (id: string) => api.delete(`tasks/${id}`),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] })
       const previousTasks = queryClient.getQueryData<Task[]>(['tasks'])
@@ -193,11 +187,9 @@ export const useUndoDeleteTaskMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      api.patch(`tasks/${id}/undo`)
-    },
+    mutationFn: (id: string) => api.patch(`tasks/${id}/undo`),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks']})
+      queryClient.invalidateQueries({ queryKey: ['tasks'] })
     },
     // onMutate: async (id) => {
     //   await queryClient.cancelQueries({ queryKey: ['tasks'] })

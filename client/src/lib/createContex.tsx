@@ -27,6 +27,10 @@ export function createContext<ContextValueType extends object | null>(
   return [Provider, useContext] as const
 }
 
+/* -------------------------------------------------------------------------------------------------
+ * Create context with zustand's store
+ * -----------------------------------------------------------------------------------------------*/
+
 export function createStoreContext<ContextValueType extends object | null>(
   rootComponentName: string
 ) {
