@@ -1,17 +1,17 @@
-import { useUsernameFieldValidation } from '@/hooks/useUsernameFieldValidation'
+import React from 'react'
 import { useAuthActions, User } from '@/stores'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import { z } from 'zod'
-import toast from 'react-hot-toast'
 
 import { Input } from './Input'
 import { PasswordTooltip } from './PasswordTooltip'
 import { Button } from './Button'
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { useNotification } from './Notification'
 
 const registerSchema = z
   .object({
@@ -39,47 +39,22 @@ const UsernameInput = () => {
   return <Input label="Username" name="username" autoComplete="username" status={usernameStatus} />
 }
 
-type SignUpPayload = Omit<FormData, 'confirmPassword'>
-type SignUpResponse = {
-  user: User
-  token: string
-}
-const useSignUpMutation = () => {
-  return useMutation(
-    async ({ username, email, password }: SignUpPayload) => {
-      const { data } = await api.post<SignUpResponse>('auth/register', {
-        username,
-        email,
-        password,
-      })
-      return data
-    },
-    {
-      onSuccess: ({ token }) => {
-        api.defaults.headers.authorization = `Bearer ${token}`
-      },
-    }
-  )
-}
-
 export const SignUpForm = () => {
   const authActions = useAuthActions()
   const methods = useForm<FormData>({ resolver: zodResolver(registerSchema) })
   const { handleSubmit } = methods
   const signUpMutation = useSignUpMutation()
+  const notification = useNotification()
 
-  const onSubmit = handleSubmit(async ({ username, email, password }) => {
-    signUpMutation.mutate(
-      { username, email, password },
-      {
-        onSuccess: ({ user, token }) => {
-          authActions.setUser(user)
-          authActions.setToken(token)
-          authActions.setAuthenticated(true)
-          toast.success('Account created successfully!')
-        },
-      }
-    )
+  const onSubmit = handleSubmit((payload) => {
+    signUpMutation.mutate(payload, {
+      onSuccess: ({ user, token }) => {
+        authActions.setUser(user)
+        authActions.setToken(token)
+        authActions.setAuthenticated(true)
+        notification.success('Account created successfully!')
+      },
+    })
   })
 
   return (
@@ -123,4 +98,63 @@ export const SignUpForm = () => {
       </form>
     </FormProvider>
   )
+}
+
+type SignUpPayload = Omit<FormData, 'confirmPassword'>
+type SignUpResponse = {
+  user: User
+  token: string
+}
+const useSignUpMutation = () => {
+  return useMutation(
+    async ({ username, email, password }: SignUpPayload) => {
+      const { data } = await api.post<SignUpResponse>('auth/register', {
+        username,
+        email,
+        password,
+      })
+      return data
+    },
+    {
+      onSuccess: ({ token }) => {
+        api.defaults.headers.authorization = `Bearer ${token}`
+      },
+    }
+  )
+}
+
+export const useUsernameFieldValidation = () => {
+  const { watch, formState, clearErrors, setError } = useFormContext()
+  const username = watch('username')
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success'>('idle')
+
+  React.useEffect(() => {
+    if (!username) {
+      setStatus('idle')
+      return
+    }
+
+    const usernameError = formState.errors['username']
+    if (usernameError?.type === 'custom') {
+      clearErrors('username')
+    }
+
+    setStatus('loading')
+    const timeoutId = setTimeout(async () => {
+      const response = await fetch(`http://localhost:3333/users/${username}`)
+      const data = await response.json()
+      if (data.username) {
+        setError('username', { type: 'custom', message: 'This username is unavailable' })
+        setStatus('idle')
+        return
+      }
+      setStatus('success')
+    }, 500)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [clearErrors, formState.errors, setError, username])
+
+  return status
 }
