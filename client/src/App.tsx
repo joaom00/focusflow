@@ -10,17 +10,14 @@ import { Notifications } from '@/components/Notification'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } })
 
-const useAxiosToken = () => {
+function App() {
   const token = useToken()
+  const userAuthenticated = useUserAuthenticated()
 
   if (token) {
     api.defaults.headers.authorization = `Bearer ${token}`
   }
-}
 
-function App() {
-  useAxiosToken()
-  const userAuthenticated = useUserAuthenticated()
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -39,6 +36,5 @@ function App() {
     </QueryClientProvider>
   )
 }
-
 
 export default App
