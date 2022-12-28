@@ -26,11 +26,11 @@ export const useHandleCopyText = () => {
  * -----------------------------------------------------------------------------------------------*/
 
 export const useHandleEdit = () => {
-  const { updateEdit } = useTaskActions()
+  const { setEdit } = useTaskActions()
 
   return () => {
     setTimeout(() => {
-      updateEdit(true)
+      setEdit(true)
     }, 1)
   }
 }
@@ -90,9 +90,9 @@ export const useHandleDelete = () => {
     deleteTask.mutate(taskId, {
       onSuccess: () => {
         notification.success('Task deleted', {
-          undoAction: () => {
+          undoAction: () => 
             undoDeleteTask.mutate(taskId)
-          },
+          ,
         })
       },
     })

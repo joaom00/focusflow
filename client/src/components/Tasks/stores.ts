@@ -13,9 +13,9 @@ export type TaskStore = {
   edit: boolean
   position: string
   actions: {
-    updateValue: (value: string) => void
-    updateEdit: (edit: boolean) => void
-    updateStatus: (status: TaskStatus) => void
+    setValue: (value: string) => void
+    setEdit: (edit: boolean) => void
+    setStatus: (status: TaskStatus) => void
     generateTaskWithPositionBelow: (tasks: Task[]) => Task
     insertTaskBelow: (tasks: Task[] | undefined) => Task[] | undefined
     duplicateTask: (task: Task) => (tasks: Task[] | undefined) => Task[] | undefined
@@ -30,9 +30,9 @@ export const createTaskStore = (initialStore: InitialTaskStore) => {
     ...initialStore,
     dropdownMenuOpen: false,
     actions: {
-      updateValue: (value) => set({ value }),
-      updateStatus: (status) => set({ status }),
-      updateEdit: (edit) => set({ edit }),
+      setValue: (value) => set({ value }),
+      setStatus: (status) => set({ status }),
+      setEdit: (edit) => set({ edit }),
       generateTaskWithPositionBelow: (currentTasks) => {
         const currentId = get().id
         const currentPosition = get().position

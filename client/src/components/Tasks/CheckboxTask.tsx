@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import { useTaskStore } from '@/stores'
+import { useTaskStore } from './stores'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'

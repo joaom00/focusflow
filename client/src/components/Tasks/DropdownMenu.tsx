@@ -1,11 +1,15 @@
 import React from 'react'
 import * as Dropdown from '@radix-ui/react-dropdown-menu'
 import { CopyIcon, Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
-import { useHandleCopyText, useHandleEdit, useHandleInsertTaskBelow, useHandleDuplicateTask, useHandleDelete } from './hooks'
-
+import {
+  useHandleCopyText,
+  useHandleEdit,
+  useHandleInsertTaskBelow,
+  useHandleDuplicateTask,
+  useHandleDelete,
+} from './hooks'
 
 type DropdownProps = Dropdown.DropdownMenuProps
-
 
 export const DropdownMenu = ({ children, ...props }: DropdownProps) => {
   const handleCopyText = useHandleCopyText()
