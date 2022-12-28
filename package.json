@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:client": "pnpm -F @chat/client dev",
-    "dev:server": "pnpm -F @chat/server dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:client": "pnpm -F @chat/web dev",
+    "dev:server": "pnpm -F @chat/api start:dev"
   },
   "keywords": [],
   "author": "",
