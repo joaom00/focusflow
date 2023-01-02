@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:client": "pnpm -F @chat/web dev",
-    "dev:server": "pnpm -F @chat/api start:dev"
+    "dev:web": "pnpm -F @chat/web dev",
+    "dev:api": "pnpm -F @chat/api start:dev"
   },
   "keywords": [],
   "author": "",
