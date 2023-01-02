@@ -1,6 +1,5 @@
-import clsx from 'clsx'
 import React from 'react'
-import { LoaderIcon } from 'react-hot-toast'
+import clsx from 'clsx'
 
 type ButtonVariant = 'default' | 'primary' | 'ghost'
 
@@ -10,7 +9,8 @@ type ButtonProps = React.ComponentPropsWithRef<'button'> & {
   isLoading?: boolean
 }
 
-const defaultClasses = 'px-5 py-2 rounded-md text-sm font-medium shadow-sm inline-flex items-center gap-3'
+const defaultClasses =
+  'px-5 py-2 rounded-md text-sm font-medium shadow-sm inline-flex items-center gap-3'
 const defaultVariantClasses =
   'bg-gray-800 hover:bg-gray-750 text-white hover:text-gray-100 border border-gray-700'
 const primaryVariantClasses =
@@ -28,7 +28,7 @@ export const Button = React.forwardRef<ButtonElement, ButtonProps>((props, forwa
 
   return (
     <button type="button" {...buttonProps} className={composedClasses} ref={forwardedRef}>
-      {isLoading && <LoaderIcon />}
+      {isLoading && <p>Loading...</p>}
       {children}
     </button>
   )
