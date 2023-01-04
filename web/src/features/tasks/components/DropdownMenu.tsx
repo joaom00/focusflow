@@ -7,7 +7,7 @@ import {
   useHandleInsertTaskBelow,
   useHandleDuplicateTask,
   useHandleDelete,
-} from './hooks'
+} from '../hooks'
 
 type DropdownProps = Dropdown.DropdownMenuProps
 

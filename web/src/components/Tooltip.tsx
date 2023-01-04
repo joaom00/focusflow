@@ -1,12 +1,15 @@
 import React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 
-interface TooltipProps extends TooltipPrimitive.TooltipContentProps {
-  children?: React.ReactNode
-  open?: boolean
-  defaultOpen?: boolean
-  onOpenChange?: (open: boolean) => void
+type TooltipRootProps = React.ComponentProps<typeof TooltipPrimitive.Root>
+type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Content>
+
+type TooltipProps = TooltipContentProps & {
   content: string | React.ReactNode
+  open?: TooltipRootProps['open']
+  defaultOpen?: TooltipRootProps['defaultOpen']
+  onOpenChange?: TooltipRootProps['onOpenChange']
+  delayDuration?: TooltipRootProps['delayDuration']
 }
 
 export const Tooltip = ({
@@ -15,6 +18,7 @@ export const Tooltip = ({
   open,
   defaultOpen,
   onOpenChange,
+  delayDuration = 700,
   ...props
 }: TooltipProps) => {
   return (
@@ -22,6 +26,7 @@ export const Tooltip = ({
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
+      delayDuration={delayDuration}
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>

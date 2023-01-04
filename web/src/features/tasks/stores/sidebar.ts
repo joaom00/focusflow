@@ -6,7 +6,7 @@ type TasksStore = {
   toggleOpen: () => void
 }
 
-const useTasksSidebarStore = create<TasksStore>()(
+export const useTasksSidebarStore = create<TasksStore>()(
   persist(
     (set) => ({
       open: false,
@@ -16,5 +16,3 @@ const useTasksSidebarStore = create<TasksStore>()(
   )
 )
 
-export const useTasksSidebarOpen = () => useTasksSidebarStore((state) => state.open)
-export const useToggleTasksSidebar = () => useTasksSidebarStore((state) => state.toggleOpen)

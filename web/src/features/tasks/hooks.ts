@@ -1,11 +1,20 @@
 import { useQueryClient } from '@tanstack/react-query'
 import shallow from 'zustand/shallow'
 
-import { useNotification } from '../Notification'
-import { useTaskStore, useTaskActions } from './stores'
+import { useNotification } from '@/components/Notification'
+import { useTaskStore } from './stores/task'
+import { useTasksSidebarStore } from './stores/sidebar'
 import { useCreateTaskMutation, useDeleteTaskMutation, useUndoDeleteTaskMutation } from './queries'
 
-import type { Task } from './Tasks'
+import type { Task } from './types'
+
+export const useTasksSidebarOpen = () => useTasksSidebarStore((state) => state.open)
+export const useToggleTasksSidebar = () => useTasksSidebarStore((state) => state.toggleOpen)
+
+/* -------------------------------------------------------------------------------------------------
+ * useTaskActions
+ * -----------------------------------------------------------------------------------------------*/
+export const useTaskActions = () => useTaskStore((state) => state.actions)
 
 /* -------------------------------------------------------------------------------------------------
  * useHandleCopyText
@@ -90,9 +99,7 @@ export const useHandleDelete = () => {
     deleteTask.mutate(taskId, {
       onSuccess: () => {
         notification.success('Task deleted', {
-          undoAction: () => 
-            undoDeleteTask.mutate(taskId)
-          ,
+          undoAction: () => undoDeleteTask.mutate(taskId),
         })
       },
     })

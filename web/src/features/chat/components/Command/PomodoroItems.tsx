@@ -1,9 +1,9 @@
 import { Command as Cmdk } from 'cmdk'
 
-import { usePomodoroActions, usePomodoroStore } from '../../stores'
-import { Presence } from '../Presence'
+import { usePomodoroActions, usePomodoroStore } from '@/stores'
+import { Presence } from '@/components/Presence'
 import { Item } from '.'
-import { composeEventHandlers } from '../../utils/composeEventHandlers'
+import { composeEventHandlers } from '@/utils/composeEventHandlers'
 import shallow from 'zustand/shallow'
 
 export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void }) => {

@@ -7,20 +7,22 @@ import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus'
 
-import { createTaskStore, useTaskStore, useTaskActions, TaskProvider } from './stores'
 
+import { IconButton } from '@/components/IconButton'
 import { CheckboxTask } from './CheckboxTask'
-import { ContextMenu } from './ContextMenu'
-import { useCreateTaskMutation, useUpdateTaskMutation } from './queries'
-import { IconButton } from '../IconButton'
 import { DropdownMenu } from './DropdownMenu'
+import { ContextMenu } from './ContextMenu'
+
+import { createTaskStore, useTaskStore, TaskProvider } from '../stores/task'
+import { useCreateTaskMutation, useUpdateTaskMutation } from '../queries'
 import {
   useHandleCopyText,
   useHandleDelete,
   useHandleDuplicateTask,
   useHandleEdit,
   useHandleInsertTaskBelow,
-} from './hooks'
+  useTaskActions,
+} from '../hooks'
 
 type TaskProps = {
   id: string

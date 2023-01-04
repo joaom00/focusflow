@@ -4,10 +4,9 @@ import { flushSync } from 'react-dom'
 import Textarea from 'react-textarea-autosize'
 
 import * as Command from './Command'
-import { useLazyRef } from '../hooks/useLazyRef'
-import { DoublyLinkedList } from '../lib/DoublyLinkedList'
-import { AccountDialog } from './AccountDialog'
-import { useUserAuthenticated } from '@/stores'
+import { useLazyRef } from '@/hooks/useLazyRef'
+import { DoublyLinkedList } from '../utils/DoublyLinkedList'
+import { AccountDialog, useUserAuthenticated } from '@/features/auth'
 import { motion } from 'framer-motion'
 
 type ChatInputFieldProps = {

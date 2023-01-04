@@ -1,21 +1,15 @@
 import React from 'react'
 import { createPortal, flushSync } from 'react-dom'
 import { RiStopFill, RiChat3Fill, RiPauseFill, RiPlayFill } from 'react-icons/ri'
-import { useTimer } from '../hooks/useTimer'
-import { createContext } from '../lib/createContex'
-import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
+import { useTimer } from '@/hooks/useTimer'
+import { createContext } from '@/utils/createContex'
+import { formatSecondsIntoMinutesAndSeconds } from '@/utils/seconds'
 import { ChatInputField } from './ChatInput'
 import { CircularProgress } from './CircularProgress'
-import { Tooltip } from './Tooltip'
-import {
-  usePomodoroStore,
-  usePomodoroActions,
-  useTasksSidebarOpen,
-  useToggleTasksSidebar,
-  useUserAuthenticated,
-  useAuthActions,
-  useUser,
-} from '@/stores'
+import { Tooltip } from '@/components/Tooltip'
+import { usePomodoroStore, usePomodoroActions } from '@/stores'
+import { useTasksSidebarOpen, useToggleTasksSidebar } from '@/features/tasks'
+import { useUser, useUserAuthenticated, useAuthActions } from '@/features/auth'
 import { ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
 import shallow from 'zustand/shallow'
 import io from 'socket.io-client'

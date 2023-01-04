@@ -2,20 +2,12 @@ import React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus'
 
-import { useTasksQuery } from './queries'
+import { useTasksQuery } from '../queries'
 
-import { ScrollArea } from '../ScrollArea'
+import { ScrollArea } from '@/components/ScrollArea'
 import { Task } from './Task'
 import { AddTaskButton } from './AddTaskButton'
-import { useTasksSidebarOpen } from '@/stores'
-
-export type Task = {
-  id: string
-  status: 'TODO' | 'DONE'
-  edit: boolean
-  content: string
-  position: string
-}
+import { useTasksSidebarOpen } from '../hooks'
 
 export const Tasks = () => {
   const tasksQuery = useTasksQuery()
@@ -39,7 +31,7 @@ export const Tasks = () => {
       </header>
 
       <ScrollArea ref={scrollViewportRef}>
-        <RovingFocusGroup.Root asChild orientation='vertical'>
+        <RovingFocusGroup.Root asChild orientation="vertical">
           <ul>
             <AnimatePresence>
               {tasksQuery.data?.map((todo) => (

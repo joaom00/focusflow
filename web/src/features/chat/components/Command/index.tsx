@@ -1,8 +1,8 @@
 import React from 'react'
 import { Command as Cmdk, useCommandState } from 'cmdk'
 import { PomodoroItems } from './PomodoroItems'
-import { useAudioPlayerStore } from '../../stores'
-import { composeEventHandlers } from '../../utils/composeEventHandlers'
+import { useAudioPlayerStore } from '@/features/audio-player'
+import { composeEventHandlers } from '@/utils/composeEventHandlers'
 import clsx from 'clsx'
 
 /* -------------------------------------------------------------------------------------------------

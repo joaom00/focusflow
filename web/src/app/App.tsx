@@ -1,16 +1,16 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { AudioPlayer } from '@/components/AudioPlayer'
-import { Chat } from '@/components/Chat'
-import { Tasks } from '@/components/Tasks/Tasks'
-import { api } from '@/lib/api'
-import { useToken, useUserAuthenticated } from '@/stores'
+import { AudioPlayer } from '@/features/audio-player'
+import { Chat } from '@/features/chat'
+import { Tasks } from '@/features/tasks'
+import { api } from '@/services/api'
+import { useToken, useUserAuthenticated } from '@/features/auth'
 import { NotificationsProvider } from '@/components/Notification'
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } })
+const queryClient = new QueryClient()
 
-function App() {
+export function App() {
   const token = useToken()
   const userAuthenticated = useUserAuthenticated()
 
@@ -35,5 +35,3 @@ function App() {
     </QueryClientProvider>
   )
 }
-
-export default App

@@ -1,9 +1,8 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import cuid from 'cuid'
-import { api } from '@/lib/api'
+import { api } from '@/services/api'
 
-import type { Task } from '@/components/Tasks/Tasks'
+import type { Task } from '@/features/tasks'
 
 /* -------------------------------------------------------------------------------------------------
  * useTasksQuery

@@ -1,5 +1,5 @@
 import React from 'react'
-import { createContext } from '../lib/createContex'
+import { createContext } from '@/utils/createContex'
 
 /**
  * Credits

@@ -1,13 +1,14 @@
-import { api } from '@/lib/api'
-import { useTaskStore } from './stores'
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import shallow from 'zustand/shallow'
 import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
-import shallow from 'zustand/shallow'
-import { CheckIcon } from '../../icons/CheckIcon'
 
-import type { Task } from './Tasks'
+import { api } from '@/services/api'
+import { CheckIcon } from '@/icons/CheckIcon'
+import { useTaskStore } from '../stores/task'
+
+import type { Task } from '../types'
 
 interface CheckboxTaskProps {
   id: string

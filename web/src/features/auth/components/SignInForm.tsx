@@ -1,12 +1,12 @@
-import { api } from '@/lib/api'
-import { useAuthActions, User } from '@/stores'
+import { api } from '@/services/api'
+import { useAuthActions, type User } from '@/features/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Button } from './Button'
-import { Input } from './Input'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
 
 const loginSchema = z.object({
   username: z
@@ -20,7 +20,6 @@ const loginSchema = z.object({
 })
 
 type FormData = z.infer<typeof loginSchema>
-
 
 export const SignInForm = () => {
   const authActions = useAuthActions()

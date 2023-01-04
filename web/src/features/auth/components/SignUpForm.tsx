@@ -1,17 +1,17 @@
 import React from 'react'
-import { useAuthActions, User } from '@/stores'
+import { useAuthActions, type User } from '@/features/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import { z } from 'zod'
 
-import { Input } from './Input'
+import { Input } from '@/components/Input'
 import { PasswordTooltip } from './PasswordTooltip'
-import { Button } from './Button'
+import { Button } from '@/components/Button'
 import { useMutation } from '@tanstack/react-query'
-import { api } from '@/lib/api'
-import { useNotification } from './Notification'
+import { api } from '@/services/api'
+import { useNotification } from '@/components/Notification'
 
 const registerSchema = z
   .object({
@@ -122,7 +122,6 @@ const useSignUpMutation = () => {
     }
   )
 }
-
 
 export const useUsernameFieldValidation = () => {
   const { watch, formState, clearErrors, setError } = useFormContext()

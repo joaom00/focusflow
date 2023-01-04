@@ -1,8 +1,8 @@
-import { createStoreContext } from '@/lib/createContex'
 import cuid from 'cuid'
 import { createStore } from 'zustand'
+import { createStoreContext } from '@/utils/createContex'
 
-import type { Task } from './Tasks'
+import type { Task } from '../types'
 
 type TaskStatus = 'TODO' | 'DONE'
 
@@ -87,4 +87,3 @@ export const createTaskStore = (initialStore: InitialTaskStore) => {
 }
 
 export const [TaskProvider, useTaskStore] = createStoreContext<TaskStore>('TaskStore')
-export const useTaskActions = () => useTaskStore((state) => state.actions)
