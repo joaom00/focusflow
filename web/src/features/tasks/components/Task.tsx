@@ -7,8 +7,8 @@ import { DotsHorizontalIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus'
 
-
 import { IconButton } from '@/components/IconButton'
+import { Label } from '@/components/Label'
 import { CheckboxTask } from './CheckboxTask'
 import { DropdownMenu } from './DropdownMenu'
 import { ContextMenu } from './ContextMenu'
@@ -261,15 +261,12 @@ const TaskImpl = () => {
                 />
               </>
             ) : (
-              <label
+              <Label
                 htmlFor={checkboxId}
                 className={clsx(
                   'self-baseline pl-10 pr-5 text-sm break-all mt-[9px] w-fit',
                   isDone && 'line-through decoration-pink-500 decoration-2 text-white/50'
                 )}
-                onMouseDown={(event) => {
-                  if (event.detail > 1) event.preventDefault()
-                }}
                 style={{
                   gridColumn: '1/2',
                   gridRow: '1/2',
@@ -280,7 +277,7 @@ const TaskImpl = () => {
                 }}
               >
                 {task.value}
-              </label>
+              </Label>
             )}
           </motion.div>
         </ContextMenu>

@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { useFormContext } from 'react-hook-form'
+import {Label} from '@/components/Label'
 
 type PrimitivInputProps = React.ComponentPropsWithRef<'input'>
 
@@ -33,13 +34,9 @@ export const Input = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <label
+      <Label
         htmlFor={name}
         className="text-sm flex justify-between items-center"
-        onMouseDown={(event) => {
-          // prevent text selection when double clicking label
-          if (event.detail > 1) event.preventDefault()
-        }}
       >
         {label}
 
@@ -52,7 +49,7 @@ export const Input = ({
         {/* {isSuccess && <CheckmarkIcon />} */}
 
         {!isLoading && !isSuccess && !hasError && trailingAccessory}
-      </label>
+      </Label>
 
       <input
         {...props}
