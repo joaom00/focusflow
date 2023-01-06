@@ -1,4 +1,4 @@
 export { AccountDialog } from './components/AccountDialog'
 export {useAuthStore} from './stores'
-export * from './hooks'
+export {useUser, useToken, useUserAuthenticated, useAuthActions} from './hooks'
 export type { User } from './types'

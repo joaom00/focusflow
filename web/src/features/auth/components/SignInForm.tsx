@@ -1,12 +1,11 @@
-import { api } from '@/services/api'
-import { useAuthActions, type User } from '@/features/auth'
+import { useAuthActions } from '@/features/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
-import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { useSignInMutation } from '../queries'
 
 const loginSchema = z.object({
   username: z
@@ -25,7 +24,7 @@ export const SignInForm = () => {
   const authActions = useAuthActions()
   const methods = useForm<FormData>({ resolver: zodResolver(loginSchema) })
   const { handleSubmit } = methods
-  const signInMutation = useSignInMutation()
+  const signInMutation = useSignInMutation<FormData>()
 
   const onSubmit = handleSubmit((payload) => {
     signInMutation.mutate(payload, {
@@ -68,24 +67,5 @@ export const SignInForm = () => {
         </fieldset>
       </form>
     </FormProvider>
-  )
-}
-
-type SignInResponse = {
-  user: User
-  token: string
-}
-
-const useSignInMutation = () => {
-  return useMutation(
-    async (payload: FormData) => {
-      const { data } = await api.post<SignInResponse>('auth/login', payload)
-      return data
-    },
-    {
-      onSuccess: ({ token }) => {
-        api.defaults.headers.authorization = `Bearer ${token}`
-      },
-    }
   )
 }

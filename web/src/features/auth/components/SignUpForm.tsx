@@ -1,17 +1,15 @@
-import React from 'react'
-import { useAuthActions, type User } from '@/features/auth'
-import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import { z } from 'zod'
-
+import { useAuthActions } from '@/features/auth'
 import { Input } from '@/components/Input'
-import { PasswordTooltip } from './PasswordTooltip'
 import { Button } from '@/components/Button'
-import { useMutation } from '@tanstack/react-query'
-import { api } from '@/services/api'
 import { useNotification } from '@/components/Notification'
+import { PasswordTooltip } from './PasswordTooltip'
+import { useSignUpMutation } from '../queries'
+import { useUsernameFieldValidation } from '../hooks'
 
 const registerSchema = z
   .object({
@@ -33,17 +31,11 @@ const registerSchema = z
 
 type FormData = z.infer<typeof registerSchema>
 
-const UsernameInput = () => {
-  const usernameStatus = useUsernameFieldValidation()
-
-  return <Input label="Username" name="username" autoComplete="username" status={usernameStatus} />
-}
-
 export const SignUpForm = () => {
   const authActions = useAuthActions()
   const methods = useForm<FormData>({ resolver: zodResolver(registerSchema) })
   const { handleSubmit } = methods
-  const signUpMutation = useSignUpMutation()
+  const signUpMutation = useSignUpMutation<FormData>()
   const notification = useNotification()
 
   const onSubmit = handleSubmit((payload) => {
@@ -100,61 +92,8 @@ export const SignUpForm = () => {
   )
 }
 
-type SignUpPayload = Omit<FormData, 'confirmPassword'>
-type SignUpResponse = {
-  user: User
-  token: string
-}
-const useSignUpMutation = () => {
-  return useMutation(
-    async ({ username, email, password }: SignUpPayload) => {
-      const { data } = await api.post<SignUpResponse>('auth/register', {
-        username,
-        email,
-        password,
-      })
-      return data
-    },
-    {
-      onSuccess: ({ token }) => {
-        api.defaults.headers.authorization = `Bearer ${token}`
-      },
-    }
-  )
-}
+const UsernameInput = () => {
+  const usernameStatus = useUsernameFieldValidation()
 
-export const useUsernameFieldValidation = () => {
-  const { watch, formState, clearErrors, setError } = useFormContext()
-  const username = watch('username')
-  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success'>('idle')
-
-  React.useEffect(() => {
-    if (!username) {
-      setStatus('idle')
-      return
-    }
-
-    const usernameError = formState.errors['username']
-    if (usernameError?.type === 'custom') {
-      clearErrors('username')
-    }
-
-    setStatus('loading')
-    const timeoutId = setTimeout(async () => {
-      const response = await fetch(`http://localhost:3333/users/${username}`)
-      const data = await response.json()
-      if (data.username) {
-        setError('username', { type: 'custom', message: 'This username is unavailable' })
-        setStatus('idle')
-        return
-      }
-      setStatus('success')
-    }, 500)
-
-    return () => {
-      clearTimeout(timeoutId)
-    }
-  }, [clearErrors, formState.errors, setError, username])
-
-  return status
+  return <Input label="Username" name="username" autoComplete="username" status={usernameStatus} />
 }

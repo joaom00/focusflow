@@ -5,10 +5,11 @@ import {Label} from '@/components/Label'
 
 type PrimitivInputProps = React.ComponentPropsWithRef<'input'>
 
+type Status = 'idle' | 'loading' | 'success'
 type InputProps = PrimitivInputProps & {
   label: string
   name: string
-  status?: 'idle' | 'loading' | 'success'
+  status?: Status
   inputIcon?: React.ReactNode
   trailingAccessory?: React.ReactNode
 }
