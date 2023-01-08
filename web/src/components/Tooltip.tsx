@@ -1,5 +1,6 @@
 import React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import clsx from 'clsx'
 
 type TooltipRootProps = React.ComponentProps<typeof TooltipPrimitive.Root>
 type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Content>
@@ -19,6 +20,7 @@ export const Tooltip = ({
   defaultOpen,
   onOpenChange,
   delayDuration = 700,
+  className,
   ...props
 }: TooltipProps) => {
   return (
@@ -35,7 +37,14 @@ export const Tooltip = ({
           align="center"
           sideOffset={4}
           {...props}
-          className="bg-gray-800 px-3 py-2 leading-none select-none rounded-lg text-xs font-medium"
+          className={clsx(
+            'bg-gray-800 px-3 py-2 leading-none select-none rounded-lg text-xs font-medium will-change-transform',
+            'data-[side=top]:animate-slideDownAndFade',
+            'data-[side=bottom]:animate-slideUpAndFade',
+            'data-[side=left]:animate-slideRightAndFade',
+            'data-[side=right]:animate-slideLeftAndFade',
+            className
+          )}
         >
           {content}
           <TooltipPrimitive.Arrow width={11} height={5} className="fill-gray-800" />

@@ -1,8 +1,7 @@
 import React from 'react'
-import { createPortal, flushSync } from 'react-dom'
+import {  flushSync } from 'react-dom'
 import { RiStopFill, RiChat3Fill, RiPauseFill, RiPlayFill } from 'react-icons/ri'
 import { useTimer } from '@/hooks/useTimer'
-import { createContext } from '@/utils/createContex'
 import { formatSecondsIntoMinutesAndSeconds } from '@/utils/seconds'
 import { ChatInputField } from './ChatInput'
 import { CircularProgress } from './CircularProgress'
@@ -10,17 +9,11 @@ import { Tooltip } from '@/components/Tooltip'
 import { usePomodoroStore, usePomodoroActions } from '@/stores'
 import { useTasksSidebarOpen, useToggleTasksSidebar } from '@/features/tasks'
 import { useUser, useUserAuthenticated, useAuthActions } from '@/features/auth'
-import { ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
+import { ChevronRightIcon, ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
 import shallow from 'zustand/shallow'
 import io from 'socket.io-client'
-
-const CHAT_NAME = 'Chat'
-
-interface ChatContextValue {
-  headerRef?: React.RefObject<HTMLElement>
-}
-
-const [ChatProvider, useChatContext] = createContext<ChatContextValue>(CHAT_NAME)
+import { ChatDialog, ChatDialogPortal, ChatDialogProvider } from './ChatDialog'
+import { motion } from 'framer-motion'
 
 const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
@@ -51,7 +44,6 @@ export const Chat = () => {
   const [messages, setMessages] = React.useState<MessagePayload[]>([])
   const [value, setValue] = React.useState('')
 
-  const headerRef = React.useRef<HTMLElement>(null)
   const chatContainer = React.useRef<HTMLDivElement>(null)
   const messagesContainer = React.useRef<HTMLDivElement>(null)
 
@@ -105,12 +97,9 @@ export const Chat = () => {
   }
 
   return (
-    <ChatProvider headerRef={headerRef}>
+    <ChatDialogProvider>
       <div className="bg-gray-900/70 max-h-[384px] md:max-h-full h-full md:max-w-[340px] w-full backdrop-blur-lg backdrop-saturate-[180%] flex flex-col border-l border-l-gray-700 absolute inset-x-0 bottom-0 md:inset-y-0 md:right-0 md:left-auto">
-        <header
-          ref={headerRef}
-          className="border-b border-b-gray-700 w-full grid grid-cols-3 items-center py-4 px-3"
-        >
+        <header className="border-b border-b-gray-700 w-full grid grid-cols-3 items-center py-4 px-3">
           <p className="text-xl font-bold justify-self-center col-start-2 font-bungee">Chat</p>
 
           {userAuthenticated && (
@@ -139,8 +128,10 @@ export const Chat = () => {
 
         <div
           ref={messagesContainer}
-          className="px-4 pt-3 mb-[60px] overflow-y-auto flex-1 basis-auto h-0 messages"
+          className="px-4 pt-3 mb-[60px] overflow-y-auto flex-1 basis-auto h-0 messages relative"
         >
+          <ChatDialog />
+
           {pomodoro.started && <ChatPomodoro />}
 
           {(pomodoro.minimized || !pomodoro.started) && (
@@ -162,37 +153,58 @@ export const Chat = () => {
           onCommand={handleCommand}
         />
       </div>
-    </ChatProvider>
+    </ChatDialogProvider>
   )
 }
 
-const CHAT_POMODORO_NAME = 'ChatPomodoro'
-
 const ChatPomodoro = () => {
-  const context = useChatContext(CHAT_POMODORO_NAME)
-
   const pomodoro = usePomodoroStore(
     (state) => ({
       started: state.started,
       minimized: state.minimized,
+      paused: state.paused,
     }),
     shallow
   )
-  const { minimize } = usePomodoroActions()
+  const { minimize, pause } = usePomodoroActions()
 
   const { seconds, setSeconds, totalSeconds } = useTimer({
     timerStarted: pomodoro.started,
   })
 
-  const onShowPomodoro = () => minimize(false)
+  const showPomodoro = () => minimize(false)
 
   return pomodoro.minimized ? (
-    createPortal(
-      <button className="justify-self-end font-bungee px-2" onClick={onShowPomodoro}>
-        {formatSecondsIntoMinutesAndSeconds(seconds)}
-      </button>,
-      context.headerRef?.current ?? document.body
-    )
+    <ChatDialogPortal>
+      <motion.div
+        initial={{ y: -30 }}
+        animate={{ y: 0 }}
+        className="bg-gray-800 opacity-60 rounded-md px-2.5 py-4 flex items-center hover:opacity-100 transition-opacity duration-300 ease-in-out gap-1.5"
+      >
+        <p className="font-bungee flex-1">{formatSecondsIntoMinutesAndSeconds(seconds)}</p>
+        {pomodoro.paused ? (
+          <button
+            className="hover:bg-gray-850 text-gray-200 p-1.5 rounded-lg select-none"
+            onClick={() => pause(false)}
+          >
+            <RiPlayFill size={18} />
+          </button>
+        ) : (
+          <button
+            className="hover:bg-gray-850 text-gray-200 p-1.5 rounded-lg select-none"
+            onClick={() => pause(true)}
+          >
+            <RiPauseFill size={18} />
+          </button>
+        )}
+        <button
+          onClick={showPomodoro}
+          className="text-xl p-1.5 rounded-lg select-none hover:bg-gray-850 text-gray-200"
+        >
+          <ChevronRightIcon />
+        </button>
+      </motion.div>
+    </ChatDialogPortal>
   ) : (
     <ChatPomodoroImpl seconds={seconds} setSeconds={setSeconds} totalSeconds={totalSeconds}>
       {formatSecondsIntoMinutesAndSeconds(seconds)}
