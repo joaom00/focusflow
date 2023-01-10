@@ -1,12 +1,8 @@
 import React from 'react'
-import {  flushSync } from 'react-dom'
+import { flushSync } from 'react-dom'
 import { RiStopFill, RiChat3Fill, RiPauseFill, RiPlayFill } from 'react-icons/ri'
-import { useTimer } from '@/hooks/useTimer'
-import { formatSecondsIntoMinutesAndSeconds } from '@/utils/seconds'
 import { ChatInputField } from './ChatInput'
-import { CircularProgress } from './CircularProgress'
 import { Tooltip } from '@/components/Tooltip'
-import { usePomodoroStore, usePomodoroActions } from '@/stores'
 import { useTasksSidebarOpen, useToggleTasksSidebar } from '@/features/tasks'
 import { useUser, useUserAuthenticated, useAuthActions } from '@/features/auth'
 import { ChevronRightIcon, ExitIcon, ReaderIcon } from '@radix-ui/react-icons'
@@ -14,11 +10,13 @@ import shallow from 'zustand/shallow'
 import io from 'socket.io-client'
 import { ChatDialog, ChatDialogPortal, ChatDialogProvider } from './ChatDialog'
 import { motion } from 'framer-motion'
+import { Pomodoro, usePomodoroStore, usePomodoroActions, useTimer } from '@/features/pomodoro'
+import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
 
 const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
-const socket = io('http://localhost:3333')
+const socket = io(import.meta.env.VITE_BASE_API_URL)
 
 type MessagePayload = {
   author: string
@@ -51,7 +49,7 @@ export const Chat = () => {
     const workTime = Math.max(Number(args[0]), MIN_WORK_MINUTES)
     const breakTime = Math.max(Number(args[1]), MIN_BREAK_MINUTES)
 
-    pomodoroActions.start(
+    pomodoroActions.setStart(
       isNaN(workTime) ? MIN_WORK_MINUTES : workTime,
       isNaN(breakTime) ? MIN_BREAK_MINUTES : breakTime
     )
@@ -166,13 +164,9 @@ const ChatPomodoro = () => {
     }),
     shallow
   )
-  const { minimize, pause } = usePomodoroActions()
+  const { setMinimize, setPause } = usePomodoroActions()
+  const { seconds, totalSeconds, setSeconds } = useTimer()
 
-  const { seconds, setSeconds, totalSeconds } = useTimer({
-    timerStarted: pomodoro.started,
-  })
-
-  const showPomodoro = () => minimize(false)
 
   return pomodoro.minimized ? (
     <ChatDialogPortal>
@@ -185,20 +179,20 @@ const ChatPomodoro = () => {
         {pomodoro.paused ? (
           <button
             className="hover:bg-gray-850 text-gray-200 p-1.5 rounded-lg select-none"
-            onClick={() => pause(false)}
+            onClick={() => setPause(false)}
           >
             <RiPlayFill size={18} />
           </button>
         ) : (
           <button
             className="hover:bg-gray-850 text-gray-200 p-1.5 rounded-lg select-none"
-            onClick={() => pause(true)}
+            onClick={() => setPause(true)}
           >
             <RiPauseFill size={18} />
           </button>
         )}
         <button
-          onClick={showPomodoro}
+          onClick={() => setMinimize(false)}
           className="text-xl p-1.5 rounded-lg select-none hover:bg-gray-850 text-gray-200"
         >
           <ChevronRightIcon />
@@ -206,68 +200,43 @@ const ChatPomodoro = () => {
       </motion.div>
     </ChatDialogPortal>
   ) : (
-    <ChatPomodoroImpl seconds={seconds} setSeconds={setSeconds} totalSeconds={totalSeconds}>
-      {formatSecondsIntoMinutesAndSeconds(seconds)}
-    </ChatPomodoroImpl>
+    <ChatPomodoroImpl seconds={seconds} totalSeconds={totalSeconds} setSeconds={setSeconds} />
   )
 }
 
-interface ChatPomodoroImplProps {
-  children?: React.ReactNode
+type ChatPomodoroImplProps = {
   seconds: number
-  setSeconds?: (seconds: number) => void
   totalSeconds: number
+  setSeconds: (seconds: number) => void
 }
 
-const ChatPomodoroImpl = ({
-  seconds,
-  setSeconds,
-  totalSeconds,
-  children,
-}: ChatPomodoroImplProps) => {
+const ChatPomodoroImpl = ({ seconds, totalSeconds, setSeconds }: ChatPomodoroImplProps) => {
   const pomodoro = usePomodoroStore(
     (state) => ({ started: state.started, paused: state.paused }),
     shallow
   )
-  const { pause, minimize, stop } = usePomodoroActions()
-
+  const { setPause, setMinimize, setStop } = usePomodoroActions()
   const percentage = Math.max(((totalSeconds - seconds) / totalSeconds) * 100, 1)
 
-  const onPlay = () => pause(false)
-  const onPause = () => pause(true)
-  const onStop = () => {
-    stop()
+  const handlePlay = () => setPause(false)
+  const handlePause = () => setPause(true)
+  const handleStop = () => {
+    setStop()
     setSeconds?.(60 * 30)
   }
-  const onShowChat = () => minimize()
+  const handleMinimize = () => setMinimize()
 
   return pomodoro.started ? (
     <div className="justify-start items-center gap-8 h-full flex flex-col pt-8">
       <div className="w-[240px] h-[240px]">
-        <CircularProgress value={percentage} className="w-full align-middle" strokeWidth={5}>
-          <CircularProgress.Trail className="stroke-gray-700" strokeLinecap="round" />
-
-          <CircularProgress.Path
-            className="stroke-pink-500"
-            strokeLinecap="round"
-            style={{
-              transition: 'stroke-dashoffset 0.5s ease',
-            }}
-          />
-          <CircularProgress.Text
-            className="text-sm font-bungee fill-white select-none"
-            style={{ dominantBaseline: 'middle', textAnchor: 'middle' }}
-          >
-            {children}
-          </CircularProgress.Text>
-        </CircularProgress>
+        <Pomodoro value={percentage}>{formatSecondsIntoMinutesAndSeconds(seconds)}</Pomodoro>
       </div>
 
       <div className="flex justify-evenly items-center w-full mt-4">
         <Tooltip content="Stop">
           <button
             className="hover:bg-gray-800 text-gray-200 p-2 rounded-lg select-none"
-            onClick={onStop}
+            onClick={handleStop}
           >
             <RiStopFill size={24} />
           </button>
@@ -277,7 +246,7 @@ const ChatPomodoroImpl = ({
           <Tooltip content="Play">
             <button
               className="hover:bg-gray-800 text-gray-200 p-2 rounded-lg select-none"
-              onClick={onPlay}
+              onClick={handlePlay}
             >
               <RiPlayFill size={24} />
             </button>
@@ -286,7 +255,7 @@ const ChatPomodoroImpl = ({
           <Tooltip content="Pause">
             <button
               className="hover:bg-gray-800 text-gray-200 p-2 rounded-lg select-none"
-              onClick={onPause}
+              onClick={handlePause}
             >
               <RiPauseFill size={24} />
             </button>
@@ -296,7 +265,7 @@ const ChatPomodoroImpl = ({
         <Tooltip content="Minimize">
           <button
             className="hover:bg-gray-800 text-gray-200 p-2 rounded-lg text-sm"
-            onClick={onShowChat}
+            onClick={handleMinimize}
           >
             <RiChat3Fill size={24} />
           </button>

@@ -1,12 +1,8 @@
 import React from 'react'
 import shallow from 'zustand/shallow'
-import {  usePomodoroStore } from '../stores'
+import { usePomodoroStore } from '../stores/pomodoro'
 
-type Props = {
-  timerStarted: boolean
-}
-
-export const useTimer = ({ timerStarted }: Props) => {
+export const useTimer = () => {
   const pomodoro = usePomodoroStore(
     (state) => ({
       workMinutes: state.workMinutes,
@@ -25,7 +21,7 @@ export const useTimer = ({ timerStarted }: Props) => {
   React.useEffect(() => {
     let timerId: ReturnType<typeof setInterval>
 
-    if (timerStarted) {
+    if (pomodoro.started) {
       timerId = setInterval(() => {
         if (pomodoro.paused) return
         setSeconds((currentSeconds) => currentSeconds - 1)
@@ -48,7 +44,6 @@ export const useTimer = ({ timerStarted }: Props) => {
 
     return () => clearInterval(timerId)
   }, [
-    timerStarted,
     seconds,
     pomodoro.started,
     pomodoro.paused,
