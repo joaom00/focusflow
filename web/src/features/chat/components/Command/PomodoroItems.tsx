@@ -11,7 +11,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
     (state) => ({ started: state.started, minimized: state.minimized, paused: state.paused }),
     shallow
   )
-  const { pause, stop, minimize } = usePomodoroActions()
+  const { setPause, setStop, setMinimize } = usePomodoroActions()
 
   return (
     <Cmdk.Group heading="Pomodoro">
@@ -19,7 +19,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/stop"
           description="Stop timer"
-          onSelect={composeEventHandlers(onSelect, () => stop())}
+          onSelect={composeEventHandlers(onSelect, () => setStop())}
         >
           /stop
         </Item>
@@ -39,7 +39,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/show-timer"
           description="Minimize chat and show timer"
-          onSelect={composeEventHandlers(onSelect, () => minimize(false))}
+          onSelect={composeEventHandlers(onSelect, () => setMinimize(false))}
         >
           /show-timer
         </Item>
@@ -49,7 +49,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/minimize"
           description="Minimize timer and show chat"
-          onSelect={composeEventHandlers(onSelect, () => minimize(true))}
+          onSelect={composeEventHandlers(onSelect, () => setMinimize(true))}
         >
           /minimize
         </Item>
@@ -59,7 +59,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/play-timer"
           description="Play timer"
-          onSelect={composeEventHandlers(onSelect, () => pause(false))}
+          onSelect={composeEventHandlers(onSelect, () => setPause(false))}
         >
           /play
         </Item>
@@ -69,7 +69,7 @@ export const PomodoroItems = ({ onSelect }: { onSelect: (value: string) => void 
         <Item
           value="/pause-timer"
           description="Pause timer"
-          onSelect={composeEventHandlers(onSelect, () => pause())}
+          onSelect={composeEventHandlers(onSelect, () => setPause())}
         >
           /pause
         </Item>
