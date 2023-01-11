@@ -3,7 +3,7 @@ import { PlusIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'
 import cuid from 'cuid'
 
-import type { Task } from './Tasks'
+import type { Task } from '../types'
 
 export const AddTaskButton = () => {
   const queryClient = useQueryClient()
