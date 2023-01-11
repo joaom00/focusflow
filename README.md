@@ -31,9 +31,14 @@ Listen to songs, chat with others while manage your tasks.
     pnpm install
     ```
 
-3. Run both web and api applications
+3. Run initial setup
+    ```
+    pnpm run setup
+    ```
+
+4. Run both web and api applications
     ```
     pnpm run dev
     ```
 
-Web are will running on port 3000 and api on 3333
+Web will be running on port 3000 and API on 3333

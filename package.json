@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "run-p dev:*",
     "dev:web": "pnpm -F @chat/web dev",
-    "dev:api": "pnpm -F @chat/api start:dev"
+    "dev:api": "pnpm -F @chat/api start:dev",
+    "setup": "pnpm -F @chat/api setup"
   },
   "keywords": [],
   "author": "",
