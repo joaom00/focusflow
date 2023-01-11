@@ -2,6 +2,9 @@ import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { useFormContext } from 'react-hook-form'
 import {Label} from '@/components/Label'
+import { LoaderIcon } from '@/icons/LoaderIcon'
+import { ErrorIcon } from '@/icons/ErrorIcon'
+import { CheckmarkIcon } from '@/icons/CheckmarkIcon'
 
 type PrimitivInputProps = React.ComponentPropsWithRef<'input'>
 
@@ -41,13 +44,16 @@ export const Input = ({
       >
         {label}
 
-        {/* {isLoading && <LoaderIcon />} */}
+        {isLoading && <LoaderIcon />}
 
         {/* {!isLoading && hasError && ( */}
         {/*   <ErrorIcon className="w-4 h-4 bg-red-500 before:w-[10px] after:w-[10px] before:left-[3px] before:bottom-[7px] after:left-[3px] after:bottom-[7px]" /> */}
         {/* )} */}
+        {!isLoading && hasError && (
+          <ErrorIcon />
+        )}
 
-        {/* {isSuccess && <CheckmarkIcon />} */}
+        {isSuccess && <CheckmarkIcon />}
 
         {!isLoading && !isSuccess && !hasError && trailingAccessory}
       </Label>

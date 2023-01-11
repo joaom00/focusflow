@@ -55,69 +55,134 @@ body {
     transform: none;
     opacity: 1;
   }
+}
 
-  @keyframes circleAnimation {
-    from {
-      transform: scale(0) rotate(45deg);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1) rotate(45deg);
-      opacity: 1;
-    }
-  }
+.checkmark-icon {
+  width: 20px;
+  opacity: 0;
+  height: 20px;
+  border-radius: 10px;
+  background: #61d345;
+  position: relative;
+  transform: rotate(45deg);
+  animation: circleAnimation 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: 100ms;
+}
 
-  @keyframes firstLineAnimation {
-    from {
-      transform: scale(0);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
+.checkmark-icon::after {
+  content: '';
+  box-sizing: border-box;
+  animation: checkmarkAnimation 0.2s ease-out forwards;
+  opacity: 0;
+  animation-delay: 200ms;
+  position: absolute;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+  border-color: #fff;
+  bottom: 6px;
+  left: 6px;
+  height: 10px;
+  width: 6px;
+}
+
+.error-icon {
+  width: 20px;
+  opacity: 0;
+  height: 20px;
+  border-radius: 10px;
+  background: #ff4b4b;
+  position: relative;
+  transform: rotate(45deg);
+  animation: circleAnimation 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: 100ms;
+}
+
+.error-icon::before, .error-icon::after {
+  content: '';
+  animation: firstLineAnimation 0.15s ease-out forwards;
+  animation-delay: 150ms;
+  position: absolute;
+  border-radius: 3px;
+  opacity: 0;
+  background: #fff;
+  bottom: 9px;
+  left: 4px;
+  height: 2px;
+  width: 12px;
+}
+
+.error-icon::before {
+  animation: secondLineAnimation 0.15s ease-out forwards;
+  animation-delay: 180ms;
+  transform: rotate(90deg);
+}
+
+.loader-icon {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 2px solid;
+  border-radius: 100%;
+  border-color: #e0e0e0;
+  border-right-color: #616161;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes checkmarkAnimation {
+  0% {
+    height: 0;
+    width: 0;
+    opacity: 0;
   }
+  40% {
+    height: 0;
+    width: 6px;
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    height: 10px;
+  }
+}
+
+@keyframes circleAnimation {
+  from {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+@keyframes firstLineAnimation {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 @keyframes secondLineAnimation {
-from {
-  transform: scale(0) rotate(90deg);
-	opacity: 0;
-}
-to {
-  transform: scale(1) rotate(90deg);
-	opacity: 1;
-}
-  }
-
-  .error-icon {
-    width: 20px;
+  from {
+    transform: scale(0) rotate(90deg);
     opacity: 0;
-    height: 20px;
-    border-radius: 10px;
-    background: #ff4b4b;
-    position: relative;
-    transform: rotate(45deg);
-    animation: circleAnimation 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    animation-delay: 100ms;
   }
-
-  .error-icon:where(:before, :after) {
-    content: '';
-    animation: firstLineAnimation 0.15s ease-out forwards;
-    animation-delay: 150ms;
-    position: absolute;
-    border-radius: 3px;
-    opacity: 0;
-    background: #fff;
-    bottom: 9px;
-    left: 4px;
-    height: 2px;
-    width: 12px;
+  to {
+    transform: scale(1) rotate(90deg);
+    opacity: 1;
   }
+}
 
-  .error-icon:before {
-    animation: secondLineAnimation 0.15s ease-out forwards;
-    animation-delay: 180ms;
-    transform: rotate(90deg);
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
