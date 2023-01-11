@@ -9,8 +9,8 @@ import { Server } from 'socket.io'
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000', 'https://chat-web-delta.vercel.app'],
-credentials: true
+    origin: ['https://chat-web-delta.vercel.app', 'http://localhost:3000'],
+    credentials: true,
   },
 })
 export class MyGateway implements OnModuleInit {
