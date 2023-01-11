@@ -16,7 +16,7 @@ import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
 const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
-const socket = io(import.meta.env.VITE_BASE_API_URL)
+const socket = io(import.meta.env.VITE_BASE_API_URL, {withCredentials: true})
 
 type MessagePayload = {
   author: string
