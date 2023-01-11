@@ -7,7 +7,12 @@ import {
 } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'https://chat-web-delta.vercel.app/'] } })
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:3000', 'https://chat-web-delta.vercel.app'],
+credentials: true
+  },
+})
 export class MyGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server
