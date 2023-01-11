@@ -1,6 +1,9 @@
-# fly.toml file generated for old-star-6144 on 2022-12-26T13:51:22-03:00
+# fly.toml file generated for focusflow on 2023-01-11T12:35:38-03:00
 
-app = "old-star-6144"
+app = "focusflow"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
 
 [[services]]
   http_checks = []
