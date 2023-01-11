@@ -20,19 +20,19 @@ export const AudioPlayer = () => {
   const audioRef = React.useRef<HTMLAudioElement>(null)
   const previouslyVolume = React.useRef(50)
 
-  const onRangeChange = (value: number[]) => {
+  const handleValueChange = (value: number[]) => {
     if (audioRef.current) {
       audioRef.current.volume = value[0] / 100
       setVolume(value)
     }
   }
 
-  const onPlay = () => {
+  const handlePlay = () => {
     audioRef.current?.play()
     play(true)
   }
 
-  const onPause = () => {
+  const handlePause = () => {
     audioRef.current?.pause()
     play(false)
   }
@@ -81,7 +81,7 @@ export const AudioPlayer = () => {
       <motion.button
         whileTap={{ scale: 0.8, backgroundColor: 'rgb(39 39 42 / 25)', opacity: 0.7 }}
         className="p-2 rounded-lg select-none"
-        onClick={isPlaying ? onPause : onPlay}
+        onClick={isPlaying ? handlePause : handlePlay}
       >
         {isPlaying ? <RiPauseFill size={24} /> : <RiPlayFill size={24} />}
       </motion.button>
@@ -121,7 +121,7 @@ export const AudioPlayer = () => {
           defaultValue={[50]}
           aria-label="Volume"
           value={volume}
-          onValueChange={onRangeChange}
+          onValueChange={handleValueChange}
           onPointerDown={(event) => event.preventDefault()}
           style={{ height: height + buffer }}
         >
@@ -134,7 +134,7 @@ export const AudioPlayer = () => {
             onPointerLeave={() => setHovered(false)}
             onPan={(_, info) => {
               const newVolume = clamp(volume[0] + info.delta.x * 0.55, 0, 100)
-              setVolume([newVolume])
+              handleValueChange([newVolume])
             }}
           >
             <SliderPrimitive.Track asChild>
@@ -150,9 +150,7 @@ export const AudioPlayer = () => {
                 <SliderPrimitive.Range className="absolute bg-white h-full rounded-full" />
               </motion.span>
             </SliderPrimitive.Track>
-            <SliderPrimitive.Thumb
-              className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)] z-20"
-            >
+            <SliderPrimitive.Thumb className="block w-5 h-5 bg-gray-100 shadow-md rounded-[10px] hover:bg-gray-200 outline-none focus:shadow-[0_0_0_5px_rgba(51,51,56,0.8)] z-20">
               <motion.div
                 initial={false}
                 animate={state}
