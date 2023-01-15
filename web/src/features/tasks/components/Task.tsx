@@ -169,23 +169,29 @@ const TaskImpl = () => {
   }
 
   const handleTaskKeyDown = (event: React.KeyboardEvent) => {
-    event.preventDefault()
-
     switch (event.key) {
       case 'Enter': {
+        event.preventDefault()
         if (event.altKey) return handleInsertTaskBelow()
         handleEdit()
         break
       }
       case 'd': {
-        if (event.ctrlKey) return handleDuplicateTask()
+        if (event.ctrlKey) {
+          event.preventDefault()
+          handleDuplicateTask()
+        }
         break
       }
       case 'c': {
-        if (event.ctrlKey) return handleCopyText()
+        if (event.ctrlKey) {
+          event.preventDefault()
+          handleCopyText()
+        }
         break
       }
       case 'Delete': {
+        event.preventDefault()
         handleDelete()
         break
       }
@@ -193,6 +199,7 @@ const TaskImpl = () => {
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(event)
     taskActions.setValue(event.currentTarget.value)
   }
 
