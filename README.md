@@ -1,8 +1,16 @@
-# Chat + Pomodoro + Tasks + Music
+<div align="center">
+  <a href="https://focusflow.vercel.app/">
+    <img
+      src="./.github/banner.png"
+      alt="project banner" width="600" />
+  </a>
+</div>
 
-Listen to songs, chat with others while manage your tasks.
+# FocusFlow
 
-# Project purpose
+Listen to live radio, chat with other users, create tasks and stay focused with the Pomodoro technique all in one place. Increase your productivity and enjoy the best music and company with our platform.
+
+## Project purpose
 
 - Experiment monorepos with [PNPM Workspace](https://pnpm.io/workspaces)
 - Learn how to deploy to [Fly.io](https://fly.io/)
@@ -10,7 +18,7 @@ Listen to songs, chat with others while manage your tasks.
   - Learn [Framer Motion](https://www.framer.com/motion/)
   - Learn [Socket.IO](https://socket.io/)
   - Practice [React](https://reactjs.org/)
-  - Practice [TailwindCSS](https://tailwindcss.com/)
+  - Practice [Tailwind CSS](https://tailwindcss.com/)
   - Practice [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)
   - Practice [React Query](https://tanstack.com/query/v4)
 - Back-End
@@ -18,7 +26,7 @@ Listen to songs, chat with others while manage your tasks.
   - Learn [Socket.IO](https://socket.io/)
   - Practice [Prisma](https://www.prisma.io/)
 
-# Getting Started
+## Getting Started
 
 1. Clone the repo
     ```
@@ -31,14 +39,22 @@ Listen to songs, chat with others while manage your tasks.
     pnpm install
     ```
 
-3. Run initial setup
+3. Start the Postgres Database in Docker
+    ```
+    pnpm run docker
+    ```
+
+4. Run initial setup
     ```
     pnpm run setup
     ```
 
-4. Run both web and api applications
+5. Run web and api applications
     ```
     pnpm run dev
     ```
 
 Web will be running on port 3000 and API on 3333
+
+## Acknowledgment
+- [X-Team Radio](https://radio.x-team.com/)
