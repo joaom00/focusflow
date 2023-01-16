@@ -7,7 +7,10 @@ import * as Command from './Command'
 import { useLazyRef } from '@/hooks/useLazyRef'
 import { DoublyLinkedList } from '../utils/DoublyLinkedList'
 import { AccountDialog, useUserAuthenticated } from '@/features/auth'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { Button } from '@/components/Button'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 type ChatInputFieldProps = {
   value: string
@@ -28,6 +31,10 @@ export const ChatInputField = ({
   onCommand,
 }: ChatInputFieldProps) => {
   const authenticated = useUserAuthenticated()
+  const [showCommandsTip, setShowCommandsTip] = useLocalStorage(
+    '@focusflow:show-commands-tip',
+    true
+  )
 
   const [open, setOpen] = React.useState(false)
   const [currentIndex, setCurrentIndex] = React.useState(0)
@@ -146,6 +153,24 @@ export const ChatInputField = ({
       <Command.Root onSelect={onCommandSelect} open={open}>
         <CmdkCommand.Input className="hidden" value={value} onValueChange={onValueChange} />
 
+        <AnimatePresence>
+          {showCommandsTip && (
+            <motion.div
+              className="bg-gray-800 w-full rounded-t-md text-xs border border-gray-700 p-2 text-gray-300 translate-y-1 flex gap-1.5 items-center"
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.2}}
+            >
+              <InfoCircledIcon className="text-gray-400" />
+              Type {'"/"'} to see the list of commands
+              <Button
+                className="px-2 py-1.5 text-xs ml-auto"
+                onClick={() => setShowCommandsTip(false)}
+              >
+                Alright
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="relative">
           <motion.div
             className="absolute left-[17px] top-1/2 text-xs font-medium text-gray-400 leading-none pointer-events-none"
@@ -164,7 +189,7 @@ export const ChatInputField = ({
               },
             }}
             transition={{
-              duration: 0.4,
+              duration: 0.3,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
