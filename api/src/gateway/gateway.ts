@@ -9,7 +9,7 @@ import { Server } from 'socket.io'
 
 @WebSocketGateway({
   cors: {
-    origin: ['https://chat-web-delta.vercel.app', 'http://localhost:3000'],
+    origin: ['https://focusflow.vercel.app', 'http://localhost:3000'],
     credentials: true,
   },
 })
