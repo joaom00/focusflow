@@ -8,10 +8,7 @@ import {
 import { Server } from 'socket.io'
 
 @WebSocketGateway({
-  cors: {
-    origin: ['https://focusflow.vercel.app', 'http://localhost:3000'],
-    credentials: true,
-  },
+  cors: true,
 })
 export class MyGateway implements OnModuleInit {
   @WebSocketServer()

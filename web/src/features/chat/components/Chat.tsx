@@ -16,7 +16,7 @@ import { formatSecondsIntoMinutesAndSeconds } from '../utils/seconds'
 const MIN_WORK_MINUTES = 30
 const MIN_BREAK_MINUTES = 5
 
-const socket = io(import.meta.env.VITE_BASE_API_URL, { withCredentials: true })
+const socket = io(import.meta.env.VITE_BASE_API_URL)
 
 type MessagePayload = {
   author: string
@@ -56,7 +56,6 @@ export const Chat = () => {
   }
 
   React.useEffect(() => {
-
     socket.on('onMessage', (data: MessagePayload) => {
       console.log('onMessage event received!')
 
